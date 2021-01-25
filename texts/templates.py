@@ -68,7 +68,7 @@ if __name__ == '__main__':
         media_url='https://telegram.org/',
         description='Тестирование. Описание проекта, минимум в 15 символов.'
     )
-    post1 = form_post_text(post_data1, with_note=True)
+    post1 = form_post_text(post_data1)
     post2 = form_post_text(post_data2, with_note=True)
 
     print(post1)

@@ -34,6 +34,8 @@ file = QuestText(
     markup.ready_kb
 )
 
+worker = QuestText('Введите ID исполнителя', markup.go_back_kb)
+
 
 @QuestFunc
 async def confirm(msg: types.Message):
@@ -45,7 +47,7 @@ async def confirm(msg: types.Message):
     await msg.answer(post_text, reply_markup=keyboard)
 
 
-class CreatePost(ConvStatesGroup):
+class PersonalProject(ConvStatesGroup):
     work_type = ConvState(work_type)
     subject = ConvState(subject)
     date = ConvState(date)
@@ -53,4 +55,5 @@ class CreatePost(ConvStatesGroup):
     price = ConvState(price)
     note = ConvState(note)
     file = ConvState(file)
+    worker = ConvState(worker)
     confirm = ConvState(confirm)
