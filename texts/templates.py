@@ -1,16 +1,16 @@
-POST_TEMPLATE = """
+_POST_TEMPLATE = """
 <b>{status}</b>
 
 #{work_type}
 #{subject}
-<a href="{media_url}">&#4448;</a>
+
 {description}
 
 <b>Сдача:</b> {date}
 <b>Цена:</b> {price}
 """
 
-BID_TEMPLATE = """
+_BID_TEMPLATE = """
 Автор <a href="{worker_url}"{worker_nickname}</a> откликнулся на ваш <a href="{post_url}">проект</a>:
 
 {bid_text}
@@ -37,11 +37,11 @@ def form_post_text(post_data: dict, with_note=False):
     status = f'{emojis[status]} {status}'
 
     post_data.update(subject=subject, work_type=work_type, price=price, date=date, status=status)
-    text = POST_TEMPLATE.format(**post_data)
+    text = _POST_TEMPLATE.format(**post_data)
 
     if with_note:
         note = post_data.get('note')
-        note = f'<b>Ваша заметка:</b> {note}' if note else ''  # TODO: заметка = None при пропуске
+        note = f'<b>Ваша заметка:</b> {note}' if note else ''
         text += note
 
     return text

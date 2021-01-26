@@ -42,7 +42,7 @@ async def confirm(msg: types.Message):
     post_data = await dp.current_state().get_data()
     text1 = 'Проверьте свой пост:'
     post_text = templates.form_post_text(post_data)
-    keyboard = markup.confirm_kb
+    keyboard = markup.confirm_project_kb
     await msg.answer(text1)
     await msg.answer(post_text, reply_markup=keyboard)
 

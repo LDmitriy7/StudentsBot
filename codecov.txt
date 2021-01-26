@@ -1,4 +1,4 @@
-texts/templates
+texts/templates [1]
 
 questions/* [2+misc+init]
 

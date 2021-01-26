@@ -1,23 +1,20 @@
 """Main script, starts bot in long-polling mode."""
-from aiogram import Dispatcher
+
+from aiogram import executor
+
+from loader import dp
 
 
-async def on_startup(dp: Dispatcher):
+async def on_startup(*args):
     import logging
-
-    import middlewares
     import handlers
+    import middlewares
 
     logging.basicConfig(level=20)
-
-    dp.throttling_rate_limit = 3
-    dp.no_throttle_error = True
+    logger = logging.getLogger(__name__)
+    logger.info('Import %s', middlewares)
+    logger.info('Import %s', handlers)
 
 
 if __name__ == '__main__':
-    from aiogram import executor
-    from loader import dp
-
     executor.start_polling(dp, on_startup=on_startup)
-
-__all__ = ['handlers', 'middlewares']

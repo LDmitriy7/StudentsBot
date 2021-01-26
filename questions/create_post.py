@@ -39,18 +39,18 @@ file = QuestText(
 async def confirm(msg: types.Message):
     post_data = await dp.current_state().get_data()
     text1 = 'Проверьте свой пост:'
-    post_text = templates.form_post_text(post_data)
-    keyboard = markup.confirm_kb
+    post_text = templates.form_post_text(post_data, with_note=True)
+    keyboard = markup.confirm_project_kb
     await msg.answer(text1)
     await msg.answer(post_text, reply_markup=keyboard)
 
 
-class CreatePost(ConvStatesGroup):
+class CreatePostConv(ConvStatesGroup):
     work_type = ConvState(work_type)
     subject = ConvState(subject)
     date = ConvState(date)
     description = ConvState(description)
     price = ConvState(price)
     note = ConvState(note)
-    file = ConvState(file)
+    files = ConvState(file)
     confirm = ConvState(confirm)

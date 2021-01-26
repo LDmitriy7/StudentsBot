@@ -13,6 +13,13 @@ class ResizedKeyboardMarkup(ReplyKeyboardMarkup):
 
 GO_BACK_BTNS = 'Назад', 'Отменить'
 
+main_kb = ResizedKeyboardMarkup()
+main_kb_buttons = [
+    'Создать пост ➕', 'Личный проект 🤝', 'Мои работы 🛠', 'Мои заказы 💼', 'Мое резюме 🎓',
+    'Мой рейтинг ⭐', 'Баланс 🤑', 'Инструкция 📑', 'Получить помощь ✍'
+]
+main_kb.add(*main_kb_buttons)
+
 go_back_kb = ResizedKeyboardMarkup()
 go_back_kb.row(*GO_BACK_BTNS)
 
@@ -21,7 +28,7 @@ miss_kb.row('Пропустить')
 miss_kb.row(*GO_BACK_BTNS)
 
 ready_kb = ResizedKeyboardMarkup()
-ready_kb.row('Готово')
+ready_kb.row('Готово', 'Сбросить выбор')
 ready_kb.row(*GO_BACK_BTNS)
 
 confirm_project_kb = ResizedKeyboardMarkup()
