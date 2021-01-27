@@ -1,7 +1,6 @@
-from aiogram.contrib.middlewares.logging import LoggingMiddleware
-
 from loader import dp
-from middlewares.main import ConvManager
+from middlewares.conv_manager import ConvManager
+from middlewares.subscribe import CheckSubscription
 
-dp.setup_middleware(LoggingMiddleware())
 dp.setup_middleware(ConvManager())
+dp.setup_middleware(CheckSubscription())

@@ -1,15 +1,16 @@
 from aiogram import types
 
 from loader import dp
-from texts import subjects
+from texts.subjects import ALL_SUBJECTS
 
 
-def get_subjects(query: types.InlineQuery):
+def find_subjects(query: types.InlineQuery):
     """Поиск подходящих предметов"""
     query = query.query.lower()
-    SUBJECTS = {s for s in subjects.SUBJECTS if query in s.lower()}
+    subjects = {s for s in ALL_SUBJECTS if query in s.lower()}
     results = []
-    for index, s in enumerate(SUBJECTS):
+
+    for index, s in enumerate(subjects):
         if index > 19:
             break
 
@@ -19,12 +20,10 @@ def get_subjects(query: types.InlineQuery):
             title=s,
             input_message_content=imc,
         )
-
         results.append(result)
     return results
 
 
-# TODO: ограничить состояния?
 @dp.inline_handler(lambda query: query.query, state='*')
 async def suggest_subjects(query: types.InlineQuery):
-    await query.answer(results=get_subjects(query))
+    await query.answer(results=find_subjects(query))

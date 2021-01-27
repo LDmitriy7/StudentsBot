@@ -1,5 +1,6 @@
 # My files
-config.py
+config.ini
+utils/account.session
 
 # Byte-compiled / optimized / DLL files
 __pycache__/

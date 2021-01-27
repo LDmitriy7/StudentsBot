@@ -1,35 +1,53 @@
+"""Модуль для генерации парных чатов с общим ботом и админ-аккаунтом.
+Требует наличие telethon-сессии в папке."""
+
 import asyncio
+from collections import namedtuple
+from typing import Tuple
+
 from telethon import TelegramClient
-from telethon.tl.functions.messages import CreateChatRequest
-from telethon.tl.functions.messages import ExportChatInviteRequest
-from telethon.tl.types import ChatAdminRights
-from telethon.tl.functions.messages import EditChatAdminRequest
+from telethon.tl.functions.messages import CreateChatRequest, EditChatAdminRequest, ExportChatInviteRequest
 
-api_id = 2034926
-api_hash = '9046c41d3e17fd1b3eaed6352662773d'
+from config import API_HASH, API_ID, LINKED_BOT
+
+PairChats = namedtuple('PairChats', ['client_chat', 'worker_chat'])
 
 
-async def create_chat(app):
+async def create_chat(app, title: str) -> Tuple[int, str]:
     """Return chat_id, chat_link"""
-    user = await app.get_entity("@test2_bot2_bot")
-    res = await app(CreateChatRequest(title="Комната", users=[user]))
+    user = await app.get_entity(LINKED_BOT)
+    result = await app(CreateChatRequest(title=title, users=[user]))
 
-    chat_id = -res.updates[1].participants.chat_id
+    chat_id = -result.updates[1].participants.chat_id
+    chat_link = await app(ExportChatInviteRequest(chat_id))
     await app(EditChatAdminRequest(chat_id, user, True))
 
-    link = await app(ExportChatInviteRequest(chat_id))
-    return chat_id, link.link
+    return chat_id, chat_link.link
 
 
-async def create_pair_chats():
-    """Возвращает user_chat, worker_chat, user_link, worker_link"""
-    async with TelegramClient('utils/account', api_id, api_hash) as app:
-        user_chat, user_link = await create_chat(app)
-        worker_chat, worker_link = await create_chat(app)
-        return user_chat, worker_chat, user_link, worker_link
+async def create_pair_chats(title: str) -> PairChats:
+    """Return PairChats: dicts(chat_id, chat_type, link, pair_id)"""
+    async with TelegramClient('utils/account', API_ID, API_HASH) as app:
+        cchat_id, cchat_link = await create_chat(app, title)
+        wchat_id, wchat_link = await create_chat(app, title)
+
+        client_chat = {
+            'chat_id': cchat_id,
+            'chat_type': 'client',
+            'link': cchat_link,
+            'pair_id': wchat_id
+        }
+        worker_chat = {
+            'chat_id': wchat_id,
+            'chat_type': 'worker',
+            'link': wchat_link,
+            'pair_id': cchat_id
+        }
+
+        return PairChats(client_chat, worker_chat)
 
 
 if __name__ == '__main__':
     loop = asyncio.get_event_loop()
-    result = loop.run_until_complete(create_pair_chats())
-    print(result)
+    r = loop.run_until_complete(create_pair_chats('Тест1'))
+    print(r)

@@ -6,14 +6,12 @@ from loader import dp
 
 
 async def on_startup(*args):
-    import logging
     import handlers
     import middlewares
 
-    logging.basicConfig(level=20)
-    logger = logging.getLogger(__name__)
-    logger.info('Import %s', middlewares)
-    logger.info('Import %s', handlers)
+    # logger.add('journal.log', level=20, mode='w', format='{function} | {message}')
+    # logger.debug('Import {}', middlewares)
+    # logger.debug('Import {}', handlers)
 
 
 if __name__ == '__main__':

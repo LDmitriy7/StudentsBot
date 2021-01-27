@@ -1,13 +1,13 @@
 """All classes for making questions."""
 
 from dataclasses import dataclass
-from typing import Awaitable, Callable, List, TypeVar, Union
+from typing import Awaitable, Callable, List, Union
 
 from aiogram import types
 from aiogram.dispatcher.filters.state import State, StatesGroup, StatesGroupMeta
 
-KeyboardMarkup = TypeVar('KeyboardMarkup', types.ReplyKeyboardMarkup, types.InlineKeyboardMarkup)
-AsyncFunction = TypeVar('AsyncFunction', bound=Callable[[types.Message], Awaitable])
+KeyboardMarkup = Union[types.ReplyKeyboardMarkup, types.InlineKeyboardMarkup]
+AsyncFunction = Callable[[types.Message], Awaitable]
 
 
 @dataclass
@@ -15,18 +15,27 @@ class QuestText:
     text: str
     keyboard: KeyboardMarkup
 
+    def __repr__(self):
+        return f'QText({self.text}, {self.keyboard})'
+
 
 @dataclass
 class QuestFunc:
     async_func: AsyncFunction
 
+    def __repr__(self):
+        return f'QFunc({self.async_func})'
 
-Quest = TypeVar('Quest', QuestText, QuestFunc)
+
+Quest = Union[QuestText, QuestFunc]
 
 
 class HandleException:
     def __init__(self, on_exception: Union[None, str, Awaitable, AsyncFunction] = None):
         self.on_exception = on_exception
+
+    def __repr__(self):
+        return f'{self.on_exception}'
 
 
 class ConvState(State):
@@ -51,3 +60,11 @@ class ConvStatesGroupMeta(StatesGroupMeta):
 
 class ConvStatesGroup(StatesGroup, metaclass=ConvStatesGroupMeta):
     """Class attrs must be ConvState instances. All subclasses will be used in ConvManager."""
+
+
+async def ask_question(msg: types.Message, question: List[Quest]):
+    for item in question:
+        if isinstance(item, QuestText):
+            await msg.answer(item.text, reply_markup=item.keyboard)
+        elif isinstance(item, QuestFunc):
+            await item.async_func(msg)

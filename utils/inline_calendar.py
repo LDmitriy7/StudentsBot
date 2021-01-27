@@ -1,3 +1,9 @@
+"""
+1) Init instance of InlineCalendar
+2) Handle callbacks with handle_callback (return [date: str] or None)
+3) Get calendar by get_keyboard
+"""
+
 import datetime
 import logging
 from calendar import monthrange
@@ -119,7 +125,7 @@ class InlineCalendar:
         if chat_id is None:
             chat_id = User.get_current().id
 
-        if not (min_date <= base_date <= max_date):
+        if not min_date <= base_date <= max_date:
             raise ValueError("Base_date is less than min_date or more than max_date")
 
         if month_names is None:
@@ -207,7 +213,7 @@ class InlineCalendar:
             try:
                 callback_data = InlineCalendar.BASE_CALLBACK.parse(callback_data)
             except ValueError:
-                raise WrongCallbackException
+                raise WrongCallbackException from None
         action, data = callback_data.get('action', None), callback_data.get('data', None)
         if action is None or data is None:
             raise WrongCallbackException("No action or no data in callback_data.")

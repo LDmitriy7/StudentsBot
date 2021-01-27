@@ -1,14 +1,14 @@
 """Func and classes for Middlewares in main module."""
 
 from dataclasses import dataclass
-from typing import Awaitable, Callable, List, Optional
+from typing import Awaitable, Callable, Optional
 
 from aiogram import types
 
 from loader import dp
 from questions import ALL_CONV_STATES_GROUPS
 from questions.misc import ConvStatesGroup, ConvStatesGroupMeta
-from questions.misc import HandleException, Quest, QuestFunc, QuestText
+from questions.misc import HandleException
 
 
 @dataclass
@@ -25,13 +25,14 @@ async def process_user_data(new_data: dict):
 
     async with dp.current_state().proxy() as udata:
         for key, value in new_data.items():
-            if isinstance(value, list):
-                udata.setdefault(key, [])
+            value_type = type(value)
 
-                if value:
-                    udata[key].extend(value)
-                else:  # reset if passed list is empty
-                    udata[key] = []
+            if value_type == list:
+                udata.setdefault(key, [])
+                udata[key].extend(value)
+
+            elif value_type == tuple and not value:  # reset list if empty tuple passed
+                udata[key] = []
 
             else:  # usual case
                 udata[key] = value
@@ -50,14 +51,6 @@ async def process_exception(msg: types.Message, exception: HandleException):
         await e_body(msg)
 
     return True
-
-
-async def ask_question(msg: types.Message, question: List[Quest]):
-    for item in question:
-        if isinstance(item, QuestText):
-            await msg.answer(item.text, reply_markup=item.keyboard)
-        elif isinstance(item, QuestFunc):
-            await item.async_func(msg)
 
 
 def get_states_group(state_name, result: HandleResult):

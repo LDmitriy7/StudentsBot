@@ -1,22 +1,22 @@
 from aiogram import types
 
-from keyboards import inline_kb, markup
+from keyboards import inline_text, inline_func, markup
 from loader import dp
 from questions.misc import ConvState, ConvStatesGroup, QuestFunc, QuestText
 from texts import templates
 
 work_type = [
     QuestText('Это займет пару минут', markup.go_back_kb),
-    QuestText('Введите тип работы:', inline_kb.work_types),
+    QuestText('Введите тип работы:', inline_text.work_types),
 ]
 
-subject = QuestText('Отправьте название предмета', inline_kb.find_subject)
+subject = QuestText('Отправьте название предмета', inline_text.find_subject)
 
 
 @QuestFunc
 async def date(msg: types.Message):
     text = 'Выберите дату сдачи'
-    keyboard = inline_kb.get_calendar()
+    keyboard = inline_func.get_calendar()
     await msg.answer(text, reply_markup=keyboard)
 
 
@@ -40,13 +40,14 @@ worker = QuestText('Введите ID исполнителя', markup.go_back_kb
 @QuestFunc
 async def confirm(msg: types.Message):
     post_data = await dp.current_state().get_data()
-    text1 = 'Проверьте свой пост:'
-    post_text = templates.form_post_text(post_data)
+    status = post_data['status']
+    post_text = templates.form_post_text(status, post_data, with_note=True)
     keyboard = markup.confirm_project_kb
-    await msg.answer(text1)
+    await msg.answer('Проверьте свой пост:')
     await msg.answer(post_text, reply_markup=keyboard)
 
 
+# прикрепляем вопросы к состояниям
 class PersonalProjectConv(ConvStatesGroup):
     work_type = ConvState(work_type)
     subject = ConvState(subject)

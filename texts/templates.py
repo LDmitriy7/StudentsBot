@@ -1,3 +1,5 @@
+"""Содержит функции для формирования текстов по шаблонам."""
+
 _POST_TEMPLATE = """
 <b>{status}</b>
 
@@ -8,75 +10,80 @@ _POST_TEMPLATE = """
 
 <b>Сдача:</b> {date}
 <b>Цена:</b> {price}
-"""
-
-_BID_TEMPLATE = """
-Автор <a href="{worker_url}">{worker_nickname}</a> откликнулся на ваш <a href="{post_url}">проект</a>:
-
-{bid_text}
-————————————————————
 {note}
 """
 
+_BID_TEMPLATE = """
+Автор <a href="{worker_url}">{worker_nickname}</a> откликнулся на ваш проект:
 
-def form_post_text(post_data: dict, with_note=False):
+{bid_text}
+"""
+
+
+def form_post_text(status: str, post_data: dict, with_note=False):
+    """Requires all fields from project.data"""
     post_data = post_data.copy()
 
     subject = post_data['subject'].replace(' ', '_')
     work_type = post_data['work_type'].replace(' ', '_')
 
-    price = post_data.get('price')
+    price = post_data['price']
     price = f'{price} грн' if price else 'Договорная'
 
     date = post_data['date'].split('-')
     date = f'{date[2]}.{date[1]}'
 
-    status = post_data['status']
     emojis = {'Активен': '🔥', 'Выполняется': '⏳', 'Выполнен': '✅'}
     status = f'{emojis[status]} {status}'
 
-    post_data.update(subject=subject, work_type=work_type, price=price, date=date, status=status)
+    note = post_data['note']
+    note = f'<b>Ваша заметка:</b> {note}' if note and with_note else ''
+
+    post_data.update(
+        subject=subject,
+        work_type=work_type,
+        price=price,
+        date=date,
+        status=status,
+        note=note,
+    )
     text = _POST_TEMPLATE.format(**post_data)
-
-    if with_note:
-        note = post_data.get('note')
-        note = f'<b>Ваша заметка:</b> {note}' if note else ''
-        text += note
-
     return text
 
 
-def form_bid_text(bid_data: dict):
-    bid_data = bid_data.copy()
-    note = bid_data.get('note')
-    note = 'Вы не оставили заметки' if note is None else f'<i>Ваша заметка к проекту</i>:\n{note}'
-    bid_data.update(note=note)
-    return _BID_TEMPLATE.format(**bid_data)
+def form_bid_text(worker_nickname: str, worker_url: str, bid_text: str):
+    text = _BID_TEMPLATE.format(
+        worker_url=worker_url,
+        worker_nickname=worker_nickname,
+        bid_text=bid_text,
+    )
+    return text
 
 
 if __name__ == '__main__':
+    status1 = 'Выполняется'
     post_data1 = dict(
         subject='Общая физика',
         work_type='Онлайн помощь',
         date='2021-01-27',
+        price=None,
         note=None,
-        status='Выполняется',
-        media_url='https://telegram.org/',
         description='Тестирование. Описание проекта, минимум в 15 символов.'
     )
-
+    status2 = 'Активен'
     post_data2 = dict(
         subject='Математика',
         work_type='Практика',
         date='2016-09-30',
         price=300,
         note='Покормить кота',
-        status='Активен',
-        media_url='https://telegram.org/',
         description='Тестирование. Описание проекта, минимум в 15 символов.'
     )
-    post1 = form_post_text(post_data1)
-    post2 = form_post_text(post_data2, with_note=True)
+
+    post1 = form_post_text(status1, post_data1)
+    post2 = form_post_text(status2, post_data2, with_note=True)
+    bid1 = form_bid_text('http://test.ru', 'Dimka5667', 'Текст заявки, не меньше 15 символов')
 
     print(post1)
     print(post2)
+    print(bid1)
