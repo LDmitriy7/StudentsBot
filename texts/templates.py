@@ -11,11 +11,10 @@ _POST_TEMPLATE = """
 """
 
 _BID_TEMPLATE = """
-Автор <a href="{worker_url}"{worker_nickname}</a> откликнулся на ваш <a href="{post_url}">проект</a>:
+Автор <a href="{worker_url}">{worker_nickname}</a> откликнулся на ваш <a href="{post_url}">проект</a>:
 
 {bid_text}
 ————————————————————
-<i>Ваша заметка к проекту</i>:
 {note}
 """
 
@@ -45,6 +44,14 @@ def form_post_text(post_data: dict, with_note=False):
         text += note
 
     return text
+
+
+def form_bid_text(bid_data: dict):
+    bid_data = bid_data.copy()
+    note = bid_data.get('note')
+    note = 'Вы не оставили заметки' if note is None else f'<i>Ваша заметка к проекту</i>:\n{note}'
+    bid_data.update(note=note)
+    return _BID_TEMPLATE.format(**bid_data)
 
 
 if __name__ == '__main__':

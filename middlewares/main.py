@@ -1,6 +1,7 @@
 from aiogram import types
 from aiogram.dispatcher.middlewares import BaseMiddleware
 
+from loader import dp
 from middlewares.misc import ask_question, get_states_group, parse_handle_results, process_exception, process_user_data
 from questions import ALL_CONV_STATES
 from questions.misc import ConvState
@@ -11,12 +12,12 @@ class ConvManager(BaseMiddleware):
 
     @classmethod
     async def on_post_process_message(cls, msg: types.Message, results: list, state_dict: dict):
-        state_ctx, state_name = state_dict.get('state'), state_dict.get('raw_state')
+        state_name = await dp.current_state().get_state()
 
         result = parse_handle_results(results)
         states_group = get_states_group(state_name, result)
 
-        await process_user_data(state_ctx, result.user_data)  # update data if exists
+        await process_user_data(result.user_data)  # update data if exists
 
         if states_group is None:  # user not in conversation
             return

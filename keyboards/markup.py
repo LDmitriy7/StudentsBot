@@ -35,6 +35,9 @@ confirm_project_kb = ResizedKeyboardMarkup()
 confirm_project_kb.row('Отправить проект')
 confirm_project_kb.row(*GO_BACK_BTNS)
 
+cancel_kb = ResizedKeyboardMarkup()
+cancel_kb.row('Отменить')
+
 if __name__ == '__main__':
     print(go_back_kb)
     print(miss_kb)

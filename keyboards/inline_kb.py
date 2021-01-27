@@ -1,7 +1,7 @@
 from datetime import date, timedelta
 
 from aiogram.types import InlineKeyboardButton, InlineKeyboardMarkup
-
+from aiogram.utils.deep_linking import get_start_link
 from loader import calendar
 
 find_subject = InlineKeyboardMarkup()
@@ -15,6 +15,29 @@ work_type_btns = [
 ]
 work_type_inline_btns = [InlineKeyboardButton(btn, callback_data=btn) for btn in work_type_btns]
 work_types.add(*work_type_inline_btns)
+
+PICK_PROJECT_PREFIX = 'pick_project_'
+GET_FILES_PREFIX = 'get_files_'
+
+
+def answer_bid(bid_id: str):
+    """Кнопки: позвать в чат, отказаться"""
+    keyboard = InlineKeyboardMarkup()
+    keyboard.row(InlineKeyboardButton('Позвать в чат', callback_data=f'pick:bid:{bid_id}'))
+    keyboard.row(InlineKeyboardButton('Отказаться', callback_data='refuse:bid'))
+    return keyboard
+
+
+async def project_kb(project_id: str, files=False):
+    """Можно посмотреть файлы и взять проект."""
+    keyboard = InlineKeyboardMarkup()
+    if files:
+        url = await get_start_link(GET_FILES_PREFIX + project_id)
+        keyboard.row(InlineKeyboardButton('Посмотреть файлы', url=url))
+
+    url = await get_start_link(PICK_PROJECT_PREFIX + project_id)
+    keyboard.row(InlineKeyboardButton('Взять проект', url=url))
+    return keyboard
 
 
 def get_calendar():

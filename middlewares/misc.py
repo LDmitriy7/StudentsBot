@@ -4,8 +4,8 @@ from dataclasses import dataclass
 from typing import Awaitable, Callable, List, Optional
 
 from aiogram import types
-from aiogram.dispatcher import FSMContext
 
+from loader import dp
 from questions import ALL_CONV_STATES_GROUPS
 from questions.misc import ConvStatesGroup, ConvStatesGroupMeta
 from questions.misc import HandleException, Quest, QuestFunc, QuestText
@@ -18,12 +18,12 @@ class HandleResult:
     user_data: Optional[dict]
 
 
-async def process_user_data(state_ctx: FSMContext, new_data: dict):
+async def process_user_data(new_data: dict):
     # TODO: docs
     if new_data is None:
         return
 
-    async with state_ctx.proxy() as udata:
+    async with dp.current_state().proxy() as udata:
         for key, value in new_data.items():
             if isinstance(value, list):
                 udata.setdefault(key, [])

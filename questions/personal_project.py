@@ -47,13 +47,13 @@ async def confirm(msg: types.Message):
     await msg.answer(post_text, reply_markup=keyboard)
 
 
-class PersonalProject(ConvStatesGroup):
+class PersonalProjectConv(ConvStatesGroup):
     work_type = ConvState(work_type)
     subject = ConvState(subject)
     date = ConvState(date)
     description = ConvState(description)
     price = ConvState(price)
     note = ConvState(note)
-    file = ConvState(file)
+    files = ConvState(file)
     worker = ConvState(worker)
     confirm = ConvState(confirm)
