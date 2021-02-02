@@ -24,7 +24,7 @@ async def add_post_keyboard(post: types.Message, project_id: str, post_data: dic
 
     keyboard = await inline_func.for_project(
         project_id,
-        pick_button=True,
-        files_button=has_files
+        pick_btn=True,
+        files_btn=has_files
     )
     await post.edit_reply_markup(keyboard)

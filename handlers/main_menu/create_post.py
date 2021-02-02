@@ -68,7 +68,7 @@ async def process_file(msg: types.Message):
     return {'files': [file_obj]}, HandleException()
 
 
-@dp.message_handler(text=['Готово', 'Сбросить выбор'], state=States.files)
+@dp.message_handler(text=['Готово', 'Начать заново'], state=States.files)
 async def process_file_finish(msg: types.Message):
     if msg.text == 'Сбросить выбор':
         return {'files': ()}, HandleException('Теперь выбирайте заново')

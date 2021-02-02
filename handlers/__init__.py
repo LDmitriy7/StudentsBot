@@ -4,14 +4,14 @@
 3) errors must be at the end.
 """
 
-from handlers import common
-from handlers import inline
+from handlers import common  # команды "Отменить", "Назад" ; Удаление сообщения
+from handlers import inline  # инлайн-поиск предметов
+from handlers import projects  # обработка кнопок под проектом: посмотреть файлы, взять проект, удалить проект
+from handlers import registration  # вся для диалога: регистрация профиля исполнителя
+
 from handlers import bids
-from handlers import registration
 
 from handlers import main_menu
 from handlers import worker_menu
 
-from handlers import projects
-
-from handlers import errors
+from handlers import errors  # подавление некоторых ошибок и предупредительное сообщение

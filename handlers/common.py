@@ -1,9 +1,12 @@
-from loader import dp
+"""Handle commands "Отменить", "Назад" and query for deleting bound message."""
 from aiogram import types
 from aiogram.dispatcher import FSMContext
-from keyboards import markup, inline_func
-from questions import ALL_CONV_STATES_GROUPS, ALL_CONV_STATES, ConvStatesGroup
-from questions.misc import HandleException, ConvState, ask_question
+
+from functions import common as cfuncs
+from keyboards import inline_func, markup
+from loader import dp
+from questions import ALL_CONV_STATES_GROUPS
+from questions.misc import HandleException
 
 
 @dp.message_handler(text='Отменить', state='*')
@@ -20,7 +23,7 @@ async def go_back(msg: types.Message, state: FSMContext):
 
     for states_group, all_states_names in ALL_CONV_STATES_GROUPS.items():
         if state_name in all_states_names:  # user is in conversation
-            await _ask_previous(msg, state, states_group)
+            await cfuncs.ask_previous(msg, state, states_group)
             break
     else:
         await state.finish()
@@ -32,14 +35,3 @@ async def go_back(msg: types.Message, state: FSMContext):
 @dp.callback_query_handler(text=inline_func.DEL_MESSAGE_DATA)
 async def delete_msg(query: types.CallbackQuery):
     await query.message.delete()
-
-
-async def _ask_previous(msg: types.Message, state: FSMContext, states_group: ConvStatesGroup):
-    new_state_name = await states_group.previous()
-
-    if new_state_name is None:  # user has left conversation
-        await state.finish()
-        await msg.answer('Отменено', reply_markup=markup.main_kb)
-    else:
-        new_state: ConvState = ALL_CONV_STATES[new_state_name]
-        await ask_question(msg, new_state.question)

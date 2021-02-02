@@ -42,7 +42,7 @@ miss_kb.row(*_GO_BACK_BTNS)
 
 # клавиатура для окончания выбора
 ready_kb = ResizedKeyboardMarkup()
-ready_kb.row('Готово', 'Сбросить выбор')
+ready_kb.row('Готово', 'Начать заново')
 ready_kb.row(*_GO_BACK_BTNS)
 
 # клавиатура для отмены

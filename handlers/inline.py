@@ -1,3 +1,4 @@
+"""Search subjects with inline query."""
 from aiogram import types
 
 from loader import dp
@@ -10,14 +11,14 @@ def find_subjects(query: types.InlineQuery):
     subjects = {s for s in ALL_SUBJECTS if query in s.lower()}
     results = []
 
-    for index, s in enumerate(subjects):
+    for index, subject in enumerate(subjects):
         if index > 19:
             break
 
-        imc = types.InputMessageContent(message_text=s)
+        imc = types.InputMessageContent(message_text=subject)
         result = types.InlineQueryResultArticle(
             id=str(index),
-            title=s,
+            title=subject,
             input_message_content=imc,
         )
         results.append(result)

@@ -16,7 +16,7 @@ subject = QuestText('Отправьте название предмета', inli
 @QuestFunc
 async def date(msg: types.Message):
     text = 'Выберите дату сдачи'
-    keyboard = inline_func.get_calendar()
+    keyboard = inline_func.make_calendar()
     await msg.answer(text, reply_markup=keyboard)
 
 
