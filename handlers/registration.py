@@ -41,10 +41,10 @@ async def process_biography(msg: types.Message):
     return {'biography': biography}
 
 
-@dp.message_handler(content_types=['photo', 'document'], state=States.works)
+@dp.message_handler(content_types=['photo'], state=States.works)
 async def process_works(msg: types.Message):
-    file_obj = cfuncs.get_file_obj(msg)
-    return {'works': [file_obj]}, HandleException()
+    photo_id = cfuncs.get_file_obj(msg)[1]
+    return {'works': [photo_id]}, HandleException()
 
 
 @dp.message_handler(text=['Готово', 'Сбросить выбор'], state=States.works)

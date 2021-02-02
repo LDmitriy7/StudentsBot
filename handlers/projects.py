@@ -6,9 +6,9 @@ from functions import common as cfuncs
 from keyboards import inline_func
 from keyboards import markup
 from loader import dp, users_db
+from questions.registration import RegistrationConv
 from states import Projects
 from texts import templates
-from questions.registration import RegistrationConv
 
 
 @dp.message_handler(CommandStart(inline_func.GET_FILES_PATTERN))

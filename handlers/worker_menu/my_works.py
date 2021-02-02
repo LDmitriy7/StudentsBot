@@ -13,12 +13,11 @@ async def send_works(msg: types.Message):
     else:
         await msg.answer('<b>У вас нет ни одной работы</b>')
 
-
-@dp.message_handler(text='Мои заявки')
-async def send_my_bids(msg: types.Message):
-    bids = await users_db.get_bids_by_user(worker_id=msg.from_user.id)
-    if bids:
-        await msg.answer('<b>Ваши заявки на проекты:</b>')
-        await funcs.send_bids(msg, bids)
-    else:
-        await msg.answer('<b>Вы не оставили ни одной заявки</b>')
+# @dp.message_handler(text='Мои заявки')
+# async def send_my_bids(msg: types.Message):
+#     bids = await users_db.get_bids_by_user(worker_id=msg.from_user.id)
+#     if bids:
+#         await msg.answer('<b>Ваши заявки на проекты:</b>')
+#         await funcs.send_bids(msg, bids)
+#     else:
+#         await msg.answer('<b>Вы не оставили ни одной заявки</b>')

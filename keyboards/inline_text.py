@@ -18,6 +18,14 @@ class WorkTypeKeyboard(InlineKeyboard):
     WORK_TYPE_INLINE_BTNS = get_same_inline_button(WORK_TYPE_BTNS)
 
 
+class MyProfileKeyboard(InlineKeyboard, Helper):
+    CHANGE_BUTTONS = [
+        'Изменить никнейм', 'Изменить номер телефона', 'Изменить email',
+        'Изменить биографию', 'Изменить примеры работ',
+    ]
+    INLINE_CHANGE_BUTTONS = get_same_inline_button(CHANGE_BUTTONS)
+
+
 class BalanceKeyboard(InlineKeyboard, Helper):
     DEPOSIT_MONEY = Item()
     WITHDRAW_MONEY = Item()
@@ -37,14 +45,19 @@ work_types.add(*WorkTypeKeyboard.WORK_TYPE_INLINE_BTNS)
 
 # для пополнения баланса и вывода
 balance = BalanceKeyboard()
-balance.row(InlineButton('Пополнить баланс', callback_data=BalanceKeyboard.DEPOSIT_MONEY))
-balance.row(InlineButton('Вывести деньги', callback_data=BalanceKeyboard.WITHDRAW_MONEY))
+balance.row(InlineButton('Пополнить баланс', callback_data=balance.DEPOSIT_MONEY))
+balance.row(InlineButton('Вывести деньги', callback_data=balance.WITHDRAW_MONEY))
 
 # для изменения предметов
 subjects = SubjectsKeyboard()
-subjects.row(InlineButton('Изменить предметы', callback_data=SubjectsKeyboard.CHANGE_SUBJECTS))
+subjects.row(InlineButton('Изменить предметы', callback_data=subjects.CHANGE_SUBJECTS))
+
+# для изменения профиля
+change_profile = MyProfileKeyboard(row_width=1)
+change_profile.add(*change_profile.INLINE_CHANGE_BUTTONS)
 
 if __name__ == '__main__':
     print(balance)
     print(work_types)
     print(subjects)
+    print(change_profile)

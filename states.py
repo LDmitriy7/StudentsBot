@@ -10,3 +10,11 @@ class MiscStates(StatesGroup):
 
 class Projects(StatesGroup):
     ask_bid_text = State()
+
+
+class ChangeProfile(StatesGroup):
+    nickname = State()
+    phone_number = State()
+    email = State()
+    biography = State()
+    works = State()

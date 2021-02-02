@@ -209,6 +209,9 @@ class MongoUpdater(MongoClient):
         oid = ObjectId(project_id)
         await self._update_object(PROJECTS, {'_id': oid}, '$set', {'status': new_status}, False)
 
+    async def update_account(self, user_id: int, new_data: dict):
+        await self._update_object(ACCOUNTS, {'_id': user_id}, '$set', new_data)
+
     async def update_account_subjects(self, user_id: int, subjects: List[str]):
         await self._update_object(
             ACCOUNTS, {'_id': user_id}, '$set',
