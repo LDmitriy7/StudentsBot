@@ -17,6 +17,7 @@ class Prefixes(Helper):
     DEL_PROJECT_ = Item()  # для запроса удаления проекта
     TOTAL_DEL_PROJECT_ = Item()  # для удаления проекта
     PAY_FOR_PROJECT_ = Item()  # для оплаты проекта
+    OFFER_PROJECT_ = Item()  # для предложения личного проекта
 
     GET_FILES_ = Item()  # для получения файлов к проекту
 

@@ -4,12 +4,13 @@ from aiogram.dispatcher import FSMContext
 
 from functions import registration as funcs
 from keyboards import markup
-from loader import dp, users_db
+from loader import dp, users_db, bot
 from questions.misc import HandleException
 from questions.registration import RegistrationConv as States
+from utils import telegraph_api as telegraph
 
 
-@dp.message_handler(state=States.phone_number)
+@dp.message_handler(content_types='any', state=States.phone_number)
 async def process_phone_number(msg: types.Message):
     if msg.text == 'Пропустить':
         phone_number = None
@@ -50,13 +51,14 @@ async def process_works(msg: types.Message):
 
 @dp.message_handler(text=['Готово', 'Начать заново'], state=States.works)
 async def process_works_finish(msg: types.Message):
-    if msg.text == 'Сбросить выбор':
+    if msg.text == 'Начать заново':
         return {'works': ()}, HandleException('Теперь отправляйте фото заново')
     return {'works': []}
 
 
 @dp.message_handler(state=States.nickname)
 async def process_nickname(msg: types.Message, state: FSMContext):
+    user_id = msg.from_user.id
     username = msg.from_user.username
     all_nicknames = await funcs.get_all_nicknames()
 
@@ -67,7 +69,9 @@ async def process_nickname(msg: types.Message, state: FSMContext):
 
     udata = await state.get_data()
     udata['nickname'] = msg.text
-    await users_db.update_account_profile(msg.from_user.id, udata)
-    await msg.answer('Регистрация пройдена', reply_markup=markup.worker_kb)
+    udata['deals_amount'] = 0
 
-# добавить создание телеграф страницы
+    await users_db.update_account_profile(user_id, udata)
+    page_url = await funcs.create_author_page(user_id)
+    await users_db.update_account_page_url(user_id, page_url)
+    await msg.answer('Регистрация пройдена', reply_markup=markup.worker_kb)

@@ -18,7 +18,7 @@ Update = Union[types.Message, types.CallbackQuery]
 @dp.message_handler(content_types='any', state='*')
 @dp.callback_query_handler(state='*')
 async def error(update: Update, state: FSMContext):
-    logger.info('ERROR ON: %s', [update, await state.get_state()])
+    logger.info('ERROR ON: %s', [str(update), await state.get_state()])
     return HandleException('Ошибка, попробуйте еще раз или сделайте сброс через /cancel')
 
 

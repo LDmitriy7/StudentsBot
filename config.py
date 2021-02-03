@@ -8,6 +8,7 @@ parser.read('config.ini')
 _bot = parser['Bot']
 _application = parser['Application']
 _channel = parser['Channel']
+_telegraph = parser['Telegraph']
 
 BOT_TOKEN = _bot['bot_token']
 LINKED_BOT = '@' + _bot['linked_conversation_bot']
@@ -18,3 +19,5 @@ API_HASH = _application['api_hash']
 
 MAIN_CHANNEL = '@' + _channel['main_channel']
 MAIN_POST_URL = 't.me/' + _channel['main_channel'] + '/{}'
+
+TELEGRAPH_TOKEN = _telegraph['access_token']

@@ -221,6 +221,9 @@ class MongoUpdater(MongoClient):
     async def update_account_profile(self, user_id: int, profile_data: dict):
         await self._update_object(ACCOUNTS, {'_id': user_id}, '$set', {'profile': profile_data}, upsert=True)
 
+    async def update_account_page_url(self, user_id: int, page_url: str):
+        await self._update_object(ACCOUNTS, {'_id': user_id}, '$set', {'page_url': page_url})
+
 
 class MongoDB(MongoAdder, MongoGetter, MongoDeleter, MongoUpdater):
     """Наследует все наборы методов управления базой."""

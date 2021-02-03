@@ -1,33 +1,36 @@
-from telegraph import Telegraph
-import asyncio
-from typing import List
 from collections import namedtuple
+from typing import List
 
-access_token = 'be3cb0f4c945f16ca942bec2a979625bcea94e4b342fe639ed7ba7607397'
-telegraph = Telegraph(access_token)
+from telegraph import Telegraph
 
-BASE_URL = 'https://telegra.ph/'
+from config import TELEGRAPH_TOKEN
+
 Review = namedtuple('Review', ['client_name', 'rating', 'text'])
 
-page_template = """
+telegraph = Telegraph(TELEGRAPH_TOKEN)
+BASE_URL = 'https://telegra.ph/'
+
+PAGE_TEMPLATE = """
 <p><b>Количество сделок 📝:</b> {deals_amount}</p>
 <p><b>Предметы 📚:</b> {subjects}</p>
+<p><b><a href="{offer_project_url}">Предложить автору проект 🤝</a></b>
+(Нажмите на ссылку и вернитесь в бота)</p>
 
-<h4>Биография 👤:</h4>
+<p><b>Биография 👤:</b></p>
 <blockquote>{biography}</blockquote>
 
-<h4><b>Средний рейтинг 🌟:</b></h4>
-<p>{avg_rating}</p>
+<h3>Средний рейтинг 🌟:</h3>
+{avg_rating}
 
-<h4>Примеры работ:</h4>
-{html_imgs}
+<h3>Примеры работ 🎓:</h3>
+<p>{images}</p>
 
-<h3>Отзывы:</h3>
+<h3>Отзывы ({reviews_amount}):</h3>
 {reviews}
 """
 
-review_template = """
-<aside><b>{client_name}:</b></aside>
+REVIEW_TEMPLATE = """
+<aside>{client_name}:</aside>
 <blockquote>{text}</blockquote>
 
 <p>Качество: {quality}</p>
@@ -35,19 +38,25 @@ review_template = """
 <p>Контактность: {contact}</p>
 """
 
+AVG_RATING_TEMPLATE = """
+<p>Качество: {quality} ({quality_num})</p>
+<p>Сроки: {terms} ({terms_num})</p>
+<p>Контактность: {contact} ({contact_num})</p>
+"""
 
-def make_html_imgs(photo_urls: List[str]) -> str:
+
+def _make_html_imgs(photo_urls: List[str]) -> str:
     """Создает текст c html-тегами <img/>."""
     photo_urls = ''.join([f'<img src="{url}"/>' for url in photo_urls])
     return photo_urls
 
 
-def make_html_reviews(reviews: List[Review]) -> str:
+def _make_html_reviews(reviews: List[Review]) -> str:
     """Создает текст с html-отзывами по шаблону."""
     html_reviews = []
     for review in reviews:
         rating = {key: "⭐" * value for key, value in review.rating.items()}
-        new_review = review_template.format(
+        new_review = REVIEW_TEMPLATE.format(
             client_name=review.client_name,
             text=review.text,
             **rating,
@@ -56,32 +65,58 @@ def make_html_reviews(reviews: List[Review]) -> str:
     return '<hr/>'.join(html_reviews)
 
 
-review1 = Review(
-    'Арсений Акопов',
-    {'quality': 4, 'contact': 5, 'terms': 4},
-    'Спасибо, все выполнил качественно, буду обращаться еще'
-)
+def _make_html_avg_rating(reviews: List[Review]) -> str:
+    """Создает средний рейтинг по html-шаблону."""
+    quality = 0
+    contact = 0
+    terms = 0
+    for review in reviews:
+        rates = review.rating
+        quality += rates['quality']
+        contact += rates['contact']
+        terms += rates['terms']
+    reviews_amount = len(reviews) or 1
+    quality /= reviews_amount
+    contact /= reviews_amount
+    terms /= reviews_amount
+
+    html_text = AVG_RATING_TEMPLATE.format(
+        quality=round(quality) * "⭐",
+        quality_num=f'{quality:.2f}',
+        contact=round(contact) * "⭐",
+        contact_num=f'{contact:.2f}',
+        terms=round(terms) * "⭐",
+        terms_num=f'{terms:.2f}',
+    )
+    return html_text
 
 
-def make_html_content(deals_amount: int, biography: str, subjects: List[str], works: List[str], reviews: List[Review]):
-    avg_rating = 'test'
+def make_html_content(
+        deals_amount: int, biography: str, subjects: List[str], offer_project_url: str,
+        photo_urls: List[str], reviews: List[Review]
+):
+    avg_rating = _make_html_avg_rating(reviews)
     subjects = ', '.join(subjects)
-    html_imgs = make_html_imgs(works)
-    reviews = make_html_reviews(reviews)
+    html_imgs = _make_html_imgs(photo_urls)
+    html_reviews = _make_html_reviews(reviews)
 
-    content = page_template.format(
+    biography = biography or '<b>Автор ничего не написал</b>'
+    subjects = subjects or '<b>Не выбраны</b>'
+
+    content = PAGE_TEMPLATE.format(
         deals_amount=deals_amount,
         biography=biography,
         subjects=subjects,
+        offer_project_url=offer_project_url,
         avg_rating=avg_rating,
-        html_imgs=html_imgs,
-        reviews=reviews,
+        images=html_imgs,
+        reviews=html_reviews,
+        reviews_amount=len(reviews)
     )
     return content
 
 
-# никнейм, биография, предметы, примеры работ, ссылка на персональный проект, отзывы + количество сделок
-async def create_page(nickname: str, html_content: str, page_url: str = None):
+def create_page(nickname: str, html_content: str, page_url: str = None):
     request_data = {
         'title': f'Страница автора {nickname}',
         'author_name': 'Бот для студентов',
@@ -99,18 +134,7 @@ async def create_page(nickname: str, html_content: str, page_url: str = None):
     return link
 
 
-files = [
-    'https://upload.wikimedia.org/wikipedia/commons/thumb/7/72/Disambig.svg/30px-Disambig.svg.png',
-    'https://upload.wikimedia.org/wikipedia/commons/thumb/7/72/Disambig.svg/30px-Disambig.svg.png',
-]
-
-page_url = 'Stranica-avtora-Dimka34-02-02-4'
-html_content = make_html_content(
-    45, 'Я python-программист, пишу ботов и парсеры больше 2 лет',
-    ['Математика', 'Русский язык', 'Общая физика', 'Украинский язык'],
-    files, [review1, review1]
-)
-
-c = create_page('Dimka34', html_content, page_url=page_url)
-r = asyncio.run(c)
-print(r)
+if __name__ == '__main__':
+    offer_page_url = 'https://t.me/test2_test_bot?start=offer_project_724477101'
+    html_content = make_html_content(0, 'Я python-программист', [], offer_page_url, [], [])
+    print(create_page('Test3', html_content))
