@@ -1,3 +1,4 @@
+"""Post-Middleware after changing profile in worker_menu/my_profile."""
 from aiogram import types
 from aiogram.dispatcher.middlewares import BaseMiddleware
 from states import ChangeProfile

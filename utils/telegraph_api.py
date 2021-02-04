@@ -1,45 +1,11 @@
-from collections import namedtuple
 from typing import List
 
 from telegraph import Telegraph
-
+from texts import html_templates as templates
 from config import TELEGRAPH_TOKEN
 
 telegraph = Telegraph(TELEGRAPH_TOKEN)
 BASE_URL = 'https://telegra.ph/'
-
-_PAGE_TEMPLATE = """
-<p><b><a href="{invite_project_url}">Предложить автору проект 🤝</a></b></p>
-<p><b>Количество сделок 📝:</b> {deals_amount}</p>
-<p><b>Предметы 📚:</b> {subjects}</p>
-
-<p><b>Биография 👤:</b></p>
-<blockquote>{biography}</blockquote>
-
-<h3>Средний рейтинг 🌟:</h3>
-{avg_rating}
-
-<h3>Примеры работ 🎓:</h3>
-<p>{images}</p>
-
-<h3>Отзывы ({reviews_amount}):</h3>
-{reviews}
-"""
-
-_REVIEW_TEMPLATE = """
-<aside>{client_name}:</aside>
-<blockquote>{text}</blockquote>
-
-<p>Качество: {quality}</p>
-<p>Сроки: {terms}</p>
-<p>Контактность: {contact}</p>
-"""
-
-_AVG_RATING_TEMPLATE = """
-<p>Качество: {quality} ({quality_num})</p>
-<p>Сроки: {terms} ({terms_num})</p>
-<p>Контактность: {contact} ({contact_num})</p>
-"""
 
 
 def _make_html_imgs(photo_urls: List[str]) -> str:
@@ -53,7 +19,7 @@ def _make_html_reviews(reviews: List[dict]) -> str:
     html_reviews = []
     for review in reviews:
         rating = {key: "⭐" * value for key, value in review['rating'].items()}
-        new_review = _REVIEW_TEMPLATE.format(
+        new_review = templates.REVIEW_TEMPLATE.format(
             client_name=review['client_name'],
             text=review['text'],
             **rating,
@@ -78,7 +44,7 @@ def _make_html_avg_rating(reviews: List[dict]) -> str:
     contact /= reviews_amount
     terms /= reviews_amount
 
-    html_text = _AVG_RATING_TEMPLATE.format(
+    html_text = templates.AVG_RATING_TEMPLATE.format(
         quality=round(quality) * "⭐",
         quality_num=f'{quality:.2f}',
         contact=round(contact) * "⭐",
@@ -93,7 +59,7 @@ def make_html_content(
         deals_amount: int, biography: str, subjects: List[str], invite_project_url: str,
         photo_urls: List[str], reviews: List[dict]) -> str:
     """Создает весь html-контент для личной страницы исполнителя."""
-    content = _PAGE_TEMPLATE.format(
+    content = templates.PAGE_TEMPLATE.format(
         deals_amount=deals_amount,
         biography=biography or '<b>Автор ничего не написал</b>',
         subjects=', '.join(subjects) or '<b>Не выбраны</b>',
@@ -123,9 +89,3 @@ def create_page(nickname: str, html_content: str, page_url: str = None) -> str:
 
     link = BASE_URL + response['path']
     return link
-
-
-if __name__ == '__main__':
-    offer_page_url = 'https://t.me/test2_test_bot?start=offer_project_724477101'
-    html_content = make_html_content(0, 'Я python-программист', [], offer_page_url, [], [])
-    print(create_page('Test3', html_content))
