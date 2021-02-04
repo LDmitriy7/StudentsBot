@@ -1,6 +1,6 @@
-from config import PAYMENTS_PROVIDER_TOKEN
 from aiogram import types
-from loader import users_db
+
+from config import PAYMENTS_PROVIDER_TOKEN
 
 
 def make_invoice(msg: types.Message, price: int) -> dict:
@@ -17,5 +17,3 @@ def make_invoice(msg: types.Message, price: int) -> dict:
         start_parameter='test2',
     )
     return invoice_data
-
-

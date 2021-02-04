@@ -1,22 +1,22 @@
 from aiogram import types
 
-from keyboards import inline_func, inline_text, markup
+from keyboards import inline_funcs, inline_plain, markup
 from loader import dp
 from questions.misc import ConvState, ConvStatesGroup, QuestFunc, QuestText
 from texts import templates
 
 work_type = [
     QuestText('Это займет пару минут', markup.go_back_kb),
-    QuestText('Введите тип работы:', inline_text.work_types),
+    QuestText('Введите тип работы:', inline_plain.work_types),
 ]
 
-subject = QuestText('Отправьте название предмета', inline_text.find_subject)
+subject = QuestText('Отправьте название предмета', inline_plain.find_subject)
 
 
 @QuestFunc
 async def date(msg: types.Message):
     text = 'Выберите дату сдачи'
-    keyboard = inline_func.make_calendar()
+    keyboard = inline_funcs.make_calendar()
     await msg.answer(text, reply_markup=keyboard)
 
 

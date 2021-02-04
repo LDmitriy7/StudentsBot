@@ -2,22 +2,22 @@
 from aiogram import types
 from aiogram.dispatcher import FSMContext
 
-from functions import registration as funcs
+from functions import common as cfuncs
+from functions import registration
 from keyboards import markup
-from loader import dp, users_db, bot
+from loader import dp, users_db
 from questions.misc import HandleException
 from questions.registration import RegistrationConv as States
-from utils import telegraph_api as telegraph
 
 
-@dp.message_handler(content_types='any', state=States.phone_number)
+@dp.message_handler(text='Пропустить', state=States.phone_number)
+async def miss_phone_number(msg: types.Message):
+    return {'phone_number': None}
+
+
+@dp.message_handler(content_types=types.ContentType.CONTACT, state=States.phone_number)
 async def process_phone_number(msg: types.Message):
-    if msg.text == 'Пропустить':
-        phone_number = None
-    elif msg.contact:
-        phone_number = msg.contact.phone_number
-    else:
-        return HandleException('Ошибка, отправьте номер, нажав на кнопку')
+    phone_number = msg.contact.phone_number
     return {'phone_number': phone_number}
 
 
@@ -58,20 +58,14 @@ async def process_works_finish(msg: types.Message):
 
 @dp.message_handler(state=States.nickname)
 async def process_nickname(msg: types.Message, state: FSMContext):
-    user_id = msg.from_user.id
     username = msg.from_user.username
-    all_nicknames = await funcs.get_all_nicknames()
+    all_nicknames = await cfuncs.get_all_nicknames()
 
     if msg.text == username:
         return HandleException('Пожалуйста, не используйте свой юзернейм')
     if msg.text in all_nicknames:
         return HandleException('Этот никнейм уже занят')
 
-    udata = await state.get_data()
-    udata['nickname'] = msg.text
-    udata['deals_amount'] = 0
-
-    await users_db.update_account_profile(user_id, udata)
-    page_url = await funcs.create_author_page(user_id)
-    await users_db.update_account_page_url(user_id, page_url)
+    profile_data = await state.get_data()
+    await registration.save_profile(msg.from_user.id, profile_data, msg.text)
     await msg.answer('Регистрация пройдена', reply_markup=markup.worker_kb)

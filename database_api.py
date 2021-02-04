@@ -108,6 +108,19 @@ class MongoAdder(MongoClient):
         )
         return inserted_id
 
+    async def add_review(self, client_id: int, client_name: str, worker_id: int, project_id: str, rating: dict,
+                         text: str) -> str:
+        inserted_id = await self._add_object(
+            REVIEWS,
+            client_id=client_id,
+            client_name=client_name,
+            worker_id=worker_id,
+            project_id=project_id,
+            rating=rating,
+            text=text
+        )
+        return inserted_id
+
 
 class MongoGetter(MongoClient):
     """Содержит методы для поиска объектов в базе."""
@@ -122,6 +135,9 @@ class MongoGetter(MongoClient):
 
     async def get_all_accounts(self) -> List[dict]:
         return await self._get_object(ACCOUNTS, {}, many=True)
+
+    async def get_all_projects(self) -> List[dict]:
+        return await self._get_object(PROJECTS, {}, many=True)
 
     async def get_project_by_id(self, project_id: str) -> dict:
         oid = ObjectId(project_id)
@@ -161,16 +177,8 @@ class MongoGetter(MongoClient):
         bid = await self._get_object(BIDS, {'_id': oid})
         return bid
 
-    async def get_bids_by_user(self, client_id: int = None, worker_id: int = None) -> List[dict]:
-        if client_id:
-            _filter = {'client_id': client_id}
-        elif worker_id:
-            _filter = {'worker_id': worker_id}
-        else:
-            raise ValueError('Must specify one of values.')
-
-        bids = await self._get_object(BIDS, _filter, many=True)
-        return bids
+    async def get_reviews_by_worker(self, worker_id: int) -> List[dict]:
+        return await self._get_object(REVIEWS, {'worker_id': worker_id}, many=True)
 
 
 class MongoDeleter(MongoClient):
@@ -207,25 +215,44 @@ class MongoUpdater(MongoClient):
 
     async def update_project_status(self, project_id: str, new_status: str):
         oid = ObjectId(project_id)
-        await self._update_object(PROJECTS, {'_id': oid}, '$set', {'status': new_status}, False)
-
-    async def update_account(self, user_id: int, new_data: dict):
-        await self._update_object(ACCOUNTS, {'_id': user_id}, '$set', new_data)
+        await self._update_object(PROJECTS, {'_id': oid}, '$set', {'status': new_status}, upsert=False)
 
     async def update_account_subjects(self, user_id: int, subjects: List[str]):
         await self._update_object(
             ACCOUNTS, {'_id': user_id}, '$set',
-            {'subjects': subjects}, upsert=True,
+            {'subjects': subjects},
         )
 
     async def update_account_profile(self, user_id: int, profile_data: dict):
-        await self._update_object(ACCOUNTS, {'_id': user_id}, '$set', {'profile': profile_data}, upsert=True)
+        await self._update_object(ACCOUNTS, {'_id': user_id}, '$set', {'profile': profile_data})
 
     async def update_account_page_url(self, user_id: int, page_url: str):
-        await self._update_object(ACCOUNTS, {'_id': user_id}, '$set', {'page_url': page_url})
+        await self._update_object(ACCOUNTS, {'_id': user_id}, '$set', {'page_url': page_url}, upsert=False)
 
 
-class MongoDB(MongoAdder, MongoGetter, MongoDeleter, MongoUpdater):
+class MongoProfileUpdater(MongoUpdater):
+    """Содержит методы для обновления профиля аккаунта."""
+
+    async def _update_profile(self, user_id: int, field: str, value):
+        await self._update_object(ACCOUNTS, {'_id': user_id}, '$set', {f'profile.{field}': value})
+
+    async def update_profile_nickname(self, user_id: int, nickname: str):
+        await self._update_profile(user_id, 'nickname', nickname)
+
+    async def update_profile_phone_number(self, user_id: int, phone_number: str):
+        await self._update_profile(user_id, 'phone_number', phone_number)
+
+    async def update_profile_email(self, user_id: int, email: str):
+        await self._update_profile(user_id, 'email', email)
+
+    async def update_profile_biography(self, user_id: int, biography: str):
+        await self._update_profile(user_id, 'biography', biography)
+
+    async def update_profile_works(self, user_id: int, works: List[str]):
+        await self._update_profile(user_id, 'works', works)
+
+
+class MongoDB(MongoAdder, MongoGetter, MongoDeleter, MongoProfileUpdater):
     """Наследует все наборы методов управления базой."""
 
 
@@ -233,6 +260,7 @@ if __name__ == '__main__':
     import asyncio
 
     db = MongoDB()
-    func = db.delete_bid_by_id('6009b42f09f016c76fa0a5af')
-    r = asyncio.run(func)
+    func = db.add_review(123, 321, '7test7', {'quality': 4, 'contact': 5, 'terms': 4}, 'Спасибо!')
+    func2 = db.get_reviews_by_worker(321)
+    r = asyncio.run(func2)
     print(r)

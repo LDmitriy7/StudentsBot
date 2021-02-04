@@ -6,7 +6,7 @@ from functions import common as cfuncs
 @dp.message_handler(text='Поиск заказов')
 async def find_orders(msg: types.Message):
     account = await users_db.get_account_by_id(msg.from_user.id)
-    subjects = account.get('subjects') if account else None
+    subjects = account.get('subjects')
     if not subjects:
         await msg.answer('<b>Вы еще не выбрали ни одного предмета</b>')
         return

@@ -3,10 +3,10 @@
 from aiogram import types
 from aiogram.dispatcher import FSMContext
 
-from filters.main import DeepLinkPrefix, QueryPrefix
+from filters import DeepLinkPrefix, QueryPrefix
 from functions import common as cfuncs
-from keyboards import inline_func, markup
-from keyboards.inline_func import Prefixes
+from keyboards import inline_funcs, markup
+from keyboards.inline_funcs import Prefixes
 from loader import dp, users_db, bot
 from questions.misc import HandleException
 from questions.registration import RegistrationConv
@@ -30,7 +30,7 @@ async def send_files(msg: types.Message, payload: str):
 async def del_project(query: types.CallbackQuery, payload: str):
     """Просит потвердить удаление проекта."""
     text = 'Вы точно хотите удалить проект?'
-    keyboard = inline_func.delete_project(payload)
+    keyboard = inline_funcs.delete_project(payload)
     await query.message.answer(text, reply_markup=keyboard)
 
 
@@ -90,7 +90,7 @@ async def send_bid(msg: types.Message, state: FSMContext):
 
     full_text = templates.form_bid_text(worker_nickname, worker_url, bid_text)
     bid_id = await users_db.add_bid(client_id, project_id, worker_id, bid_text)  # сохранение заявки
-    keyboard = inline_func.for_bid(project_id, bid_id)
+    keyboard = inline_funcs.for_bid(project_id, bid_id)
 
     await bot.send_message(client_id, full_text, reply_markup=keyboard)  # отправка заказчику
     await msg.answer('Заявка отправлена', reply_markup=markup.main_kb)

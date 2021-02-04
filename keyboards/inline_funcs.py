@@ -25,6 +25,12 @@ class Prefixes(Helper):
     PICK_BID_ = Item()  # для принятия заявки
 
 
+def link_button(text: str, url: str):
+    keyboard = InlineKeyboard()
+    keyboard.row(Button(text, url=url))
+    return keyboard
+
+
 async def for_project(project_id: str, pick_btn=False, del_btn=False, files_btn=False):
     """Кнопки с данными в формате: prefix{project_id}"""
     keyboard = InlineKeyboard()

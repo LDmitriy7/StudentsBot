@@ -6,9 +6,9 @@ from loader import dp
 
 
 async def on_startup(*args):
+    import logging
     import handlers
     import middlewares
-    import logging
 
     logging.basicConfig(level=20)
     # logger.add('journal.log', level=20, mode='w', format='{function} | {message}')

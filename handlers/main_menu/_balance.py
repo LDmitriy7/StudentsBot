@@ -2,8 +2,8 @@ from aiogram import types
 from aiogram.dispatcher import FSMContext
 
 from functions import balance as funcs, common as cfuncs
-from keyboards import markup, inline_text
-from keyboards.inline_text import BalanceKeyboard
+from keyboards import markup, inline_plain
+from keyboards.inline_plain import BalanceKeyboard
 from loader import bot, dp, users_db
 from states import MiscStates
 
@@ -25,7 +25,7 @@ async def accrue_money(msg: types.Message):
 async def send_balance(msg: types.Message):
     balance = await cfuncs.get_balance(msg)
     text = f'Ваш баланс: {balance} грн'
-    keyboard = inline_text.balance
+    keyboard = inline_plain.balance
     await msg.answer(text, reply_markup=keyboard)
 
 

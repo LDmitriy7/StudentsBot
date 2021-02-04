@@ -2,7 +2,7 @@ from aiogram import types
 from aiogram.dispatcher import FSMContext
 from loader import bot
 from config import MAIN_CHANNEL, MAIN_POST_URL
-from keyboards import inline_func
+from keyboards import inline_funcs
 from texts import templates
 from typing import Tuple
 
@@ -22,7 +22,7 @@ async def add_post_keyboard(post: types.Message, project_id: str, post_data: dic
 
     has_files = bool(post_data.get('files'))
 
-    keyboard = await inline_func.for_project(
+    keyboard = await inline_funcs.for_project(
         project_id,
         pick_btn=True,
         files_btn=has_files

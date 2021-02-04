@@ -19,6 +19,18 @@ _BID_TEMPLATE = """
 {bid_text}
 """
 
+_PROFILE_TEMPLATE = """
+Никнейм: {nickname}
+Телефон: {phone_number}
+Email: {email}
+
+Ссылка на личную страницу:
+{page_url}
+
+Ссылка-приглашение в личный проект:
+{invite_project_link}
+"""
+
 
 def form_post_text(status: str, post_data: dict, with_note=False):
     """Requires all fields from project.data"""
@@ -58,6 +70,16 @@ def form_bid_text(worker_nickname: str, worker_url: str, bid_text: str):
         bid_text=bid_text,
     )
     return text
+
+
+def form_profile_template(nickname: str, phone_number: str, email: str, page_url: str, invite_project_link: str):
+    return _PROFILE_TEMPLATE.format(
+        nickname=nickname,
+        phone_number=phone_number,
+        email=email,
+        page_url=page_url,
+        invite_project_link=invite_project_link,
+    )
 
 
 if __name__ == '__main__':

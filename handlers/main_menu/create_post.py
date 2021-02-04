@@ -5,7 +5,7 @@ from aiogram.dispatcher import FSMContext
 from functions import common as cfuncs
 from functions import create_post as funcs
 from keyboards import markup
-from keyboards.inline_text import WorkTypeKeyboard
+from keyboards.inline_plain import WorkTypeKeyboard
 from loader import calendar, dp, users_db
 from questions.create_post import CreatePostConv as States
 from questions.misc import HandleException

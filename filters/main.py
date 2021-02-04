@@ -28,21 +28,3 @@ class QueryPrefix:
             return {'payload': payload}
         else:
             return False
-
-
-if __name__ == '__main__':
-    GET_FILES_PREFIX = 'GET_FILES_'
-
-    msg = types.Message()
-    msg.text = '/start ' + GET_FILES_PREFIX + '2312312f'
-    print(msg.text)
-    _filter = DeepLinkPrefix(GET_FILES_PREFIX)
-    result = _filter(msg)
-    print(result)
-
-    query = types.CallbackQuery()
-    query.data = GET_FILES_PREFIX + '3287ssd3'
-    print(query.data)
-    _filter = QueryPrefix(GET_FILES_PREFIX)
-    result = _filter(query)
-    print(result)

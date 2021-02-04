@@ -3,7 +3,7 @@ from aiogram import types
 from aiogram.dispatcher import FSMContext
 
 from functions import common as cfuncs
-from keyboards import inline_func, markup
+from keyboards import inline_funcs, markup
 from loader import dp
 from questions import ALL_CONV_STATES_GROUPS
 from questions.misc import HandleException
@@ -32,6 +32,6 @@ async def go_back(msg: types.Message, state: FSMContext):
     return HandleException()  # exception in any case
 
 
-@dp.callback_query_handler(text=inline_func.DEL_MESSAGE_DATA)
+@dp.callback_query_handler(text=inline_funcs.DEL_MESSAGE_DATA)
 async def delete_msg(query: types.CallbackQuery):
     await query.message.delete()

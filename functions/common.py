@@ -5,7 +5,7 @@ from aiogram import types
 from aiogram.dispatcher import FSMContext
 
 from config import MAIN_CHANNEL
-from keyboards import inline_func, markup
+from keyboards import inline_funcs, markup
 from loader import bot, calendar, users_db
 from questions import ALL_CONV_STATES, ConvStatesGroup
 from questions.misc import ConvState, HandleException, ask_question
@@ -44,7 +44,7 @@ async def handle_calendar_callback(query: types.CallbackQuery, callback_data) ->
 
 
 async def _reinit_calendar(msg: types.Message):
-    keyboard = inline_func.make_calendar()
+    keyboard = inline_funcs.make_calendar()
     await msg.edit_reply_markup(keyboard)
 
 
@@ -82,7 +82,7 @@ async def send_projects(msg: types.Message, projects: List[dict], with_note=True
         else:
             is_active = False
 
-        keyboard = await inline_func.for_project(
+        keyboard = await inline_funcs.for_project(
             project_id,
             pick_btn=pick_button,
             del_btn=is_active,
@@ -100,3 +100,14 @@ async def ask_previous(msg: types.Message, state: FSMContext, states_group: Conv
     else:
         new_state: ConvState = ALL_CONV_STATES[new_state_name]
         await ask_question(msg, new_state.question)
+
+
+async def get_all_nicknames() -> set:
+    """Возращает сет всех никнеймов пользователей."""
+    all_nicknames = set()
+    for account in await users_db.get_all_accounts():
+        profile = account.get('profile')
+        if profile:
+            nickname = profile['nickname']
+            all_nicknames.add(nickname)
+    return all_nicknames

@@ -8,6 +8,7 @@ from texts.subjects import ALL_SUBJECTS
 def find_subjects(query: types.InlineQuery):
     """Поиск подходящих предметов"""
     query = query.query.lower()
+
     subjects = {s for s in ALL_SUBJECTS if query in s.lower()}
     results = []
 

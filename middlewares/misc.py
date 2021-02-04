@@ -86,3 +86,15 @@ def parse_handle_results(results: list) -> HandleResult:
             user_data = item
 
     return HandleResult(exception, states_group, user_data)
+
+
+def check_on_exception(results: list):
+    """Проверяет, была ли обработка с исключением."""
+    if results:
+        result = results[0]
+        if not isinstance(result, tuple):
+            result = [result]
+        for item in result:
+            if isinstance(item, HandleException):
+                return True
+    return False
