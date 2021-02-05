@@ -5,9 +5,10 @@
 """
 
 from handlers import common  # команды "Отменить", "Назад", удаление сообщения +
+from handlers import offer_project
 from handlers import search_subjects  # инлайн-поиск предметов +
-from handlers import projects  # обработка кнопок для проекта: посмотреть файлы, взять проект, удалить проект
 from handlers import registration  # все для диалога: регистрация профиля и страницы исполнителя +
+from handlers import projects  # обработка кнопок для проекта: посмотреть файлы, взять проект, удалить проект +-
 
 from handlers import bids
 

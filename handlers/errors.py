@@ -23,11 +23,11 @@ async def error(update: Update, state: FSMContext):
 
 @dp.errors_handler(exception=MessageNotModified)
 async def suppress_error1(*args):
-    logger.info('ERROR ON: %s', args)
+    logger.info('ERROR ON: %s', [str(i) for i in args])
     return True
 
 
 @dp.errors_handler(exception=MessageToDeleteNotFound)
 async def suppress_error2(*args):
-    logger.info('ERROR ON: %s', args)
+    logger.info('ERROR ON: %s', [str(i) for i in args])
     return True

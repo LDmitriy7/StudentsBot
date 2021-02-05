@@ -70,7 +70,7 @@ async def process_file(msg: types.Message):
 
 @dp.message_handler(text=['Готово', 'Начать заново'], state=States.files)
 async def process_file_finish(msg: types.Message):
-    if msg.text == 'Сбросить выбор':
+    if msg.text == 'Начать заново':
         return {'files': ()}, HandleException('Теперь выбирайте заново')
     return {'files': [], 'status': 'Активен'}
 
@@ -82,7 +82,5 @@ async def exit_create_post(msg: types.Message, state: FSMContext):
     project_id = await users_db.add_project(msg.from_user.id, post_data)
 
     text = f'<a href="{post_url}">Проект</a> успешно создан'
-    keyboard = markup.main_kb
-
     await funcs.add_post_keyboard(post_obj, project_id, post_data)
-    await msg.answer(text, reply_markup=keyboard)
+    await msg.answer(text, reply_markup=markup.main_kb)

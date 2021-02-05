@@ -5,6 +5,8 @@ from aiogram.types import InlineKeyboardButton as Button
 from aiogram.types import InlineKeyboardMarkup
 from aiogram.utils.helper import Helper, Item
 
+OFFER_PROJECT_TO_CLIENT_QUERY = 'offer_project_to_client'
+
 
 def _get_same_inline_button(buttons: List[str]):
     """Создает инлайн-кнопки из обычных, где [callback_data = text]"""
@@ -44,6 +46,10 @@ class SubjectsKeyboard(InlineKeyboard):
 # для поиска предметов
 find_subject = InlineKeyboard()
 find_subject.row(Button('Найти предмет', switch_inline_query_current_chat=''))
+
+# для предложения проекта заказчику
+offer_project_to_client = InlineKeyboard()
+offer_project_to_client.row(Button('Выбрать чат', switch_inline_query=OFFER_PROJECT_TO_CLIENT_QUERY))
 
 # для выбора типа работы
 work_types = WorkTypeKeyboard(row_width=2)

@@ -2,6 +2,7 @@ from aiogram import types
 
 from keyboards import inline_funcs, inline_plain, markup
 from loader import dp
+from functions import common as cfuncs
 from questions.misc import ConvState, ConvStatesGroup, QuestFunc, QuestText
 from texts import templates
 
@@ -39,10 +40,17 @@ file = QuestText(
 async def confirm(msg: types.Message):
     post_data = await dp.current_state().get_data()
     status = post_data['status']
+    files = post_data.get('files', [])
+
     post_text = templates.form_post_text(status, post_data, with_note=True)
     keyboard = markup.confirm_project_kb
-    await msg.answer('Проверьте свой пост:', reply_markup=keyboard)
+    await msg.answer('<b>Проверьте свой пост:</b>', reply_markup=keyboard)
     await msg.answer(post_text)
+
+    if files:
+        await msg.answer('<b>Файлы к проекту:</b>')
+        for file in files:
+            await cfuncs.send_file(msg.from_user.id, *file)
 
 
 # прикрепляем вопросы к состояниям

@@ -40,6 +40,14 @@ def link_button(text: str, url: str):
     return keyboard
 
 
+def offer_project_to_client(worker_id: int):
+    """Кнопка заполнить проект со стартовой ссылкой {prefix}{worker_id}."""
+    keyboard = InlineKeyboard()
+    url = START_LINK.format(f'{Prefixes.OFFER_PROJECT_}{worker_id}')
+    keyboard.url_row('Заполнить проект', url)
+    return keyboard
+
+
 def for_project(project_id: str, pick_btn=False, del_btn=False, files_btn=False, chat_link=None):
     """Кнопки с данными в формате: prefix{project_id} + кнопка-ссылка в чат."""
     keyboard = InlineKeyboard()
@@ -56,10 +64,10 @@ def for_project(project_id: str, pick_btn=False, del_btn=False, files_btn=False,
         add_button('Взять проект', Prefixes.SEND_BID_)
     if files_btn:
         add_button('Посмотреть файлы', Prefixes.GET_FILES_)
-    if del_btn:
-        add_button('Удалить проект', Prefixes.DEL_PROJECT_, as_url=False)
     if chat_link:
         keyboard.url_row('Перейти в чат', chat_link)
+    if del_btn:
+        add_button('Удалить проект', Prefixes.DEL_PROJECT_, as_url=False)
     return keyboard
 
 
@@ -78,9 +86,11 @@ def for_bid(bid_id: str, pick_btn=True, refuse_btn=True):
     pick_bid_data = Prefixes.PICK_BID_ + bid_id
 
     if pick_btn:
-        keyboard.data_row('Принять завку', pick_bid_data)
+        button1 = Button('Принять', callback_data=pick_bid_data)
+        keyboard.insert(button1)
     if refuse_btn:
-        keyboard.data_row('Отклонить', DEL_MESSAGE_DATA)
+        button2 = Button('Отклонить', callback_data=DEL_MESSAGE_DATA)
+        keyboard.insert(button2)
     return keyboard
 
 
