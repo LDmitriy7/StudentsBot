@@ -7,7 +7,7 @@ phone_number = QuestText('Отправьте номер телефона', marku
 
 email = QuestText('Отправьте email', markup.miss_kb)
 
-biography = QuestText('Напишите о себе все, что считаете нужным', markup.miss_kb)
+biography = QuestText('Напишите о себе все, что считаете нужным', markup.go_back_kb)
 
 works = QuestText(
     'Отправьте примеры ваших работ (только фото), отправляйте фото по одному!',

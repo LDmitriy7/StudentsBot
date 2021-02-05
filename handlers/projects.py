@@ -5,13 +5,13 @@ from aiogram.dispatcher import FSMContext
 
 from filters import DeepLinkPrefix, QueryPrefix
 from functions import common as cfuncs
+from functions import bids as funcs
 from keyboards import inline_funcs, markup
 from keyboards.inline_funcs import Prefixes
-from loader import dp, users_db, bot
+from loader import bot, dp, users_db
 from questions.misc import HandleException
 from questions.registration import RegistrationConv
 from states import Projects as States
-from texts import templates
 
 
 @dp.message_handler(DeepLinkPrefix(Prefixes.GET_FILES_))
@@ -30,7 +30,7 @@ async def send_files(msg: types.Message, payload: str):
 async def del_project(query: types.CallbackQuery, payload: str):
     """Просит потвердить удаление проекта."""
     text = 'Вы точно хотите удалить проект?'
-    keyboard = inline_funcs.delete_project(payload)
+    keyboard = inline_funcs.del_project(payload)
     await query.message.answer(text, reply_markup=keyboard)
 
 
@@ -48,26 +48,33 @@ async def total_del_project(query: types.CallbackQuery, payload: str):
         await users_db.delete_project_by_id(payload)
     else:
         text = '<b>Не могу удалить этот проект.</b>'
-
-    await query.message.answer(text)
+    await query.message.edit_text(text)
 
 
 @dp.message_handler(DeepLinkPrefix(Prefixes.SEND_BID_))
 async def ask_bid_text(msg: types.Message, payload: str):
     """Запрашивает текст для заявки у исполнителя или отправляет на регистрацию."""
-    account = await users_db.get_account_by_id(msg.from_user.id)
+    worker_id = msg.from_user.id
+    account = await users_db.get_account_by_id(worker_id)
     profile = account.get('profile') if account else None
+    project = await users_db.get_project_by_id(payload)
+
     if not profile:
         await msg.answer('Сначала пройдите регистрацию')
         return RegistrationConv
 
-    project = await users_db.get_project_by_id(payload)
-    if project:
-        await States.ask_bid_text.set()
-        await msg.answer('Отправьте текст для заявки:', reply_markup=markup.cancel_kb)
-        return {'project_id': payload, 'client_id': project['client_id']}
+    if not project:
+        await msg.answer('<b>Этот проект уже удален</b>')
+        return
 
-    await msg.answer('<b>Этот проект уже удален</b>')
+    client_id = project['client_id']
+    if worker_id == client_id:
+        await msg.answer('<b>Вы не можете взять свой проект</b>')
+        return
+
+    await States.ask_bid_text.set()
+    await msg.answer('Отправьте текст для заявки:', reply_markup=markup.cancel_kb)
+    return {'project_id': payload, 'client_id': client_id, 'worker_id': worker_id}
 
 
 @dp.message_handler(state=States.ask_bid_text)
@@ -77,21 +84,17 @@ async def send_bid(msg: types.Message, state: FSMContext):
 
     if not 15 < len(bid_text) < 500:
         return HandleException('Ошибка, текст заявки должен быть от 15 до 500 символов')
+    if bid_text.startswith('/start'):
+        return HandleException('Ошибка, отправьте текст для заявки')
 
     bid_data = await state.get_data()
     client_id = bid_data['client_id']
     project_id = bid_data['project_id']
 
-    worker_account = await users_db.get_account_by_id(msg.from_user.id)
-    worker_profile = worker_account['profile']
-    worker_nickname = worker_profile['nickname']
-    worker_url = worker_account['page_url']
-    worker_id = worker_account['_id']
-
-    full_text = templates.form_bid_text(worker_nickname, worker_url, bid_text)
-    bid_id = await users_db.add_bid(client_id, project_id, worker_id, bid_text)  # сохранение заявки
+    bid_id = await users_db.add_bid(**bid_data, text=bid_text)  # сохранение заявки
+    full_bid_text = await funcs.get_full_bid_text(msg.from_user.id, project_id, bid_text)
     keyboard = inline_funcs.for_bid(project_id, bid_id)
 
-    await bot.send_message(client_id, full_text, reply_markup=keyboard)  # отправка заказчику
+    await bot.send_message(client_id, full_bid_text, reply_markup=keyboard)  # отправка заказчику
     await msg.answer('Заявка отправлена', reply_markup=markup.main_kb)
     await state.finish()

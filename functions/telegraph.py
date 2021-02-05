@@ -1,18 +1,19 @@
+from typing import List
+
+from config import START_LINK
+from keyboards.inline_funcs import Prefixes
 from loader import bot, users_db
 from utils import telegraph_api
-from keyboards.inline_funcs import Prefixes
-from aiogram.utils.deep_linking import get_start_link
-from typing import List
 
 
 async def get_file_urls(file_ids: list) -> List[str]:
     return [await (await bot.get_file(file_id)).get_url() for file_id in file_ids]
 
 
-async def get_invite_project_url(user_id: int) -> str:
+def get_invite_project_url(user_id: int) -> str:
     """Создает ссылку-приглашение в личный проект."""
     payload = f'{Prefixes.OFFER_PROJECT_}{user_id}'
-    return await get_start_link(payload)
+    return START_LINK.format(payload)
 
 
 async def create_author_page(user_id: int) -> str:
@@ -23,12 +24,12 @@ async def create_author_page(user_id: int) -> str:
     p = account['profile']
     page_url = account.get('page_url')
     photo_urls = await get_file_urls(p['works'])
-    invite_project_url = await get_invite_project_url(user_id)
+    invite_project_url = get_invite_project_url(user_id)
 
     html_content = telegraph_api.make_html_content(
         p['deals_amount'], p['biography'], account['subjects'],
         invite_project_url, photo_urls, reviews
     )
 
-    page_url = telegraph_api.create_page(p['nickname'], html_content, page_url)
+    page_url = await telegraph_api.create_page(p['nickname'], html_content, page_url)
     return page_url

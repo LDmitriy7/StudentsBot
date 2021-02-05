@@ -5,7 +5,7 @@ from aiogram.dispatcher import FSMContext
 from functions import common as cfuncs
 from functions import registration
 from keyboards import markup
-from loader import dp, users_db
+from loader import dp
 from questions.misc import HandleException
 from questions.registration import RegistrationConv as States
 
@@ -34,9 +34,7 @@ async def process_email(msg: types.Message):
 
 @dp.message_handler(state=States.biography)
 async def process_biography(msg: types.Message):
-    if msg.text == 'Пропустить':
-        biography = None
-    elif len(msg.text) > 15:
+    if len(msg.text) > 15:
         biography = msg.text
     else:
         return HandleException('Напишите не меньше 15 символов')
@@ -61,7 +59,7 @@ async def process_nickname(msg: types.Message, state: FSMContext):
     username = msg.from_user.username
     all_nicknames = await cfuncs.get_all_nicknames()
 
-    if msg.text == username:
+    if msg.text.lower() == username.lower():
         return HandleException('Пожалуйста, не используйте свой юзернейм')
     if msg.text in all_nicknames:
         return HandleException('Этот никнейм уже занят')

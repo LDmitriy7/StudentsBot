@@ -22,7 +22,7 @@ async def add_post_keyboard(post: types.Message, project_id: str, post_data: dic
 
     has_files = bool(post_data.get('files'))
 
-    keyboard = await inline_funcs.for_project(
+    keyboard = inline_funcs.for_project(
         project_id,
         pick_btn=True,
         files_btn=has_files

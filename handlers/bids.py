@@ -42,7 +42,7 @@ async def get_project(query: types.CallbackQuery, payload: str):
     if project:
         text = templates.form_post_text(project['status'], project['data'], with_note=True)
         has_files = bool(project['data'].get('files'))
-        keyboard = await inline_funcs.for_project(payload, files_btn=has_files)
+        keyboard = inline_funcs.for_project(payload, files_btn=has_files)
         await query.message.answer(text, reply_markup=keyboard)
     else:
         await query.answer('Этот проект уже удален')

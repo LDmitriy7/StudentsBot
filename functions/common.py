@@ -67,30 +67,6 @@ async def delete_post(post_url: str = None):
         await bot.delete_message(MAIN_CHANNEL, post_id)
 
 
-async def send_projects(msg: types.Message, projects: List[dict], with_note=True, pick_button=False, del_button=False):
-    """Отправляет в ответ проекты по списку."""
-    for p in projects:
-        post_data = p['data']
-        status = p['status']
-        project_id = str(p['_id'])
-
-        text = templates.form_post_text(status, post_data, with_note)
-        has_files = bool(post_data.get('files'))
-
-        if del_button:
-            is_active = p.get('status') == 'Активен'
-        else:
-            is_active = False
-
-        keyboard = await inline_funcs.for_project(
-            project_id,
-            pick_btn=pick_button,
-            del_btn=is_active,
-            files_btn=has_files,
-        )
-        await msg.answer(text, reply_markup=keyboard)
-
-
 async def ask_previous(msg: types.Message, state: FSMContext, states_group: ConvStatesGroup):
     new_state_name = await states_group.previous()
 

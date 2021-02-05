@@ -28,7 +28,6 @@ async def go_back(msg: types.Message, state: FSMContext):
     else:
         await state.finish()
         await msg.answer('Отменено', reply_markup=markup.main_kb)
-
     return HandleException()  # exception in any case
 
 

@@ -3,12 +3,12 @@
 from datetime import date, timedelta
 
 from aiogram.types import InlineKeyboardButton as Button
-from aiogram.types import InlineKeyboardMarkup as InlineKeyboard
-from aiogram.utils.deep_linking import get_start_link
-from aiogram.utils.helper import Item, Helper
+from aiogram.types import InlineKeyboardMarkup
+from aiogram.utils.helper import Helper, Item
+from config import START_LINK
 from loader import calendar
 
-DEL_MESSAGE_DATA = 'del_message'  # для удаления связанного сообщения
+DEL_MESSAGE_DATA = 'DEL_MESSAGE'  # для удаления связанного сообщения
 
 
 class Prefixes(Helper):
@@ -25,59 +25,62 @@ class Prefixes(Helper):
     PICK_BID_ = Item()  # для принятия заявки
 
 
+class InlineKeyboard(InlineKeyboardMarkup, Helper):
+    def data_row(self, text: str, callback_data: str):
+        self.row(Button(text, callback_data=callback_data))
+
+    def url_row(self, text: str, url: str):
+        self.row(Button(text, url=url))
+
+
 def link_button(text: str, url: str):
+    """Одна кнопка-ссылка."""
     keyboard = InlineKeyboard()
-    keyboard.row(Button(text, url=url))
+    keyboard.url_row(text, url)
     return keyboard
 
 
-async def for_project(project_id: str, pick_btn=False, del_btn=False, files_btn=False):
-    """Кнопки с данными в формате: prefix{project_id}"""
+def for_project(project_id: str, pick_btn=False, del_btn=False, files_btn=False, chat_link=None):
+    """Кнопки с данными в формате: prefix{project_id} + кнопка-ссылка в чат."""
     keyboard = InlineKeyboard()
 
-    async def add_button(text, prefix, as_url=True):
+    def add_button(text, prefix, as_url=True):
         if as_url:
-            url = await get_start_link(prefix + project_id)
-            button = Button(text, url=url)
+            url = START_LINK.format(prefix + project_id)
+            keyboard.url_row(text, url)
         else:
             cdata = prefix + project_id
-            button = Button(text, callback_data=cdata)
-        keyboard.row(button)
+            keyboard.data_row(text, cdata)
 
     if pick_btn:
-        await add_button('Взять проект', Prefixes.SEND_BID_)
-
+        add_button('Взять проект', Prefixes.SEND_BID_)
     if files_btn:
-        await add_button('Посмотреть файлы', Prefixes.GET_FILES_)
-
+        add_button('Посмотреть файлы', Prefixes.GET_FILES_)
     if del_btn:
-        await add_button('Удалить проект', Prefixes.DEL_PROJECT_, as_url=False)
-
+        add_button('Удалить проект', Prefixes.DEL_PROJECT_, as_url=False)
+    if chat_link:
+        keyboard.url_row('Перейти в чат', chat_link)
     return keyboard
 
 
-def delete_project(project_id: str):
+def del_project(project_id: str):
     """Для окончательного удаления проекта."""
     keyboard = InlineKeyboard()
     cdata = Prefixes.TOTAL_DEL_PROJECT_ + project_id
-    keyboard.row(Button('Удалить проект', callback_data=cdata))
-    keyboard.row(Button('Отменить', callback_data=DEL_MESSAGE_DATA))
+    keyboard.data_row('Удалить проект', cdata)
+    keyboard.data_row('Отменить', DEL_MESSAGE_DATA)
     return keyboard
 
 
-def for_bid(project_id: str, bid_id: str, watch_project_btn=True, pick_bid_btn=True, refuse_bid_btn=True):
-    """Кнопки c данными в формате: {prefix}{object_id}."""
+def for_bid(bid_id: str, pick_btn=True, refuse_btn=True):
+    """Кнопки c данными в формате: {prefix}{bid_id}."""
     keyboard = InlineKeyboard()
-    get_project_data = Prefixes.GET_PROJECT_ + project_id
     pick_bid_data = Prefixes.PICK_BID_ + bid_id
 
-    if watch_project_btn:
-        keyboard.row(Button('Посмотреть проект', callback_data=get_project_data))
-    if pick_bid_btn:
-        keyboard.row(Button('Принять завку', callback_data=pick_bid_data))
-    if refuse_bid_btn:
-        keyboard.row(Button('Отклонить', callback_data=DEL_MESSAGE_DATA))
-
+    if pick_btn:
+        keyboard.data_row('Принять завку', pick_bid_data)
+    if refuse_btn:
+        keyboard.data_row('Отклонить', DEL_MESSAGE_DATA)
     return keyboard
 
 

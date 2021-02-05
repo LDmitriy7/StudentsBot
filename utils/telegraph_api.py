@@ -3,8 +3,13 @@ from typing import List
 from telegraph import Telegraph
 from texts import html_templates as templates
 from config import TELEGRAPH_TOKEN
+from functions.reviews import count_avg_rating
+import atexit
+import asyncio
 
 telegraph = Telegraph(TELEGRAPH_TOKEN)
+atexit.register(asyncio.run, telegraph.close_session())
+
 BASE_URL = 'https://telegra.ph/'
 
 
@@ -30,27 +35,16 @@ def _make_html_reviews(reviews: List[dict]) -> str:
 
 def _make_html_avg_rating(reviews: List[dict]) -> str:
     """Создает html-текст со средним рейтингом по шаблону."""
-    quality = 0
-    contact = 0
-    terms = 0
-    for review in reviews:
-        rating = review['rating']
-        quality += rating['quality']
-        contact += rating['contact']
-        terms += rating['terms']
-
-    reviews_amount = len(reviews) or 1
-    quality /= reviews_amount
-    contact /= reviews_amount
-    terms /= reviews_amount
+    rating = count_avg_rating(reviews)
+    quality, contact, terms = rating['quality'], rating['contact'], rating['terms']
 
     html_text = templates.AVG_RATING_TEMPLATE.format(
         quality=round(quality) * "⭐",
-        quality_num=f'{quality:.2f}',
+        quality_num=quality,
         contact=round(contact) * "⭐",
-        contact_num=f'{contact:.2f}',
+        contact_num=contact,
         terms=round(terms) * "⭐",
-        terms_num=f'{terms:.2f}',
+        terms_num=terms,
     )
     return html_text
 
@@ -72,7 +66,7 @@ def make_html_content(
     return content
 
 
-def create_page(nickname: str, html_content: str, page_url: str = None) -> str:
+async def create_page(nickname: str, html_content: str, page_url: str = None) -> str:
     """Создает или редактирует [если задан page_url] страницу исполнителя. Возращает ссылку."""
     request_data = {
         'title': f'Страница автора {nickname}',
@@ -83,9 +77,9 @@ def create_page(nickname: str, html_content: str, page_url: str = None) -> str:
 
     if page_url:
         page_path = page_url.replace(BASE_URL, '')
-        response = telegraph.edit_page(path=page_path, **request_data)
+        response = await telegraph.edit_page(path=page_path, **request_data)
     else:
-        response = telegraph.create_page(**request_data)
+        response = await telegraph.create_page(**request_data)
 
     link = BASE_URL + response['path']
     return link

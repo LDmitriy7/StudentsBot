@@ -1,6 +1,7 @@
-from loader import users_db, dp
 from aiogram import types
-from functions import common as cfuncs
+
+from functions import projects as funcs
+from loader import dp, users_db
 
 
 @dp.message_handler(text='Поиск заказов')
@@ -14,6 +15,6 @@ async def find_orders(msg: types.Message):
     projects = await users_db.get_projects_by_subjects(subjects)
     if projects:
         await msg.answer('<b>Подходящие заказы:</b>')
-        await cfuncs.send_projects(msg, projects, with_note=False, pick_button=True)
+        await funcs.send_projects(msg, projects, pick_btn=True)
     else:
         await msg.answer('<b>Не найдено подходящих заказов</b>')

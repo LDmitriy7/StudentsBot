@@ -13,9 +13,19 @@ _POST_TEMPLATE = """
 {note}
 """
 
-_BID_TEMPLATE = """
-Автор <a href="{worker_url}">{worker_nickname}</a> откликнулся на ваш проект:
+_AVG_RATING_TEMPLATE = """\
+Качество: {quality} ({quality_num})
+Сроки: {terms} ({terms_num})
+Контактность: {contact} ({contact_num})\
+"""
 
+_BID_TEMPLATE = """
+На ваш <a href="{post_url}">проект</a> откликнулся автор <a href="{worker_url}">{worker_nickname}</a>:
+
+<b>Средний рейтинг</b>:
+{avg_rating}
+
+<b>Комментарий</b>:
 {bid_text}
 """
 
@@ -26,10 +36,28 @@ Email: {email}
 
 Ссылка на личную страницу:
 {page_url}
-
-Ссылка-приглашение в личный проект:
-{invite_project_link}
 """
+
+
+def form_avg_rating_text(rating: dict) -> str:
+    """Создает текст со средним рейтингом по шаблону."""
+    quality, contact, terms = rating['quality'], rating['contact'], rating['terms']
+
+    return _AVG_RATING_TEMPLATE.format(
+        quality=round(quality) * "⭐",
+        quality_num=quality,
+        contact=round(contact) * "⭐",
+        contact_num=contact,
+        terms=round(terms) * "⭐",
+        terms_num=terms,
+    )
+
+
+def form_subjects_text(subjects: list) -> str:
+    title = '<b>Ваши предметы:</b>'
+    subjects = [f' • {s}' for s in subjects]
+    result = title + '\n' + '\n'.join(subjects)
+    return result
 
 
 def form_post_text(status: str, post_data: dict, with_note=False):
@@ -63,22 +91,23 @@ def form_post_text(status: str, post_data: dict, with_note=False):
     return text
 
 
-def form_bid_text(worker_nickname: str, worker_url: str, bid_text: str):
+def form_bid_text(worker_nickname: str, worker_url: str, post_url: str, avg_rating: str, bid_text: str) -> str:
     text = _BID_TEMPLATE.format(
         worker_url=worker_url,
         worker_nickname=worker_nickname,
+        post_url=post_url,
+        avg_rating=avg_rating,
         bid_text=bid_text,
     )
     return text
 
 
-def form_profile_template(nickname: str, phone_number: str, email: str, page_url: str, invite_project_link: str):
+def form_profile_template(nickname: str, phone_number: str, email: str, page_url: str):
     return _PROFILE_TEMPLATE.format(
         nickname=nickname,
         phone_number=phone_number,
         email=email,
         page_url=page_url,
-        invite_project_link=invite_project_link,
     )
 
 

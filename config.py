@@ -3,6 +3,7 @@
 from configparser import ConfigParser
 
 parser = ConfigParser()
+parser.read('../../config.ini')  # TODO: remove
 parser.read('config.ini')
 
 _bot = parser['Bot']
@@ -11,6 +12,7 @@ _channel = parser['Channel']
 _telegraph = parser['Telegraph']
 
 BOT_TOKEN = _bot['bot_token']
+START_LINK = 'https://t.me/' + _bot["bot_username"] + '?start={}'
 LINKED_BOT = '@' + _bot['linked_conversation_bot']
 PAYMENTS_PROVIDER_TOKEN = _bot['payments_provider_token']
 

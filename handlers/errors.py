@@ -11,7 +11,6 @@ from loader import dp
 from questions.misc import HandleException
 
 logger = logging.getLogger(__name__)
-
 Update = Union[types.Message, types.CallbackQuery]
 
 

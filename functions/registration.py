@@ -1,5 +1,5 @@
-from loader import users_db
 from functions.telegraph import create_author_page
+from loader import users_db
 
 
 async def save_profile(user_id: int, profile_data: dict, nickname: str, deals_amount=0):

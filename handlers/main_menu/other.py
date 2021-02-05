@@ -1,8 +1,10 @@
+"""Кнопки 'Предложить идею', 'Инструкция' и 'Меню исполнителя'."""
 from aiogram import types
-from loader import dp, users_db
+
 from keyboards import markup
-from texts import main as texts
+from loader import dp, users_db
 from questions.registration import RegistrationConv
+from texts import main as texts
 
 
 @dp.message_handler(text='Предложить идею ✍')
