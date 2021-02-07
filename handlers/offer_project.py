@@ -3,11 +3,11 @@ from aiogram import types
 from keyboards import inline_funcs, inline_plain
 
 
-@dp.inline_handler(text=inline_plain.OFFER_PROJECT_TO_CLIENT_QUERY)
+@dp.inline_handler(text=inline_plain.INVITE_PROJECT_QUERY)
 async def send_offer_to_client(query: types.InlineQuery):
     worker_id = query.from_user.id
     text = 'Перейдите по ссылке, чтобы заполнить персональный проект'
-    keyboard = inline_funcs.offer_project_to_client(worker_id)
+    keyboard = inline_funcs.invite_project(worker_id)
     imc = types.InputMessageContent(message_text=text)
 
     result = types.InlineQueryResultArticle(

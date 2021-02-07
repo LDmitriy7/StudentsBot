@@ -1,5 +1,4 @@
-from dataclasses import dataclass, asdict, field
-from pprint import pp
+from dataclasses import dataclass, field
 from typing import List
 
 
@@ -24,11 +23,11 @@ class Account:
 
 @dataclass
 class Bid:
-    _id: str
     client_id: int
     worker_id: int
     project_id: str
     text: str
+    # _id: str = None
 
 
 @dataclass
@@ -39,6 +38,12 @@ class Chat:
     user_id: int
     link: str
     pair_id: int
+
+
+@dataclass
+class PairChats:
+    client_chat: Chat
+    worker_chat: Chat
 
 
 @dataclass
@@ -54,14 +59,14 @@ class ProjectData:
 
 @dataclass
 class Project:
-    _id: str
     client_id: int
     data: ProjectData
-    client_chat_id: int
-    worker_chat_id: int
-    status: int = 'Активен'
+    status: str
+    client_chat_id: int = None
+    worker_chat_id: int = None
     post_url: str = None
     worker_id: int = None
+    # _id: str = None
 
 
 @dataclass
@@ -73,11 +78,10 @@ class Rating:
 
 @dataclass
 class Review:
-    _id: str
     client_id: int
     client_name: str
     worker_id: int
     project_id: str
     rating: Rating
     text: str
-
+    # _id: str = None

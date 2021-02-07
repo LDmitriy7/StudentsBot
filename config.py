@@ -1,9 +1,11 @@
+# -*- coding: utf-8 -*-
 """Содержит все важные константы для бота (в том числе секретные)"""
 
 from configparser import ConfigParser
 
 parser = ConfigParser()
 parser.read('../../config.ini')  # TODO: remove
+parser.read('../config.ini')  # TODO: remove
 parser.read('config.ini')
 
 _bot = parser['Bot']

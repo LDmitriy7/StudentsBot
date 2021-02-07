@@ -17,7 +17,8 @@ class Prefixes(Helper):
     DEL_PROJECT_ = Item()  # для запроса удаления проекта
     TOTAL_DEL_PROJECT_ = Item()  # для удаления проекта
     PAY_FOR_PROJECT_ = Item()  # для оплаты проекта
-    OFFER_PROJECT_ = Item()  # для предложения личного проекта
+    INVITE_PROJECT_ = Item()  # для предложения проекта автором
+    OFFER_PROJECT_ = Item()  # для предложения проекта заказчиком
 
     GET_FILES_ = Item()  # для получения файлов к проекту
 
@@ -40,10 +41,18 @@ def link_button(text: str, url: str):
     return keyboard
 
 
-def offer_project_to_client(worker_id: int):
-    """Кнопка заполнить проект со стартовой ссылкой {prefix}{worker_id}."""
+def offer_project(project_id: str):
+    """Кнопка 'Выбрать чат' для отправки проекта лично."""
     keyboard = InlineKeyboard()
-    url = START_LINK.format(f'{Prefixes.OFFER_PROJECT_}{worker_id}')
+    siq = f'{Prefixes.OFFER_PROJECT_}{project_id}'
+    keyboard.row(Button('Выбрать чат', switch_inline_query=siq))
+    return keyboard
+
+
+def invite_project(worker_id: int):
+    """Кнопка 'Заполнить проект' со стартовой ссылкой {prefix}{worker_id}."""
+    keyboard = InlineKeyboard()
+    url = START_LINK.format(f'{Prefixes.INVITE_PROJECT_}{worker_id}')
     keyboard.url_row('Заполнить проект', url)
     return keyboard
 

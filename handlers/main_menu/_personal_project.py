@@ -5,21 +5,37 @@ from aiogram.dispatcher import FSMContext
 from filters import DeepLinkPrefix
 from functions import common as cfuncs
 from functions import personal_project as funcs
+from keyboards import inline_funcs, inline_plain, markup
 from keyboards.inline_funcs import Prefixes
 from keyboards.inline_plain import WorkTypeKeyboard
-from keyboards import inline_funcs, inline_plain, markup
 from loader import bot, calendar, dp, users_db
 from questions.misc import HandleException
 from questions.personal_project import PersonalProjectConv as States
-from utils.chat_creator import create_pair_chats
+from questions.registration import RegistrationConv
 from texts import main as texts
+from type_classes import Project, ProjectData
+from utils.chat_creator import create_pair_chats
+from middlewares.misc import
 
 
-# вход в создание проекта
+# вход в создание проекта +
 
 @dp.message_handler(text='Личный проект 🤝')
 async def ask_user_role(msg: types.Message):
     await msg.answer(texts.start_personal_project, reply_markup=markup.personal_project)
+
+
+@dp.message_handler(text='Я исполнитель')
+async def send_invite_project_keyboard(msg: types.Message):
+    account = await users_db.get_account_by_id(msg.from_user.id)
+    profile = account.get('profile') if account else None
+    if profile:
+        text = 'Выберите <b>заказчика</b> из списка своих чатов'
+        keyboard = inline_plain.invite_project
+        await msg.answer(text, reply_markup=keyboard)
+    else:
+        await msg.answer('Сначала пройдите регистрацию')
+        return RegistrationConv
 
 
 @dp.message_handler(text='Я заказчик')
@@ -28,14 +44,7 @@ async def entry_create_post(msg: types.Message):
     return States  # входим в диалог
 
 
-@dp.message_handler(text='Я исполнитель')
-async def choose_client_chat(msg: types.Message):
-    text = 'Выберите <b>заказчика</b> из списка своих чатов'
-    keyboard = inline_plain.offer_project_to_client
-    await msg.answer(text, reply_markup=keyboard)
-
-
-@dp.message_handler(DeepLinkPrefix(Prefixes.OFFER_PROJECT_))
+@dp.message_handler(DeepLinkPrefix(Prefixes.INVITE_PROJECT_))
 async def entry_create_post_with_worker(msg: types.Message, payload: str):
     worker_id = int(payload)
     if msg.from_user.id == worker_id:
@@ -102,32 +111,27 @@ async def process_file(msg: types.Message):
 async def process_file_finish(msg: types.Message):
     if msg.text == 'Начать заново':
         return {'files': ()}, HandleException('Теперь выбирайте заново')
-    return {'files': [], 'status': 'Активен'}
+    return {'files': []}
 
-# @dp.message_handler(text='Отправить проект', state=States.confirm)
-# async def send_personal_post(msg: types.Message, state: FSMContext):
-#     post_data = await state.get_data()
-#     client_id = msg.from_user.id
-#     worker_id = post_data['worker_id']
-#
-#     post_msg = await funcs.send_project(msg.from_user.full_name, post_data)
-#     if isinstance(post_msg, HandleException):  # распространяем исключение
-#         return post_msg
-#
-#     project_id = await users_db.add_project(msg.from_user.id, post_data)  # сохранение проекта
-#     await bot.send_chat_action(client_id, 'typing')
-#
-#     pair_chats = await create_pair_chats('Нора1')  # создание чатов
-#     client_chat: dict = pair_chats.client_chat
-#     worker_chat: dict = pair_chats.worker_chat
-#
-#     await users_db.add_chat(project_id, **client_chat, user_id=client_id)
-#     await users_db.add_chat(project_id, **worker_chat, user_id=worker_id)
-#     await funcs.add_post_keyboard(post_msg, worker_chat['link'])  # добавляем кнопку-приглашение
-#
-#     text1 = 'Проект успешно создан и отправлен'
-#     keyboard1 = markup.main_kb
-#     text2 = 'Ожидайте автора в чате'
-#     keyboard2 = inline_funcs.link_button('Перейти в чат', client_chat['link'])
-#     await msg.answer(text1, reply_markup=keyboard1)
-#     await msg.answer(text2, reply_markup=keyboard2)
+
+# отправка проекта
+
+@dp.message_handler(text='Отправить проект', state=States.confirm)
+async def send_personal_post(msg: types.Message, state: FSMContext):
+    udata = await state.get_data()
+    client_id = msg.from_user.id
+    worker_id = udata.pop('worker_id', None)
+
+    project_data = ProjectData(**udata)
+    project = Project(client_id, project_data, 'Активен', worker_id=worker_id)
+    project_id = await users_db.add_project_test(project)  # сохранение проекта
+
+    if worker_id:
+        chats = await cfuncs.create_chats(client_id, worker_id, project_id)  # создание и сохранение чатов
+        if await funcs.try_send_project(msg, worker_id, chats.worker_chat.link):
+            return  # проект уже отправлен
+
+    text = 'Теперь вы можете отправить проект <b>исполнителю</b>'
+    keyboard = inline_funcs.offer_project(project_id)
+    await msg.answer('Проект создан', reply_markup=markup.main_kb)
+    await msg.answer(text, reply_markup=keyboard)

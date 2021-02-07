@@ -1,5 +1,5 @@
 from datetime import date
-from typing import List, Tuple, Union
+from typing import Tuple, Union
 
 from aiogram import types
 from aiogram.dispatcher import FSMContext
@@ -9,8 +9,18 @@ from keyboards import inline_funcs, markup
 from loader import bot, calendar, users_db
 from questions import ALL_CONV_STATES, ConvStatesGroup
 from questions.misc import ConvState, HandleException, ask_question
-from texts import templates
+from type_classes import PairChats
+from utils.chat_creator import create_pair_chats
 from utils.inline_calendar import NotInitedException
+
+
+async def create_chats(client_id: int, worker_id: int, project_id: str) -> PairChats:
+    """Создает и сохраняет парные чаты."""
+    await bot.send_chat_action(client_id, 'typing')
+    pair_chats = await create_pair_chats('Нора2', project_id, client_id, worker_id)
+    await users_db.add_chat_test(pair_chats.client_chat)
+    await users_db.add_chat_test(pair_chats.worker_chat)
+    return pair_chats
 
 
 async def get_balance(msg: types.Message) -> int:

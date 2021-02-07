@@ -8,7 +8,7 @@ def make_invoice(msg: types.Message, price: int) -> dict:
 
     invoice_data = dict(
         chat_id=msg.from_user.id,
-        title='Пополнение',
+        title = 'Пополнение',
         description='Пополнение баланса',
         provider_token=PAYMENTS_PROVIDER_TOKEN,
         currency='uah',

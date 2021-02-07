@@ -12,7 +12,7 @@ async def get_file_urls(file_ids: list) -> List[str]:
 
 def get_invite_project_url(user_id: int) -> str:
     """Создает ссылку-приглашение в личный проект."""
-    payload = f'{Prefixes.OFFER_PROJECT_}{user_id}'
+    payload = f'{Prefixes.INVITE_PROJECT_}{user_id}'
     return START_LINK.format(payload)
 
 

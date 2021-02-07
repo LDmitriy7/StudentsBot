@@ -5,6 +5,8 @@ from typing import List, Optional, Union
 from bson import ObjectId
 from motor.motor_asyncio import AsyncIOMotorClient, AsyncIOMotorDatabase
 from pymongo.results import InsertOneResult
+from type_classes import Chat, ProjectData, Project, Bid, Review, Profile, Rating, Account
+from dataclasses import asdict
 
 ACCOUNTS = 'accounts'
 PROJECTS = 'projects'
@@ -85,6 +87,9 @@ class MongoAdder(MongoClient):
         )
         return inserted_id
 
+    async def add_project_test(self, project: Project):
+        return await self._add_object(PROJECTS, **asdict(project))
+
     async def add_bid(self, client_id: int, project_id: str, worker_id: int, text: str) -> str:
         inserted_id = await self._add_object(
             BIDS,
@@ -94,6 +99,9 @@ class MongoAdder(MongoClient):
             text=text,
         )
         return inserted_id
+
+    async def add_bid_test(self, bid: Bid) -> str:
+        return await self._add_object(BIDS, **asdict(bid))
 
     async def add_chat(self, project_id: str, chat_id: int, chat_type: str, user_id: int, link: str,
                        pair_id: int) -> str:
@@ -107,6 +115,9 @@ class MongoAdder(MongoClient):
             pair_id=pair_id,
         )
         return inserted_id
+
+    async def add_chat_test(self, chat: Chat):
+        return await self._add_object(CHATS, **asdict(chat))
 
     async def add_review(self, client_id: int, client_name: str, worker_id: int, project_id: str, rating: dict,
                          text: str) -> str:

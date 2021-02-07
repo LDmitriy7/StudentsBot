@@ -1,5 +1,8 @@
-from type_classes import Profile, Project, ProjectData, Account, Bid, Rating, Review, Chat
+import asyncio
 from pprint import pp
+
+from loader import users_db
+from type_classes import Account, Bid, Chat, Profile, Project, ProjectData, Rating, Review
 
 profile = Profile(**{
     "phone_number": None, "email": None, "biography": "Я пишу ботов на python 3 года", "works": [
@@ -16,7 +19,7 @@ account = Account(**{
 })
 
 bid = Bid(**{
-    "_id": {"$oid": "6016f6a74ca817b3e3f8fa7a"}, "client_id": 1478623483, "worker_id": 724477101,
+    "client_id": 1478623483, "worker_id": 724477101,
     "project_id": "6016f6084ca817b3e3f8fa79", "text": "Здравствуйте, помогу прям сейчас"
 })
 
@@ -34,7 +37,7 @@ project_data = ProjectData(**{
 })
 
 project = Project(**{
-    "_id": {"$oid": "601975fd7a44a2358740a40e"}, "client_id": 1478623483, "worker_id": 724477101,
+    "client_id": 1478623483, "worker_id": 724477101,
     "status": "Активен", "post_url": "t.me/help_students7/78", 'data': project_data,
     'client_chat_id': -541355717, 'worker_chat_id': -545651958
 })
@@ -44,7 +47,7 @@ rating = Rating(**{
 })
 
 review = Review(**{
-    "_id": {"$oid": "601bea5e20622f6689301c84"}, "client_id": 1478623483, "worker_id": 724477101,
+    "client_id": 1478623483, "worker_id": 724477101,
     "project_id": "601975fd7a44a2358740a40e", "rating": rating, "text": "Спасибо!", "client_name": "Максим Некрасов"
 })
 
@@ -56,3 +59,6 @@ pp(project_data)
 pp(project)
 pp(rating)
 pp(review)
+
+result = asyncio.run(users_db.add_bid_test(bid))
+print(result)
