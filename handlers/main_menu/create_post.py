@@ -4,11 +4,13 @@ from aiogram.dispatcher import FSMContext
 
 from functions import common as cfuncs
 from functions import create_post as funcs
+from functions import projects
 from keyboards import markup
 from keyboards.inline_plain import WorkTypeKeyboard
 from loader import calendar, dp, users_db
 from questions.create_post import CreatePostConv as States
 from questions.misc import HandleException
+import type_classes as datatypes
 
 
 @dp.message_handler(text='Создать пост ➕')
@@ -72,15 +74,15 @@ async def process_file(msg: types.Message):
 async def process_file_finish(msg: types.Message):
     if msg.text == 'Начать заново':
         return {'files': ()}, HandleException('Теперь выбирайте заново')
-    return {'files': [], 'status': 'Активен'}
+    return {'files': []}
 
 
 @dp.message_handler(text='Отправить проект', state=States.confirm)
 async def exit_create_post(msg: types.Message, state: FSMContext):
-    post_data = await state.get_data()
-    post_obj, post_url = await funcs.send_post(post_data)
-    project_id = await users_db.add_project(msg.from_user.id, post_data)
+    udata = await state.get_data()
+    post_obj, post_url = await funcs.send_post(udata)
+    project_id = await projects.save_project(udata, msg.from_user.id, post_url=post_url)
 
     text = f'<a href="{post_url}">Проект</a> успешно создан'
-    await funcs.add_post_keyboard(post_obj, project_id, post_data)
+    await funcs.add_post_keyboard(post_obj, project_id, udata)
     await msg.answer(text, reply_markup=markup.main_kb)

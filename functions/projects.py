@@ -40,9 +40,9 @@ async def send_projects(
         await msg.answer(text, reply_markup=keyboard)
 
 
-async def save_project(project_data: dict, client_id: int, worker_id: int) -> str:
-    """Сохраняет активный проект в базу, возращает его id."""
+async def save_project(project_data: dict, client_id: int, worker_id: int = None, post_url: str = None) -> str:
+    """Сохраняет проект в базу c активным статусом, возращает его _id."""
     project_data = ProjectData(**project_data)
-    project = Project(client_id, project_data, 'Активен', worker_id=worker_id)
-    project_id = await users_db.add_project_test(project)  # сохранение проекта
+    project = Project('Активен', project_data, client_id, worker_id=worker_id, post_url=post_url)
+    project_id = await users_db.add_project(project)
     return project_id

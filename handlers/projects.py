@@ -93,7 +93,7 @@ async def send_bid(msg: types.Message, state: FSMContext):
     project_id = bid_data['project_id']
 
     bid = Bid(client_id, project_id, msg.from_user.id, bid_text)
-    bid_id = await users_db.add_bid_test(bid)  # сохранение заявки
+    bid_id = await users_db.add_bid(bid)  # сохранение заявки
     full_bid_text = await funcs.get_worker_bid_text(msg.from_user.id, project_id, bid_text)
     keyboard = inline_funcs.for_bid(bid_id)
 

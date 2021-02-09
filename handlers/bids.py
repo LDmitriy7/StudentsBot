@@ -25,7 +25,7 @@ async def pick_bid(query: types.CallbackQuery, payload: str):
             await query.message.edit_text(text, reply_markup=keyboard)
         else:
             await bot.send_message(user_id, text, reply_markup=keyboard)
-        await users_db.add_chat_test(chat)  # сохранение чата
+        await users_db.add_chat(chat)  # сохранение чата
 
     await send_invite_msg(client_id, chats.client_chat)
     await send_invite_msg(worker_id, chats.worker_chat)

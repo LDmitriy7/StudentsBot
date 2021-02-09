@@ -14,11 +14,11 @@ class Profile:
 
 @dataclass
 class Account:
-    _id: int
-    page_url: str
+    # _id: int
     balance: int = 0
     subjects: list = field(default_factory=list)
     profile: Profile = None
+    page_url: str = None
 
 
 @dataclass
@@ -27,12 +27,11 @@ class Bid:
     project_id: str
     worker_id: int = None
     text: str = None
-    # _id: str = None
 
 
 @dataclass
 class Chat:
-    _id: int
+    # _id: int
     project_id: str
     chat_type: str
     user_id: int
@@ -59,14 +58,13 @@ class ProjectData:
 
 @dataclass
 class Project:
-    client_id: int
-    data: ProjectData
     status: str
+    data: ProjectData
+    client_id: int
+    worker_id: int = None
+    post_url: str = None
     client_chat_id: int = None
     worker_chat_id: int = None
-    post_url: str = None
-    worker_id: int = None
-    # _id: str = None
 
 
 @dataclass
@@ -84,4 +82,3 @@ class Review:
     project_id: str
     rating: Rating
     text: str
-    # _id: str = None

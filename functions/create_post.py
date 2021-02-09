@@ -8,12 +8,11 @@ from typing import Tuple
 
 
 async def send_post(post_data: dict) -> Tuple[types.Message, str]:
-    """Send post to channel. Add post_url to post_data. Return post_obj and post_url."""
+    """Send post to channel. Return post_obj and post_url."""
     status = post_data['status']
     text = templates.form_post_text(status, post_data)
     post_obj = await bot.send_message(MAIN_CHANNEL, text)
     post_url = MAIN_POST_URL.format(post_obj.message_id)
-    post_data['post_url'] = post_url
     return post_obj, post_url
 
 

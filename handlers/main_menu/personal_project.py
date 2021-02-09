@@ -125,7 +125,7 @@ async def send_personal_post(msg: types.Message, state: FSMContext):
 
     if worker_id:
         bid = Bid(client_id, project_id, worker_id)
-        bid_id = await users_db.add_bid_test(bid)
+        bid_id = await users_db.add_bid(bid)
         await bids.send_client_bid(msg.from_user.full_name, bid.worker_id, bid_id)
         await msg.answer('Я позову вас в чат, когда исполнитель откликнется')
         return

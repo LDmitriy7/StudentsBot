@@ -60,5 +60,5 @@ pp(project)
 pp(rating)
 pp(review)
 
-result = asyncio.run(users_db.add_bid_test(bid))
+result = asyncio.run(users_db.add_bid(bid))
 print(result)

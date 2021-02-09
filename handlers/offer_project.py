@@ -44,7 +44,7 @@ async def pick_project(query: types.CallbackQuery, payload: str):
     async def send_invite_msg(user_id: int, chat: Chat):
         text = 'Ссылка в чат для принятого проекта'
         keyboard = inline_funcs.link_button('Перейти в чат', chat.link)
-        await users_db.add_chat_test(chat)  # сохранение чата
+        await users_db.add_chat(chat)  # сохранение чата
         await bot.send_message(user_id, text, reply_markup=keyboard)
 
     await send_invite_msg(client_id, chats.client_chat)

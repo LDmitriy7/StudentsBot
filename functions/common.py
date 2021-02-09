@@ -18,8 +18,8 @@ async def create_chats(client_id: int, worker_id: int, project_id: str) -> PairC
     """Создает и сохраняет парные чаты."""
     await bot.send_chat_action(client_id, 'typing')
     pair_chats = await create_pair_chats('Нора2', project_id, client_id, worker_id)
-    await users_db.add_chat_test(pair_chats.client_chat)
-    await users_db.add_chat_test(pair_chats.worker_chat)
+    await users_db.add_chat(pair_chats.client_chat)
+    await users_db.add_chat(pair_chats.worker_chat)
     return pair_chats
 
 
