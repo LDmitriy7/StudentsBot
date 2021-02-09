@@ -7,6 +7,12 @@ from keyboards import inline_funcs, markup
 from loader import dp
 from questions import ALL_CONV_STATES_GROUPS
 from questions.misc import HandleException
+from texts import main as texts
+
+
+@dp.message_handler(text='/start')
+async def send_welcome(msg: types.Message):
+    await msg.answer(texts.welcome, reply_markup=markup.main_kb)
 
 
 @dp.message_handler(text='Отменить', state='*')

@@ -19,12 +19,26 @@ class DeepLinkPrefix:
 class QueryPrefix:
     """Check query.data for prefix, return payload without prefix."""
 
+    def __init__(self, qprefix: str):
+        self.qprefix = qprefix
+
+    def __call__(self, query: types.CallbackQuery):
+        if query.data.startswith(self.qprefix):
+            payload = query.data.replace(self.qprefix, '')
+            return {'payload': payload}
+        else:
+            return False
+
+
+class InlinePrefix:
+    """Check query.query for prefix, return payload without prefix."""
+
     def __init__(self, iprefix: str):
         self.iprefix = iprefix
 
-    def __call__(self, query: types.CallbackQuery):
-        if query.data.startswith(self.iprefix):
-            payload = query.data.replace(self.iprefix, '')
+    def __call__(self, query: types.InlineQuery):
+        if query.query.startswith(self.iprefix):
+            payload = query.query.replace(self.iprefix, '')
             return {'payload': payload}
         else:
             return False

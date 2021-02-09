@@ -12,6 +12,7 @@ from loader import bot, dp, users_db
 from questions.misc import HandleException
 from questions.registration import RegistrationConv
 from states import Projects as States
+from type_classes import Bid
 
 
 @dp.message_handler(DeepLinkPrefix(Prefixes.GET_FILES_))
@@ -74,7 +75,7 @@ async def ask_bid_text(msg: types.Message, payload: str):
 
     await States.ask_bid_text.set()
     await msg.answer('Отправьте текст для заявки:', reply_markup=markup.cancel_kb)
-    return {'project_id': payload, 'client_id': client_id, 'worker_id': worker_id}
+    return {'project_id': payload, 'client_id': client_id}
 
 
 @dp.message_handler(state=States.ask_bid_text)
@@ -91,9 +92,10 @@ async def send_bid(msg: types.Message, state: FSMContext):
     client_id = bid_data['client_id']
     project_id = bid_data['project_id']
 
-    bid_id = await users_db.add_bid(**bid_data, text=bid_text)  # сохранение заявки
-    full_bid_text = await funcs.get_full_bid_text(msg.from_user.id, project_id, bid_text)
-    keyboard = inline_funcs.for_bid(project_id, bid_id)
+    bid = Bid(client_id, project_id, msg.from_user.id, bid_text)
+    bid_id = await users_db.add_bid_test(bid)  # сохранение заявки
+    full_bid_text = await funcs.get_worker_bid_text(msg.from_user.id, project_id, bid_text)
+    keyboard = inline_funcs.for_bid(bid_id)
 
     await bot.send_message(client_id, full_bid_text, reply_markup=keyboard)  # отправка заказчику
     await msg.answer('Заявка отправлена', reply_markup=markup.main_kb)

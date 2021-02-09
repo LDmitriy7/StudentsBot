@@ -155,6 +155,13 @@ class MongoGetter(MongoClient):
         project = await self._get_object(PROJECTS, {'_id': oid})
         return project
 
+    async def get_project_by_id_test(self, project_id: str) -> Project:
+        oid = ObjectId(project_id)
+        project = await self._get_object(PROJECTS, {'_id': oid})
+        project.pop('_id')
+        project_data = ProjectData(**project.pop('data'))
+        return Project(**project, data=project_data)
+
     async def get_projects_by_user(self, client_id: int = None, worker_id: int = None) -> List[dict]:
         if client_id:
             _filter = {'client_id': client_id}
@@ -178,6 +185,16 @@ class MongoGetter(MongoClient):
         account = await self._get_object(ACCOUNTS, _filter)
         return account
 
+    async def get_account_by_id_test(self, user_id: int) -> Optional[Account]:
+        _filter = {'_id': user_id}
+        account = await self._get_object(ACCOUNTS, _filter)
+        if account:
+            profile = account.pop('profile', None)
+            profile = Profile(**profile) if profile else None
+            return Account(**account, profile=profile)
+        else:
+            return None
+
     async def get_chat_by_id(self, chat_id: int) -> dict:
         _filter = {'_id': chat_id}
         chat = await self._get_object(CHATS, _filter)
@@ -187,6 +204,12 @@ class MongoGetter(MongoClient):
         oid = ObjectId(bid_id)
         bid = await self._get_object(BIDS, {'_id': oid})
         return bid
+
+    async def get_bid_by_id_test(self, bid_id: str) -> Bid:
+        oid = ObjectId(bid_id)
+        bid = await self._get_object(BIDS, {'_id': oid})
+        bid.pop('_id')
+        return Bid(**bid)
 
     async def get_reviews_by_worker(self, worker_id: int) -> List[dict]:
         return await self._get_object(REVIEWS, {'worker_id': worker_id}, many=True)

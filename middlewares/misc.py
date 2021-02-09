@@ -39,7 +39,7 @@ async def process_user_data(new_data: dict):
 
 
 async def process_exception(msg: types.Message, exception: HandleException):
-    if not exception:
+    if not (msg and exception):
         return False
 
     e_body = exception.on_exception

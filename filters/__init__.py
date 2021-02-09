@@ -1,1 +1,1 @@
-from filters.main import DeepLinkPrefix, QueryPrefix
+from filters.main import DeepLinkPrefix, QueryPrefix, InlinePrefix

@@ -1,7 +1,7 @@
 from typing import List
 
 from aiogram import types
-
+from type_classes import ProjectData, Project
 from keyboards import inline_funcs
 from loader import users_db
 from texts import templates
@@ -39,3 +39,10 @@ async def send_projects(
         )
         await msg.answer(text, reply_markup=keyboard)
 
+
+async def save_project(project_data: dict, client_id: int, worker_id: int) -> str:
+    """Сохраняет активный проект в базу, возращает его id."""
+    project_data = ProjectData(**project_data)
+    project = Project(client_id, project_data, 'Активен', worker_id=worker_id)
+    project_id = await users_db.add_project_test(project)  # сохранение проекта
+    return project_id

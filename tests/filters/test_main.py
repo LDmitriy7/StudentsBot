@@ -1,4 +1,4 @@
-from filters import DeepLinkPrefix, QueryPrefix
+from filters import DeepLinkPrefix, QueryPrefix, InlinePrefix
 from keyboards.inline_funcs import Prefixes
 from aiogram import types
 from loader import users_db
@@ -13,6 +13,7 @@ async def get_all_projects():
 
 msg = types.Message()
 query = types.CallbackQuery()
+inline_query = types.InlineQuery()
 command_start = '/start {prefix}{payload}'
 project_ids = asyncio.run(get_all_projects())
 NORMAL_PREFIXES = Prefixes.all()
@@ -32,6 +33,14 @@ def test_normal_prefixes2():
             query.data = prefix + payload
             _filter = QueryPrefix(prefix)
             assert _filter(query) == {'payload': payload}
+
+
+def test_normal_prefixes3():
+    for payload in project_ids:
+        for prefix in NORMAL_PREFIXES:
+            inline_query.query = prefix + payload
+            _filter = InlinePrefix(prefix)
+            assert _filter(inline_query) == {'payload': payload}
 
 
 def test_broken_prefixes():

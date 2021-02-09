@@ -23,7 +23,7 @@ async def create_chat(app, title: str) -> Tuple[int, str]:
 
 
 async def create_pair_chats(title: str, project_id: str, client_id: int, worker_id: int) -> PairChats:
-    """Return PairChats: dicts(chat_id, chat_type, link, pair_id)"""
+    """Create 2 pair chats for anonymous conversation."""
     async with TelegramClient('utils/account', API_ID, API_HASH) as app:
         cchat_id, cchat_link = await create_chat(app, title)
         wchat_id, wchat_link = await create_chat(app, title)

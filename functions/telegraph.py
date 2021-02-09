@@ -27,7 +27,7 @@ async def create_author_page(user_id: int) -> str:
     invite_project_url = get_invite_project_url(user_id)
 
     html_content = telegraph_api.make_html_content(
-        p['deals_amount'], p['biography'], account['subjects'],
+        p['deals_amount'], p['biography'], account.get('subjects', []),
         invite_project_url, photo_urls, reviews
     )
 

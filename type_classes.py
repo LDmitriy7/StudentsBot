@@ -16,17 +16,17 @@ class Profile:
 class Account:
     _id: int
     page_url: str
-    profile: Profile
     balance: int = 0
     subjects: list = field(default_factory=list)
+    profile: Profile = None
 
 
 @dataclass
 class Bid:
     client_id: int
-    worker_id: int
     project_id: str
-    text: str
+    worker_id: int = None
+    text: str = None
     # _id: str = None
 
 

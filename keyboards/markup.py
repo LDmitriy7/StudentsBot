@@ -18,7 +18,8 @@ class ResizedKeyboardMarkup(ReplyKeyboardMarkup):
         return item in buttons
 
 
-_GO_BACK_BTNS = ['Назад', 'Отменить']
+CANCEL_BTN = 'Отменить'
+_GO_BACK_BTNS = ['Назад', CANCEL_BTN]
 
 # главная клавиатура
 main_kb = ResizedKeyboardMarkup()
@@ -47,7 +48,7 @@ ready_kb.row(*_GO_BACK_BTNS)
 
 # клавиатура для отмены
 cancel_kb = ResizedKeyboardMarkup()
-cancel_kb.row('Отменить')
+cancel_kb.row(CANCEL_BTN)
 
 # ----- частные клавиатуры -----
 
@@ -64,7 +65,7 @@ phone_number.row(*_GO_BACK_BTNS)
 # клавиатура для выбора роли в персональном проекте
 personal_project = ResizedKeyboardMarkup()
 personal_project.row('Я заказчик', 'Я исполнитель')
-personal_project.row(*_GO_BACK_BTNS)
+personal_project.row(CANCEL_BTN)
 
 if __name__ == '__main__':
     print(main_kb.keyboard)

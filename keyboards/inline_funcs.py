@@ -19,6 +19,7 @@ class Prefixes(Helper):
     PAY_FOR_PROJECT_ = Item()  # для оплаты проекта
     INVITE_PROJECT_ = Item()  # для предложения проекта автором
     OFFER_PROJECT_ = Item()  # для предложения проекта заказчиком
+    PICK_PROJECT_ = Item()  # для принятия персонального проекта автором
 
     GET_FILES_ = Item()  # для получения файлов к проекту
 
@@ -46,6 +47,14 @@ def offer_project(project_id: str):
     keyboard = InlineKeyboard()
     siq = f'{Prefixes.OFFER_PROJECT_}{project_id}'
     keyboard.row(Button('Выбрать чат', switch_inline_query=siq))
+    return keyboard
+
+
+def pick_project(project_id: str):
+    """Кнопка 'Позвать в чат' для принятия проекта автором."""
+    keyboard = InlineKeyboard()
+    cdata = f'{Prefixes.PICK_PROJECT_}{project_id}'
+    keyboard.data_row('Позвать в чат', cdata)
     return keyboard
 
 

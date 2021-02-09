@@ -19,14 +19,19 @@ _AVG_RATING_TEMPLATE = """\
 Контактность: {contact} ({contact_num})\
 """
 
-_BID_TEMPLATE = """
-На ваш <a href="{post_url}">проект</a> откликнулся автор <a href="{worker_url}">{worker_nickname}</a>:
+_WORKER_BID_TEMPLATE = """
+<a href="{post_url}">&#8203;</a>\
+Автор <a href="{worker_url}">{worker_nickname}</a> отклинкулся на ваш проект:
 
 <b>Средний рейтинг</b>:
 {avg_rating}
 
 <b>Комментарий</b>:
 {bid_text}
+"""
+
+_CLIENT_BID_TEMPLATE = """
+Заказчик {client_name} предлагает вам персональный проект
 """
 
 _PROFILE_TEMPLATE = """
@@ -37,6 +42,10 @@ Email: {email}
 Ссылка на личную страницу:
 {page_url}
 """
+
+
+def form_client_bid_text(client_name: str) -> str:
+    return _CLIENT_BID_TEMPLATE.format(client_name=client_name)
 
 
 def form_avg_rating_text(rating: dict) -> str:
@@ -91,8 +100,8 @@ def form_post_text(status: str, post_data: dict, with_note=False):
     return text
 
 
-def form_bid_text(worker_nickname: str, worker_url: str, post_url: str, avg_rating: str, bid_text: str) -> str:
-    text = _BID_TEMPLATE.format(
+def form_worker_bid_text(worker_nickname: str, worker_url: str, post_url: str, avg_rating: str, bid_text: str) -> str:
+    text = _WORKER_BID_TEMPLATE.format(
         worker_url=worker_url,
         worker_nickname=worker_nickname,
         post_url=post_url,
@@ -133,7 +142,7 @@ if __name__ == '__main__':
 
     post1 = form_post_text(status1, post_data1)
     post2 = form_post_text(status2, post_data2, with_note=True)
-    bid1 = form_bid_text('http://test.ru', 'Dimka5667', 'Текст заявки, не меньше 15 символов')
+    bid1 = form_worker_bid_text('http://test.ru', 'Dimka5667', 'Текст заявки, не меньше 15 символов')
 
     print(post1)
     print(post2)
