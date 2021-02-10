@@ -107,6 +107,19 @@ async def test_get_account_by_id():
     print(result)
 
 
+@mark.asyncio
+async def test_get_chat_by_id():
+    coro = _db.get_chat_by_id(-542448565)
+    result = await coro
+    print(result)
+
+
+@mark.asyncio
+async def test_get_reviews_by_worker():
+    coro = _db.get_reviews_by_worker(724477101)
+    result = await coro
+    print(result)
+
 # asyncio.run(test_add_project())
 # asyncio.run(test_add_bid())
 # asyncio.run(test_add_chat())
@@ -116,4 +129,11 @@ async def test_get_account_by_id():
 # asyncio.run(test_get_project_by_id())
 # asyncio.run(test_get_projects_by_users())
 # asyncio.run(test_get_projects_by_subjects())
-asyncio.run(test_get_account_by_id())
+# asyncio.run(test_get_account_by_id())
+# asyncio.run(test_get_chat_by_id())
+# asyncio.run(test_get_reviews_by_worker())
+
+# asyncio.run(_db.delete_chat_by_id(-542448565))
+# asyncio.run(_db.delete_bid_by_id('602044c5a5b1540f04152330'))
+# asyncio.run(_db.delete_account_by_id(1478623483))
+# asyncio.run(_db.delete_project_by_id('60204485a5b1540f0415232f'))

@@ -115,7 +115,7 @@ class MongoAdder(MongoBase):
 
 
 class MongoGetter(MongoBase):
-    """Содержит методы для поиска объектов в базе."""
+    """Содержит методы для поиска объектов в коллекциях."""
 
     async def get_all_accounts(self) -> List[datatypes.Account]:
         accounts = []
@@ -129,7 +129,7 @@ class MongoGetter(MongoBase):
             projects.append(datatypes.Project.from_dict(p))
         return projects
 
-    async def get_project_by_id(self, project_id: str) -> datatypes.Project:
+    async def get_project_by_id(self, project_id: str) -> Optional[datatypes.Project]:
         oid = ObjectId(project_id)
         project_dict = await self.get_object(PROJECTS, {'_id': oid})
         return datatypes.Project.from_dict(project_dict)
@@ -156,61 +156,50 @@ class MongoGetter(MongoBase):
             projects.append(datatypes.Project.from_dict(p))
         return projects
 
-    async def get_account_by_id(self, user_id: int) -> datatypes.Account:
+    async def get_account_by_id(self, user_id: int) -> Optional[datatypes.Account]:
         _filter = {'_id': user_id}
         account = await self.get_object(ACCOUNTS, _filter)
         return datatypes.Account.from_dict(account)
 
-    async def get_account_by_id_test(self, user_id: int) -> Optional[datatypes.Account]:
-        _filter = {'_id': user_id}
-        account = await self._get_object(ACCOUNTS, _filter)
-        if account:
-            profile = account.pop('profile', None)
-            profile = datatypes.Profile(**profile) if profile else None
-            return datatypes.Account(**account, profile=profile)
-        else:
-            return None
-
-    async def get_chat_by_id(self, chat_id: int) -> dict:
+    async def get_chat_by_id(self, chat_id: int) -> Optional[datatypes.Chat]:
         _filter = {'_id': chat_id}
-        chat = await self._get_object(CHATS, _filter)
-        return chat
+        chat = await self.get_object(CHATS, _filter)
+        return datatypes.Chat.from_dict(chat)
 
-    async def get_bid_by_id(self, bid_id: str) -> dict:
-        oid = ObjectId(bid_id)
-        bid = await self._get_object(BIDS, {'_id': oid})
-        return bid
+    async def get_bid_by_id(self, bid_id: str) -> Optional[datatypes.Bid]:
+        _filter = {'_id': ObjectId(bid_id)}
+        bid = await self.get_object(BIDS, _filter)
+        return datatypes.Bid.from_dict(bid)
 
-    async def get_bid_by_id_test(self, bid_id: str) -> datatypes.Bid:
-        oid = ObjectId(bid_id)
-        bid = await self.get_object(BIDS, {'_id': oid})
-        bid.pop('_id')
-        return datatypes.Bid(**bid)
-
-    async def get_reviews_by_worker(self, worker_id: int) -> List[dict]:
-        return await self._get_object(REVIEWS, {'worker_id': worker_id}, many=True)
+    async def get_reviews_by_worker(self, worker_id: int) -> List[datatypes.Review]:
+        reviews = []
+        for r in await self.get_object(REVIEWS, {'worker_id': worker_id}, many=True):
+            reviews.append(datatypes.Review.from_dict(r))
+        return reviews
 
 
-class MongoDeleter(MongoClient):
-    """Содержит методы для удаления объектов из базы."""
+class MongoDeleter(MongoBase):
+    """Содержит методы для удаления объектов из коллекций."""
 
     async def delete_project_by_id(self, project_id: str):
-        oid = ObjectId(project_id)
-        await self._delete_object(PROJECTS, {'_id': oid})
+        _filter = {'_id': ObjectId(project_id)}
+        await self.delete_object(PROJECTS, _filter)
 
     async def delete_account_by_id(self, user_id: int):
-        await self._delete_object(ACCOUNTS, {'_id': user_id})
+        _filter = {'_id': user_id}
+        await self.delete_object(ACCOUNTS, _filter)
 
     async def delete_bid_by_id(self, bid_id: str):
-        oid = ObjectId(bid_id)
-        await self._delete_object(BIDS, {'_id': oid})
+        _filter = {'_id': ObjectId(bid_id)}
+        await self.delete_object(BIDS, _filter)
 
     async def delete_chat_by_id(self, chat_id: int):
-        await self._delete_object(CHATS, {'_id': chat_id})
+        _filter = {'_id': chat_id}
+        await self.delete_object(CHATS, _filter)
 
 
 class MongoUpdater(MongoClient):
-    """Содержит методы для обновления объектов в базе."""
+    """Содержит методы для обновления объектов в коллекциях."""
 
     async def incr_balance(self, user_id: int, amount: int):
         await self._update_object(ACCOUNTS, {'_id': user_id}, '$inc', {'balance': amount})

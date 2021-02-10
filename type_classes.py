@@ -1,9 +1,19 @@
+from __future__ import annotations
 from dataclasses import dataclass, field
-from typing import List
+from typing import List, Optional
+
+
+class DataType:
+    def __init__(self, **kwargs):
+        raise NotImplemented
+
+    @classmethod
+    def from_dict(cls, obj_data: dict):
+        return cls(**obj_data) if obj_data else None
 
 
 @dataclass
-class Profile:
+class Profile(DataType):
     nickname: str
     phone_number: str
     email: str
@@ -13,14 +23,14 @@ class Profile:
 
 
 @dataclass
-class Account:
+class Account(DataType):
     balance: int = 0
     subjects: list = field(default_factory=list)
     profile: Profile = None
     page_url: str = None
 
     @classmethod
-    def from_dict(cls, account: dict):
+    def from_dict(cls, account: dict) -> Optional[Account]:
         if account:
             profile_data = account.pop('profile', None)
             profile = Profile(**profile_data) if profile_data else None
@@ -29,7 +39,7 @@ class Account:
 
 
 @dataclass
-class Bid:
+class Bid(DataType):
     client_id: int
     project_id: str
     worker_id: int = None
@@ -37,7 +47,7 @@ class Bid:
 
 
 @dataclass
-class Chat:
+class Chat(DataType):
     # _id: int
     project_id: str
     chat_type: str
@@ -47,13 +57,13 @@ class Chat:
 
 
 @dataclass
-class PairChats:
+class PairChats(DataType):
     client_chat: Chat
     worker_chat: Chat
 
 
 @dataclass
-class ProjectData:
+class ProjectData(DataType):
     work_type: str
     subject: str
     date: str
@@ -64,7 +74,7 @@ class ProjectData:
 
 
 @dataclass
-class Project:
+class Project(DataType):
     status: str
     data: ProjectData
     client_id: int
@@ -74,7 +84,7 @@ class Project:
     worker_chat_id: int = None
 
     @classmethod
-    def from_dict(cls, project: dict):
+    def from_dict(cls, project: dict) -> Optional[Project]:
         if project:
             project_data = ProjectData(**project.pop('data'))
             return cls(**project, data=project_data)
@@ -82,14 +92,14 @@ class Project:
 
 
 @dataclass
-class Rating:
+class Rating(DataType):
     quality: int
     contact: int
     terms: int
 
 
 @dataclass
-class Review:
+class Review(DataType):
     client_id: int
     client_name: str
     worker_id: int
@@ -98,7 +108,7 @@ class Review:
     text: str
 
     @classmethod
-    def from_dict(cls, review: dict):
+    def from_dict(cls, review: dict) -> Optional[Review]:
         if review:
             rating = Rating(**review.pop('rating'))
             return cls(**review, rating=rating)
