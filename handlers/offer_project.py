@@ -25,7 +25,7 @@ async def send_offer_to_worker(query: types.InlineQuery, payload: str):
 
 @dp.callback_query_handler(QueryPrefix(Prefixes.PICK_PROJECT_), state='*')
 async def pick_project(query: types.CallbackQuery, payload: str):
-    project = await users_db.get_project_by_id_test(payload)
+    project = await users_db.get_project_by_id(payload)
     client_id = project.client_id
     worker_id = query.from_user.id
 

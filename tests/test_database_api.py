@@ -69,6 +69,41 @@ async def test_add_review():
 async def test_get_all_accounts():
     coro = _db.get_all_accounts()
     result = await coro
+    print(*result, sep='\n')
+
+
+@mark.asyncio
+async def test_get_all_projects():
+    coro = _db.get_all_projects()
+    result = await coro
+    print(*result, sep='\n')
+
+
+@mark.asyncio
+async def test_get_project_by_id():
+    coro = _db.get_project_by_id('602060bf4ea678d12efe9221')
+    result = await coro
+    print(result)
+
+
+@mark.asyncio
+async def test_get_projects_by_users():
+    coro = _db.get_projects_by_user(724477101)
+    result = await coro
+    print(*result, sep='\n')
+
+
+@mark.asyncio
+async def test_get_projects_by_subjects():
+    coro = _db.get_projects_by_subjects(['Unix', 'Математика'])
+    result = await coro
+    print(*result, sep='\n')
+
+
+@mark.asyncio
+async def test_get_account_by_id():
+    coro = _db.get_account_by_id(724477101)
+    result = await coro
     print(result)
 
 
@@ -76,4 +111,9 @@ async def test_get_all_accounts():
 # asyncio.run(test_add_bid())
 # asyncio.run(test_add_chat())
 # asyncio.run(test_add_review())
-asyncio.run(test_get_all_accounts())
+# asyncio.run(test_get_all_accounts())
+# asyncio.run(test_get_all_projects())
+# asyncio.run(test_get_project_by_id())
+# asyncio.run(test_get_projects_by_users())
+# asyncio.run(test_get_projects_by_subjects())
+asyncio.run(test_get_account_by_id())

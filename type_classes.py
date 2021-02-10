@@ -14,11 +14,18 @@ class Profile:
 
 @dataclass
 class Account:
-    # _id: int
     balance: int = 0
     subjects: list = field(default_factory=list)
     profile: Profile = None
     page_url: str = None
+
+    @classmethod
+    def from_dict(cls, account: dict):
+        if account:
+            profile_data = account.pop('profile', None)
+            profile = Profile(**profile_data) if profile_data else None
+            return cls(**account, profile=profile)
+        return None
 
 
 @dataclass
@@ -66,6 +73,13 @@ class Project:
     client_chat_id: int = None
     worker_chat_id: int = None
 
+    @classmethod
+    def from_dict(cls, project: dict):
+        if project:
+            project_data = ProjectData(**project.pop('data'))
+            return cls(**project, data=project_data)
+        return None
+
 
 @dataclass
 class Rating:
@@ -82,3 +96,10 @@ class Review:
     project_id: str
     rating: Rating
     text: str
+
+    @classmethod
+    def from_dict(cls, review: dict):
+        if review:
+            rating = Rating(**review.pop('rating'))
+            return cls(**review, rating=rating)
+        return None

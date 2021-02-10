@@ -80,15 +80,11 @@ class MongoBase(MongoClient):
                          pop_id=True) -> Union[dict, List[dict], None]:
         """Возвращает из коллекции объект, список объектов [many=True] или None."""
         db = await self.get_db()
+        projection = {'_id': 0} if pop_id else {}
         if many:
-            result = []
-            async for obj in db[collection].find(_filter):
-                if pop_id:
-                    obj.pop('_id')
-                result.append(obj)
+            result = [obj async for obj in db[collection].find(_filter, projection)]
         else:
-            result = await db[collection].find_one(_filter)
-            result.pop('_id')
+            result = await db[collection].find_one(_filter, projection)
         return result
 
     async def delete_object(self, collection: str, _filter: dict):
@@ -124,27 +120,21 @@ class MongoGetter(MongoBase):
     async def get_all_accounts(self) -> List[datatypes.Account]:
         accounts = []
         for a in await self.get_object(ACCOUNTS, {}, many=True):
-            profile_data = a.pop('profile', None)
-            profile = datatypes.Profile(**profile_data) if profile_data else None
-            accounts.append(datatypes.Account(**a, profile=profile))
+            accounts.append(datatypes.Account.from_dict(a))
         return accounts
 
-    async def get_all_projects(self) -> List[dict]:
-        return await self._get_object(PROJECTS, {}, many=True)
+    async def get_all_projects(self) -> List[datatypes.Project]:
+        projects = []
+        for p in await self.get_object(PROJECTS, {}, many=True):
+            projects.append(datatypes.Project.from_dict(p))
+        return projects
 
-    async def get_project_by_id(self, project_id: str) -> dict:
+    async def get_project_by_id(self, project_id: str) -> datatypes.Project:
         oid = ObjectId(project_id)
-        project = await self._get_object(PROJECTS, {'_id': oid})
-        return project
+        project_dict = await self.get_object(PROJECTS, {'_id': oid})
+        return datatypes.Project.from_dict(project_dict)
 
-    async def get_project_by_id_test(self, project_id: str) -> datatypes.Project:
-        oid = ObjectId(project_id)
-        project = await self.get_object(PROJECTS, {'_id': oid})
-        project.pop('_id')
-        project_data = datatypes.ProjectData(**project.pop('data'))
-        return datatypes.Project(**project, data=project_data)
-
-    async def get_projects_by_user(self, client_id: int = None, worker_id: int = None) -> List[dict]:
+    async def get_projects_by_user(self, client_id: int = None, worker_id: int = None) -> List[datatypes.Project]:
         if client_id:
             _filter = {'client_id': client_id}
         elif worker_id:
@@ -152,20 +142,24 @@ class MongoGetter(MongoBase):
         else:
             raise ValueError('Must specify one of values.')
 
-        projects = await self._get_object(PROJECTS, _filter, many=True)
+        projects = []
+        for p in await self.get_object(PROJECTS, _filter, many=True):
+            projects.append(datatypes.Project.from_dict(p))
         return projects
 
-    async def get_projects_by_subjects(self, subjects: List[str], only_active=True) -> List[dict]:
+    async def get_projects_by_subjects(self, subjects: List[str], only_active=True) -> List[datatypes.Project]:
         _filter = {'data.subject': {'$in': subjects}}
         if only_active:
             _filter.update(status='Активен')
-        projects = await self._get_object(PROJECTS, _filter, many=True)
+        projects = []
+        for p in await self.get_object(PROJECTS, _filter, many=True):
+            projects.append(datatypes.Project.from_dict(p))
         return projects
 
-    async def get_account_by_id(self, user_id: int) -> dict:
+    async def get_account_by_id(self, user_id: int) -> datatypes.Account:
         _filter = {'_id': user_id}
-        account = await self._get_object(ACCOUNTS, _filter)
-        return account
+        account = await self.get_object(ACCOUNTS, _filter)
+        return datatypes.Account.from_dict(account)
 
     async def get_account_by_id_test(self, user_id: int) -> Optional[datatypes.Account]:
         _filter = {'_id': user_id}
