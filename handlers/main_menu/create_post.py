@@ -2,15 +2,17 @@
 from aiogram import types
 from aiogram.dispatcher import FSMContext
 
+import datatypes as datatypes
+import functions._calendar
+import functions.files
+import functions.posts
 from functions import common as cfuncs
 from functions import create_post as funcs
-from functions import projects
 from keyboards import markup
 from keyboards.inline_plain import WorkTypeKeyboard
 from loader import calendar, dp, users_db
 from questions.create_post import CreatePostConv as States
 from questions.misc import HandleException
-import type_classes as datatypes
 
 
 @dp.message_handler(text='Создать пост ➕')
@@ -31,7 +33,7 @@ async def process_subject(msg: types.Message):
 
 @dp.callback_query_handler(calendar.filter(), state=States.date)
 async def process_date(query: types.CallbackQuery, callback_data: dict):
-    handle_result = await cfuncs.handle_calendar_callback(query, callback_data)
+    handle_result = await functions._calendar.handle_calendar_callback(query, callback_data)
     if isinstance(handle_result, HandleException):
         return handle_result  # распространяем исключение
     await query.answer(f'Выбрано: {handle_result}')
@@ -66,7 +68,7 @@ async def process_note(msg: types.Message):
 
 @dp.message_handler(content_types=['photo', 'document'], state=States.files)
 async def process_file(msg: types.Message):
-    file_obj = cfuncs.get_file_obj(msg)
+    file_obj = functions.files.get_file_obj(msg)
     return {'files': [file_obj]}, HandleException()
 
 
@@ -80,9 +82,13 @@ async def process_file_finish(msg: types.Message):
 @dp.message_handler(text='Отправить проект', state=States.confirm)
 async def exit_create_post(msg: types.Message, state: FSMContext):
     udata = await state.get_data()
-    post_obj, post_url = await funcs.send_post(udata)
-    project_id = await projects.save_project(udata, msg.from_user.id, post_url=post_url)
+    project_data = datatypes.ProjectData(**udata)
+    project = datatypes.Project(project_data, msg.from_user.id)
+
+    post_obj, post_url = await functions.posts.send_post(project.status, project_data)
+    project.post_url = post_url
+    project_id = await users_db.add_project(project)
 
     text = f'<a href="{post_url}">Проект</a> успешно создан'
-    await funcs.add_post_keyboard(post_obj, project_id, udata)
+    await functions.posts.add_post_keyboard(post_obj, project_id, project_data)
     await msg.answer(text, reply_markup=markup.main_kb)

@@ -3,16 +3,16 @@
 from aiogram import types
 from aiogram.dispatcher import FSMContext
 
+import functions.files
 from filters import DeepLinkPrefix, QueryPrefix
 from functions import bids as funcs
 from functions import common as cfuncs
 from keyboards import inline_funcs, markup
-from keyboards.inline_funcs import Prefixes
 from loader import bot, dp, users_db
 from questions.misc import HandleException
 from questions.registration import RegistrationConv
 from states import Projects as States
-from type_classes import Bid
+from datatypes import Bid, Prefixes
 
 
 @dp.message_handler(DeepLinkPrefix(Prefixes.GET_FILES_))
@@ -22,7 +22,7 @@ async def send_files(msg: types.Message, payload: str):
     if project:
         files = project['data'].get('files', [])
         for file in files:
-            await cfuncs.send_file(msg.from_user.id, *file)
+            await functions.files.send_file(msg.from_user.id, *file)
     else:
         await msg.answer('Этот проект уже удален')
 

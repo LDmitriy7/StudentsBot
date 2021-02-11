@@ -1,3 +1,5 @@
+from typing import Union
+
 from aiogram import types
 
 
@@ -7,13 +9,12 @@ class DeepLinkPrefix:
     def __init__(self, dprefix: str):
         self.dprefix = dprefix
 
-    def __call__(self, msg: types.Message):
+    def __call__(self, msg: types.Message) -> Union[dict, bool]:
         deeplink = msg.text.split()
         if deeplink[0] == '/start' and deeplink[-1].startswith(self.dprefix):
-            payload = deeplink[-1].replace(self.dprefix, '')
+            payload = deeplink[-1].removeprefix(self.dprefix)
             return {'payload': payload}
-        else:
-            return False
+        return False
 
 
 class QueryPrefix:
@@ -22,12 +23,11 @@ class QueryPrefix:
     def __init__(self, qprefix: str):
         self.qprefix = qprefix
 
-    def __call__(self, query: types.CallbackQuery):
+    def __call__(self, query: types.CallbackQuery) -> Union[dict, bool]:
         if query.data.startswith(self.qprefix):
-            payload = query.data.replace(self.qprefix, '')
+            payload = query.data.removeprefix(self.qprefix)
             return {'payload': payload}
-        else:
-            return False
+        return False
 
 
 class InlinePrefix:
@@ -36,9 +36,8 @@ class InlinePrefix:
     def __init__(self, iprefix: str):
         self.iprefix = iprefix
 
-    def __call__(self, query: types.InlineQuery):
+    def __call__(self, query: types.InlineQuery) -> Union[dict, bool]:
         if query.query.startswith(self.iprefix):
-            payload = query.query.replace(self.iprefix, '')
+            payload = query.query.removeprefix(self.iprefix)
             return {'payload': payload}
-        else:
-            return False
+        return False

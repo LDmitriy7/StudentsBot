@@ -2,6 +2,7 @@
 from aiogram import types
 from aiogram.dispatcher import FSMContext
 
+import questions.misc
 from functions import common as cfuncs
 from keyboards import inline_funcs, markup
 from loader import dp
@@ -29,7 +30,7 @@ async def go_back(msg: types.Message, state: FSMContext):
 
     for states_group, all_states_names in ALL_CONV_STATES_GROUPS.items():
         if state_name in all_states_names:  # user is in conversation
-            await cfuncs.ask_previous(msg, state, states_group)
+            await questions.misc.ask_prev_question(msg, state, states_group)
             break
     else:
         await state.finish()

@@ -5,7 +5,7 @@ from questions.misc import HandleException
 from loader import bot
 from keyboards import inline_funcs, markup
 from typing import Union, Optional
-from type_classes import PairChats
+from datatypes import PairChats
 
 
 async def send_invitation(client_name: str, worker_id: int, chat_link: str) -> Optional[HandleException]:

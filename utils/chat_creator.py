@@ -7,7 +7,7 @@ from telethon import TelegramClient
 from telethon.tl.functions.messages import CreateChatRequest, EditChatAdminRequest, ExportChatInviteRequest
 
 from config import API_HASH, API_ID, LINKED_BOT
-from type_classes import Chat, PairChats
+from datatypes import Chat, PairChats
 
 
 async def create_chat(app, title: str) -> Tuple[int, str]:
@@ -28,11 +28,6 @@ async def create_pair_chats(title: str, project_id: str, client_id: int, worker_
         cchat_id, cchat_link = await create_chat(app, title)
         wchat_id, wchat_link = await create_chat(app, title)
 
-        client_chat = Chat(cchat_id, project_id, 'client', client_id, cchat_link, wchat_id)
-        worker_chat = Chat(wchat_id, project_id, 'worker', worker_id, wchat_link, cchat_id)
+        client_chat = Chat(project_id, 'client', client_id, cchat_link, wchat_id, _id=cchat_id)
+        worker_chat = Chat(project_id, 'worker', worker_id, wchat_link, cchat_id, _id=wchat_id)
         return PairChats(client_chat, worker_chat)
-
-# if __name__ == '__main__':
-#     loop = asyncio.get_event_loop()
-#     r = loop.run_until_complete(create_pair_chats('Тест1'))
-#     print(r)

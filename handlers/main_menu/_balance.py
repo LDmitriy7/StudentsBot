@@ -1,7 +1,8 @@
 from aiogram import types
 from aiogram.dispatcher import FSMContext
 
-from functions import balance as funcs, common as cfuncs
+import functions as funcs
+# from functions import balance as funcs, common as cfuncs
 from keyboards import markup, inline_plain
 from keyboards.inline_plain import BalanceKeyboard
 from loader import bot, dp, users_db
@@ -23,7 +24,7 @@ async def accrue_money(msg: types.Message):
 
 @dp.message_handler(text='Баланс 🤑')
 async def send_balance(msg: types.Message):
-    balance = await cfuncs.get_balance(msg)
+    balance = await funcs.get_account_balance(msg.from_user.id)
     text = f'Ваш баланс: {balance} грн'
     keyboard = inline_plain.balance
     await msg.answer(text, reply_markup=keyboard)
@@ -42,7 +43,7 @@ async def process_deposit(msg: types.Message, state: FSMContext):
     amount = msg.text
     if amount.isdigit() and int(amount) > 0:
         price = int(amount)
-        invoice_data = funcs.make_invoice(msg, price)
+        invoice_data = funcs.make_invoice(msg.chat.id, price)
         await bot.send_invoice(**invoice_data)
         await state.finish()
     else:
@@ -60,7 +61,7 @@ async def ask_withdraw_amount(query: types.CallbackQuery):
 @dp.message_handler(state=MiscStates.ask_withdraw_amount)
 async def process_withdraw(msg: types.Message, state: FSMContext):
     amount = msg.text
-    balance = await cfuncs.get_balance(msg)
+    balance = await functions.balance.get_balance(msg.from_user.id)
 
     if amount.isdigit() and 0 < int(amount) < balance:
         price = -int(amount)

@@ -1,5 +1,5 @@
 from database_api import MongoDB
-import type_classes as datatypes
+import datatypes as datatypes
 from pytest import mark
 import asyncio
 

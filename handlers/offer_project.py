@@ -1,10 +1,10 @@
-from loader import dp, users_db, bot
 from aiogram import types
-from keyboards import inline_funcs, markup
-from keyboards.inline_funcs import Prefixes
+
+from datatypes import Chat, Prefixes
 from filters import InlinePrefix, QueryPrefix
+from keyboards import inline_funcs, markup
+from loader import dp, users_db, bot
 from utils.chat_creator import create_pair_chats
-from type_classes import Chat
 
 
 @dp.inline_handler(InlinePrefix(Prefixes.OFFER_PROJECT_))
@@ -33,7 +33,7 @@ async def pick_project(query: types.CallbackQuery, payload: str):
         await query.answer('Вы не можете сами принять проект')
         return
 
-    account = await users_db.get_account_by_id_test(worker_id)
+    account = await users_db.get_account_by_id(worker_id)
     if not (account and account.profile):
         await query.answer('Сначала пройдите регистрацию в боте', markup.main_kb)
         await bot.send_message(worker_id, 'Загляните в меню исполнителя')

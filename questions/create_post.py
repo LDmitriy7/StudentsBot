@@ -1,10 +1,11 @@
 from aiogram import types
 
+import functions.files
 from keyboards import inline_funcs, inline_plain, markup
 from loader import dp
-from functions import common as cfuncs
 from questions.misc import ConvState, ConvStatesGroup, QuestFunc, QuestText
 from texts import templates
+import datatypes
 
 work_type = [
     QuestText('Это займет пару минут', markup.go_back_kb),
@@ -38,19 +39,19 @@ file = QuestText(
 
 @QuestFunc
 async def confirm(msg: types.Message):
-    post_data = await dp.current_state().get_data()
-    status = post_data['status']
-    files = post_data.get('files', [])
+    udata = await dp.current_state().get_data()
+    post_data = datatypes.ProjectData(**udata)
+    files = post_data.files
 
-    post_text = templates.form_post_text(status, post_data, with_note=True)
+    post_text = templates.form_post_text('Активен', post_data, with_note=True)
     keyboard = markup.confirm_project_kb
     await msg.answer('<b>Проверьте свой пост:</b>', reply_markup=keyboard)
     await msg.answer(post_text)
 
     if files:
         await msg.answer('<b>Файлы к проекту:</b>')
-        for file in files:
-            await cfuncs.send_file(msg.from_user.id, *file)
+        for f in files:
+            await functions.files.send_file(msg.from_user.id, *f)
 
 
 # прикрепляем вопросы к состояниям

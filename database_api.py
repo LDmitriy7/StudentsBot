@@ -6,8 +6,8 @@ from typing import List, Optional, Union
 from bson import ObjectId
 from motor.motor_asyncio import AsyncIOMotorClient, AsyncIOMotorDatabase
 from pymongo.results import InsertOneResult
-
-import type_classes as datatypes
+from aiogram.utils.helper import Helper
+import datatypes as datatypes
 
 ACCOUNTS = 'accounts'
 PROJECTS = 'projects'
@@ -16,10 +16,10 @@ CHATS = 'chats'
 REVIEWS = 'reviews'
 WITHDRAWALS = 'withdrawals'
 
-PROJECTS_INDEX = (PROJECTS, ['client_id', 'worker_id', 'data.subject'])
-BIDS_INDEX = (BIDS, ['client_id', 'worker_id'])
 
-INDEXES = [PROJECTS_INDEX, BIDS_INDEX]
+class Indexes(Helper):
+    PROJECTS = (PROJECTS, ['client_id', 'worker_id', 'data.subject'])
+    BIDS = (BIDS, ['client_id', 'worker_id'])
 
 
 class MongoClient:
@@ -55,7 +55,7 @@ class MongoClient:
 
     @staticmethod
     async def apply_index(db):
-        for index in INDEXES:
+        for index in Indexes.all():
             collection, fields = index
             for field in fields:
                 await db[collection].create_index(keys=[(field, 1)], background=True)
@@ -120,13 +120,17 @@ class MongoGetter(MongoBase):
     async def get_all_accounts(self) -> List[datatypes.Account]:
         accounts = []
         for a in await self.get_object(ACCOUNTS, {}, many=True):
-            accounts.append(datatypes.Account.from_dict(a))
+            account = datatypes.Account.from_dict(a)
+            if account:
+                accounts.append(account)
         return accounts
 
     async def get_all_projects(self) -> List[datatypes.Project]:
         projects = []
         for p in await self.get_object(PROJECTS, {}, many=True):
-            projects.append(datatypes.Project.from_dict(p))
+            project = datatypes.Project.from_dict(p)
+            if project:
+                projects.append(project)
         return projects
 
     async def get_project_by_id(self, project_id: str) -> Optional[datatypes.Project]:
@@ -198,49 +202,50 @@ class MongoDeleter(MongoBase):
         await self.delete_object(CHATS, _filter)
 
 
-class MongoUpdater(MongoClient):
+class MongoUpdater(MongoBase):
     """Содержит методы для обновления объектов в коллекциях."""
 
     async def incr_balance(self, user_id: int, amount: int):
-        await self._update_object(ACCOUNTS, {'_id': user_id}, '$inc', {'balance': amount})
+        await self.update_object(ACCOUNTS, {'_id': user_id}, '$inc', {'balance': amount})
 
     async def update_project_status(self, project_id: str, new_status: str):
-        oid = ObjectId(project_id)
-        await self._update_object(PROJECTS, {'_id': oid}, '$set', {'status': new_status}, upsert=False)
+        _filter = {'_id': ObjectId(project_id)}
+        await self.update_object(PROJECTS, _filter, '$set', {'status': new_status}, upsert=False)
 
     async def update_account_subjects(self, user_id: int, subjects: List[str]):
-        await self._update_object(
-            ACCOUNTS, {'_id': user_id}, '$set',
-            {'subjects': subjects},
-        )
+        _filter = {'_id': user_id}
+        await self.update_object(ACCOUNTS, _filter, '$set', {'subjects': subjects})
 
-    async def update_account_profile(self, user_id: int, profile_data: dict):
-        await self._update_object(ACCOUNTS, {'_id': user_id}, '$set', {'profile': profile_data})
+    async def update_account_profile(self, user_id: int, profile: datatypes.Profile):
+        _filter = {'_id': user_id}
+        await self.update_object(ACCOUNTS, _filter, '$set', {'profile': asdict(profile)})
 
     async def update_account_page_url(self, user_id: int, page_url: str):
-        await self._update_object(ACCOUNTS, {'_id': user_id}, '$set', {'page_url': page_url}, upsert=False)
+        _filter = {'_id': user_id}
+        await self.update_object(ACCOUNTS, _filter, '$set', {'page_url': page_url}, upsert=False)
+
+    async def update_profile(self, user_id: int, field: str, value):
+        _filter = {'_id': user_id}
+        await self.update_object(ACCOUNTS, _filter, '$set', {f'profile.{field}': value})
 
 
 class MongoProfileUpdater(MongoUpdater):
     """Содержит методы для обновления профиля аккаунта."""
 
-    async def _update_profile(self, user_id: int, field: str, value):
-        await self._update_object(ACCOUNTS, {'_id': user_id}, '$set', {f'profile.{field}': value})
-
     async def update_profile_nickname(self, user_id: int, nickname: str):
-        await self._update_profile(user_id, 'nickname', nickname)
+        await self.update_profile(user_id, 'nickname', nickname)
 
     async def update_profile_phone_number(self, user_id: int, phone_number: str):
-        await self._update_profile(user_id, 'phone_number', phone_number)
+        await self.update_profile(user_id, 'phone_number', phone_number)
 
     async def update_profile_email(self, user_id: int, email: str):
-        await self._update_profile(user_id, 'email', email)
+        await self.update_profile(user_id, 'email', email)
 
     async def update_profile_biography(self, user_id: int, biography: str):
-        await self._update_profile(user_id, 'biography', biography)
+        await self.update_profile(user_id, 'biography', biography)
 
     async def update_profile_works(self, user_id: int, works: List[str]):
-        await self._update_profile(user_id, 'works', works)
+        await self.update_profile(user_id, 'works', works)
 
 
 class MongoDB(MongoAdder, MongoGetter, MongoDeleter, MongoProfileUpdater):

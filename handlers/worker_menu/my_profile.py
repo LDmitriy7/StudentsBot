@@ -15,11 +15,11 @@ from texts import templates
 @dp.message_handler(text='Мой профиль')
 async def send_profile(msg: types.Message):
     account = await users_db.get_account_by_id(msg.from_user.id)
-    profile = account['profile']
-    nickname = profile['nickname']
-    phone_number = profile['phone_number'] or 'Не указан'
-    email = profile['email'] or 'Не указан'
-    page_url = account['page_url']
+    profile = account.profile
+    nickname = profile.nickname
+    phone_number = profile.phone_number or 'Не указан'
+    email = profile.email or 'Не указан'
+    page_url = account.page_url
 
     text = templates.form_profile_template(nickname, phone_number, email, page_url)
     await msg.answer(text, reply_markup=change_profile)

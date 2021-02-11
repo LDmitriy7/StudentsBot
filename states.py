@@ -1,3 +1,4 @@
+"""Наборы всех обычных состояний бота."""
 from aiogram.dispatcher.filters.state import State, StatesGroup
 
 

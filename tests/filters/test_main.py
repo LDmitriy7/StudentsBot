@@ -1,5 +1,5 @@
 from filters import DeepLinkPrefix, QueryPrefix, InlinePrefix
-from keyboards.inline_funcs import Prefixes
+from datatypes import Prefixes
 from aiogram import types
 from loader import users_db
 import asyncio

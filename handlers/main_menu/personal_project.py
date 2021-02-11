@@ -2,18 +2,19 @@
 from aiogram import types
 from aiogram.dispatcher import FSMContext
 
+import functions._calendar
+import functions.files
 from filters import DeepLinkPrefix
 from functions import common as cfuncs
 from functions import projects, bids
 from keyboards import inline_funcs, inline_plain, markup
-from keyboards.inline_funcs import Prefixes
 from keyboards.inline_plain import WorkTypeKeyboard
 from loader import calendar, dp, users_db
 from questions.misc import HandleException
 from questions.personal_project import PersonalProjectConv as States
 from questions.registration import RegistrationConv
 from texts import main as texts
-from type_classes import Bid
+from datatypes import Bid, Prefixes
 
 
 # вход в создание проекта +
@@ -64,7 +65,7 @@ async def process_subject(msg: types.Message):
 
 @dp.callback_query_handler(calendar.filter(), state=States.date)
 async def process_date(query: types.CallbackQuery, callback_data: dict):
-    result = await cfuncs.handle_calendar_callback(query, callback_data)
+    result = await functions._calendar.handle_calendar_callback(query, callback_data)
 
     if isinstance(result, HandleException):
         return result  # распространяем исключение
@@ -101,7 +102,7 @@ async def process_note(msg: types.Message):
 
 @dp.message_handler(content_types=['photo', 'document'], state=States.files)
 async def process_file(msg: types.Message):
-    file_obj = cfuncs.get_file_obj(msg)
+    file_obj = functions.files.get_file_obj(msg)
     return {'files': [file_obj]}, HandleException()
 
 

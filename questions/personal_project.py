@@ -1,5 +1,6 @@
 from aiogram import types
 
+import functions.files
 from functions import common as cfuncs
 from keyboards import inline_funcs, inline_plain, markup
 from loader import dp
@@ -52,7 +53,7 @@ async def confirm(msg: types.Message):
     if files:
         await msg.answer('<b>Файлы к проекту:</b>')
         for file in files:
-            await cfuncs.send_file(msg.from_user.id, *file)
+            await functions.files.send_file(msg.from_user.id, *file)
 
 
 # прикрепляем вопросы к состояниям

@@ -2,9 +2,8 @@ from aiogram import types
 
 from filters import QueryPrefix
 from keyboards import inline_funcs
-from keyboards.inline_funcs import Prefixes
 from loader import bot, dp, users_db
-from type_classes import Chat
+from datatypes import Chat, Prefixes
 from utils.chat_creator import create_pair_chats
 
 

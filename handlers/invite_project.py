@@ -1,8 +1,7 @@
-from loader import dp
 from aiogram import types
+
 from keyboards import inline_funcs, inline_plain
-from keyboards.inline_funcs import Prefixes
-from filters import QueryPrefix
+from loader import dp
 
 
 @dp.inline_handler(text=inline_plain.INVITE_PROJECT_QUERY)

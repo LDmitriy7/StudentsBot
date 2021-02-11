@@ -1,20 +1,21 @@
+from dataclasses import asdict, fields
 from typing import List
 
+import datatypes
 
-def count_avg_rating(reviews: List[dict]) -> dict:
-    quality, contact, terms = 0, 0, 0
+__all__ = ['count_avg_rating']
+
+
+def count_avg_rating(reviews: List[datatypes.Review]) -> dict:
+    """Count average user's rating dict from reviews."""
+    avg_rating = {field.name: 0 for field in fields(datatypes.Rating)}
     for review in reviews:
-        rating = review['rating']
-        quality += rating['quality']
-        contact += rating['contact']
-        terms += rating['terms']
+        rating_dict = asdict(review.rating)
+        for rate, amount in rating_dict.items():
+            avg_rating[rate] += amount
 
     reviews_amount = len(reviews) or 1
-    quality /= reviews_amount
-    contact /= reviews_amount
-    terms /= reviews_amount
-    return {
-        'quality': round(quality, 1),
-        'contact': round(contact, 1),
-        'terms': round(terms, 1)
-    }
+    for rate, amount in avg_rating.items():
+        avg_rating[rate] /= reviews_amount
+
+    return avg_rating

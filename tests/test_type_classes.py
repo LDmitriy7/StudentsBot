@@ -2,7 +2,7 @@ import asyncio
 from pprint import pp
 
 from loader import users_db
-from type_classes import Account, Bid, Chat, Profile, Project, ProjectData, Rating, Review
+from datatypes import Account, Bid, Chat, Profile, Project, ProjectData, Rating, Review
 
 profile = Profile(**{
     "phone_number": None, "email": None, "biography": "Я пишу ботов на python 3 года", "works": [

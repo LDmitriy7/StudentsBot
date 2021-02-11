@@ -1,14 +1,18 @@
+"""Содержит все классы с данными."""
 from __future__ import annotations
+
+from abc import ABC
 from dataclasses import dataclass, field
 from typing import List, Optional
 
+from aiogram.utils.helper import Helper, Item
+from bson import ObjectId
 
-class DataType:
-    def __init__(self, **kwargs):
-        raise NotImplemented
 
+class DataType(ABC):
     @classmethod
     def from_dict(cls, obj_data: dict):
+        # noinspection PyArgumentList
         return cls(**obj_data) if obj_data else None
 
 
@@ -48,12 +52,16 @@ class Bid(DataType):
 
 @dataclass
 class Chat(DataType):
-    # _id: int
     project_id: str
     chat_type: str
     user_id: int
     link: str
     pair_id: int
+    _id: int = None
+
+    @property
+    def id(self):
+        return self._id
 
 
 @dataclass
@@ -68,20 +76,21 @@ class ProjectData(DataType):
     subject: str
     date: str
     description: str
-    price: int
-    note: str
+    price: int = None
+    note: str = None
     files: List[list] = field(default_factory=list)
 
 
 @dataclass
 class Project(DataType):
-    status: str
     data: ProjectData
     client_id: int
     worker_id: int = None
+    status: str = 'Активен'
     post_url: str = None
     client_chat_id: int = None
     worker_chat_id: int = None
+    _id: ObjectId = None
 
     @classmethod
     def from_dict(cls, project: dict) -> Optional[Project]:
@@ -89,6 +98,10 @@ class Project(DataType):
             project_data = ProjectData(**project.pop('data'))
             return cls(**project, data=project_data)
         return None
+
+    @property
+    def id(self) -> str:
+        return str(self._id)
 
 
 @dataclass
@@ -113,3 +126,19 @@ class Review(DataType):
             rating = Rating(**review.pop('rating'))
             return cls(**review, rating=rating)
         return None
+
+
+class Prefixes(Helper):
+    """Command-prefixes for deep-links and query.data"""
+    GET_PROJECT_ = Item()  # для получения проекта
+    DEL_PROJECT_ = Item()  # для запроса удаления проекта
+    TOTAL_DEL_PROJECT_ = Item()  # для удаления проекта
+    PAY_FOR_PROJECT_ = Item()  # для оплаты проекта
+    INVITE_PROJECT_ = Item()  # для предложения проекта автором
+    OFFER_PROJECT_ = Item()  # для предложения проекта заказчиком
+    PICK_PROJECT_ = Item()  # для принятия персонального проекта автором
+
+    GET_FILES_ = Item()  # для получения файлов к проекту
+
+    SEND_BID_ = Item()  # для заявки на проект
+    PICK_BID_ = Item()  # для принятия заявки

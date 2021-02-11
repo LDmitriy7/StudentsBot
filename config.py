@@ -1,4 +1,3 @@
-# -*- coding: utf-8 -*-
 """Содержит все важные константы для бота (в том числе секретные)"""
 
 from configparser import ConfigParser
