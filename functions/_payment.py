@@ -1,10 +1,10 @@
+"""Contain funcs for work with payments and balance."""
 from aiogram import types
 
 from config import PAYMENTS_PROVIDER_TOKEN
+from loader import users_db
 
 __all__ = ['make_invoice', 'get_account_balance']
-
-from loader import users_db
 
 
 def make_invoice(chat_id: int, price: int) -> dict:

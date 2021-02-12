@@ -3,15 +3,15 @@ from aiogram.dispatcher import FSMContext
 
 from keyboards import inline_plain, markup
 from loader import dp, users_db
+from questions.misc import HandleException
 from states import MiscStates as States
 from texts import templates
-from questions.misc import HandleException
 
 
 @dp.message_handler(text='Мои предметы')
 async def send_my_subjects(msg: types.Message):
     account = await users_db.get_account_by_id(msg.from_user.id)
-    subjects = account.get('subjects', [])
+    subjects = account.subjects
     if subjects:
         text = templates.form_subjects_text(subjects)
     else:
@@ -24,7 +24,6 @@ async def send_my_subjects(msg: types.Message):
 async def start_change_subjects(query: types.CallbackQuery):
     msg = query.message
     account = await users_db.get_account_by_id(query.from_user.id)
-    subjects = account.get('subjects', [])
 
     text1 = 'Введите название предмета'
     keyboard1 = markup.ready_kb
@@ -34,13 +33,13 @@ async def start_change_subjects(query: types.CallbackQuery):
     await States.change_subjects.set()
     await msg.answer(text1, reply_markup=keyboard1)
     await msg.answer(text2, reply_markup=keyboard2)
-    return {'subjects': subjects}
+    return {'subjects': account.subjects}
 
 
 @dp.message_handler(text='Начать заново', state=States.change_subjects)
 async def reset_subjects(msg: types.Message):
     await msg.answer('Осторожно, вы сбросили все предметы, но можете сделать отмену')
-    return {'subjects': ()}, HandleException
+    return {'subjects': ()}, HandleException()
 
 
 @dp.message_handler(text='Готово', state=States.change_subjects)

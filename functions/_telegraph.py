@@ -1,23 +1,16 @@
-# """Contain funcs for""" TODO:
+"""Contain funcs for work with telegraph."""
 from typing import List
 
-from config import START_LINK
-from datatypes import Prefixes
+from functions.common import count_avg_rating, get_invite_project_url
 from loader import bot, users_db
 from utils import telegraph_api
 
-__all__ = ['get_invite_project_url', 'create_author_page']
+__all__ = ['create_author_page']
 
 
 async def get_file_urls(file_ids: list) -> List[str]:
     """Возращает список ссылок на файлы по их айди."""
     return [await (await bot.get_file(file_id)).get_url() for file_id in file_ids]
-
-
-def get_invite_project_url(user_id: int) -> str:
-    """Создает ссылку-приглашение в личный проект."""
-    payload = f'{Prefixes.INVITE_PROJECT_}{user_id}'
-    return START_LINK.format(payload)
 
 
 async def create_author_page(user_id: int) -> str:
@@ -26,14 +19,13 @@ async def create_author_page(user_id: int) -> str:
     reviews = await users_db.get_reviews_by_worker(user_id)
 
     p = account.profile
-    page_url = account.page_url
     photo_urls = await get_file_urls(p.works)
     invite_project_url = get_invite_project_url(user_id)
+    avg_rating = count_avg_rating(reviews)
 
     html_content = telegraph_api.make_html_content(
         p.deals_amount, p.biography, account.subjects,
-        invite_project_url, photo_urls, reviews
+        invite_project_url, photo_urls, avg_rating, reviews
     )
-
-    page_url = await telegraph_api.create_page(p.nickname, html_content, page_url)
+    page_url = await telegraph_api.create_page(p.nickname, html_content, account.page_url)
     return page_url

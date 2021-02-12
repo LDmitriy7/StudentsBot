@@ -2,7 +2,7 @@
 from aiogram import types
 from aiogram.dispatcher import FSMContext
 
-from functions import common as cfuncs
+import functions as funcs
 from keyboards import markup
 from keyboards.inline_plain import change_profile
 from loader import dp, users_db
@@ -58,7 +58,7 @@ async def start_change_biography(query: types.CallbackQuery):
 @dp.callback_query_handler(text=change_profile.CHANGE_WORKS)
 async def start_change_works(query: types.CallbackQuery):
     account = await users_db.get_account_by_id(query.from_user.id)
-    works = account['profile'].get('works', [])
+    works = account.profile.works
     question = questions.works
     await States.works.set()
     await query.message.answer(question.text, reply_markup=question.keyboard)
@@ -70,7 +70,7 @@ async def start_change_works(query: types.CallbackQuery):
 @dp.message_handler(state=States.nickname)
 async def process_nickname(msg: types.Message):
     username = msg.from_user.username
-    all_nicknames = await cfuncs.get_all_nicknames()
+    all_nicknames = await funcs.get_all_nicknames()
 
     if msg.text.lower() == username.lower():
         return HandleException('Пожалуйста, не используйте свой юзернейм')

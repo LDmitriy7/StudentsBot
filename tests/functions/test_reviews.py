@@ -1,4 +1,4 @@
-from functions.reviews import count_avg_rating
+from functions import count_avg_rating
 
 r1 = {'rating': {'quality': 4, 'contact': 3, 'terms': 5}}
 r2 = {'rating': {'quality': 5, 'contact': 3, 'terms': 4}}

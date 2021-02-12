@@ -28,15 +28,15 @@ chat = Chat(**{
     "link": "https://t.me/joinchat/IERuxYC7bh_h4wTL", "pair_id": -545651958
 })
 
-project_data = ProjectData(**{
+project_data = {
     "work_type": "Практика", "subject": "Python", "date": "2021-02-18",
     "description": "Написать перцептрон на python", "price": 500,
     "note": "Не нужна", "files": [
         ["photo", "AgACAgIAAxkBAAI_jWAZdfa6_SNMPl4-rMEtmtBO6urBAAIRsjEbWpvQSBYwGt4F4Rsm7MBImC4AAwEAAwIAA3kAA9p_BgABHgQ"]
     ]
-})
+}
 
-project = Project(**{
+project = Project.from_dict({
     "client_id": 1478623483, "worker_id": 724477101,
     "status": "Активен", "post_url": "t.me/help_students7/78", 'data': project_data,
     'client_chat_id': -541355717, 'worker_chat_id': -545651958

@@ -2,12 +2,12 @@
 from aiogram import types
 from aiogram.dispatcher import FSMContext
 
-from functions import common as cfuncs
-from functions import registration
+import datatypes
+import functions as funcs
 from keyboards import markup
-from loader import dp
+from loader import dp, users_db
+from questions import RegistrationConv as States
 from questions.misc import HandleException
-from questions.registration import RegistrationConv as States
 
 
 @dp.message_handler(text='Пропустить', state=States.phone_number)
@@ -56,14 +56,20 @@ async def process_works_finish(msg: types.Message):
 
 @dp.message_handler(state=States.nickname)
 async def process_nickname(msg: types.Message, state: FSMContext):
-    username = msg.from_user.username
-    all_nicknames = await cfuncs.get_all_nicknames()
+    user_id, username = msg.from_user.id, msg.from_user.username
+    all_nicknames = await funcs.get_all_nicknames()
 
     if msg.text.lower() == username.lower():
         return HandleException('Пожалуйста, не используйте свой юзернейм')
     if msg.text in all_nicknames:
         return HandleException('Этот никнейм уже занят')
 
+    # сохранение профиля
     profile_data = await state.get_data()
-    await registration.save_profile(msg.from_user.id, profile_data, msg.text)
+    profile = datatypes.Profile(**profile_data, nickname=msg.text)
+    await users_db.update_account_profile(user_id, profile)
+
+    # сохранение личной страницы
+    page_url = await funcs.create_author_page(user_id)  # создаем страницу автора
+    await users_db.update_account_page_url(user_id, page_url)
     await msg.answer('Регистрация пройдена', reply_markup=markup.worker_kb)

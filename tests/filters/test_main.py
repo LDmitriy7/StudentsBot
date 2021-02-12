@@ -7,7 +7,7 @@ import asyncio
 
 async def get_all_projects():
     accounts = await users_db.get_all_projects()
-    pids = [str(i['_id']) for i in accounts]
+    pids = [i.id for i in accounts]
     return pids
 
 

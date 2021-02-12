@@ -2,7 +2,6 @@ from aiogram import types
 from aiogram.dispatcher import FSMContext
 
 import functions as funcs
-# from functions import balance as funcs, common as cfuncs
 from keyboards import markup, inline_plain
 from keyboards.inline_plain import BalanceKeyboard
 from loader import bot, dp, users_db
@@ -61,7 +60,7 @@ async def ask_withdraw_amount(query: types.CallbackQuery):
 @dp.message_handler(state=MiscStates.ask_withdraw_amount)
 async def process_withdraw(msg: types.Message, state: FSMContext):
     amount = msg.text
-    balance = await functions.balance.get_balance(msg.from_user.id)
+    balance = await funcs.get_account_balance(msg.from_user.id)
 
     if amount.isdigit() and 0 < int(amount) < balance:
         price = -int(amount)

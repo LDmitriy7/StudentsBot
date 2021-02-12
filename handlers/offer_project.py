@@ -1,10 +1,10 @@
 from aiogram import types
 
+import functions as funcs
 from datatypes import Chat, Prefixes
 from filters import InlinePrefix, QueryPrefix
 from keyboards import inline_funcs, markup
 from loader import dp, users_db, bot
-from utils.chat_creator import create_pair_chats
 
 
 @dp.inline_handler(InlinePrefix(Prefixes.OFFER_PROJECT_))
@@ -34,17 +34,16 @@ async def pick_project(query: types.CallbackQuery, payload: str):
         return
 
     account = await users_db.get_account_by_id(worker_id)
-    if not (account and account.profile):
+    if not (account and account.profile):  # TODO: ссылка на регистрацию
         await query.answer('Сначала пройдите регистрацию в боте', markup.main_kb)
         await bot.send_message(worker_id, 'Загляните в меню исполнителя')
         return
 
-    chats = await create_pair_chats('Нора3', payload, client_id, worker_id)
+    chats = await funcs.create_and_save_chats(client_id, worker_id, payload)
 
     async def send_invite_msg(user_id: int, chat: Chat):
         text = 'Ссылка в чат для принятого проекта'
         keyboard = inline_funcs.link_button('Перейти в чат', chat.link)
-        await users_db.add_chat(chat)  # сохранение чата
         await bot.send_message(user_id, text, reply_markup=keyboard)
 
     await send_invite_msg(client_id, chats.client_chat)

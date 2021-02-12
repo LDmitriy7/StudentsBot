@@ -1,13 +1,19 @@
 """Contain all questions (ConvStatesGroups with question for each state)."""
 
-from questions import create_post, personal_project, registration
-from questions.misc import ConvStatesGroup, ConvState, ask_question
 from aiogram import types
 from aiogram.dispatcher import FSMContext
+
 from keyboards import markup
+from questions.misc import ConvStatesGroup, ConvState, ask_question
+from questions.create_project import CreateProjectConv
+from questions.registration import RegistrationConv
+
+__all__ = [
+    'ALL_CONV_STATES', 'ALL_CONV_STATES_GROUPS', 'ask_prev_question',
+    'CreateProjectConv', 'RegistrationConv'
+]
 
 ConvSubClasses = ConvStatesGroup.__subclasses__()
-
 ALL_CONV_STATES_GROUPS = {sg: sg.all_states_names for sg in ConvSubClasses}
 ALL_CONV_STATES = {state.state: state for sg in ConvSubClasses for state in sg.all_states}
 

@@ -3,16 +3,14 @@
 from aiogram import types
 from aiogram.dispatcher import FSMContext
 
-import functions.files
+import functions as funcs
+from datatypes import Bid, Prefixes
 from filters import DeepLinkPrefix, QueryPrefix
-from functions import bids as funcs
-from functions import common as cfuncs
 from keyboards import inline_funcs, markup
 from loader import bot, dp, users_db
+from questions import RegistrationConv
 from questions.misc import HandleException
-from questions.registration import RegistrationConv
 from states import Projects as States
-from datatypes import Bid, Prefixes
 
 
 @dp.message_handler(DeepLinkPrefix(Prefixes.GET_FILES_))
@@ -20,9 +18,9 @@ async def send_files(msg: types.Message, payload: str):
     """Отправляет все файлы к проекту."""
     project = await users_db.get_project_by_id(payload)
     if project:
-        files = project['data'].get('files', [])
-        for file in files:
-            await functions.files.send_file(msg.from_user.id, *file)
+        files = project.data.files
+        for f in files:
+            await funcs.send_file(msg.from_user.id, *f)
     else:
         await msg.answer('Этот проект уже удален')
 
@@ -42,10 +40,9 @@ async def total_del_project(query: types.CallbackQuery, payload: str):
 
     if project is None:
         text = '<b>Этот проект уже удален</b>'
-    elif project['status'] == 'Активен' and project['client_id'] == query.from_user.id:
+    elif project.status == 'Активен' and project.client_id == query.from_user.id:
         text = '<b>Проект удален</b>'
-        post_url = project.get('post_url')
-        await cfuncs.delete_post(post_url)  # удаляем пост, если есть ссылка
+        await funcs.delete_post(project.post_url)  # удаляем пост, если есть ссылка
         await users_db.delete_project_by_id(payload)
     else:
         text = '<b>Не могу удалить этот проект.</b>'
@@ -57,7 +54,7 @@ async def ask_bid_text(msg: types.Message, payload: str):
     """Запрашивает текст для заявки у исполнителя или отправляет на регистрацию."""
     worker_id = msg.from_user.id
     account = await users_db.get_account_by_id(worker_id)
-    profile = account.get('profile') if account else None
+    profile = account.profile if account else None
     project = await users_db.get_project_by_id(payload)
 
     if not profile:
@@ -68,7 +65,7 @@ async def ask_bid_text(msg: types.Message, payload: str):
         await msg.answer('<b>Этот проект уже удален</b>')
         return
 
-    client_id = project['client_id']
+    client_id = project.client_id
     if worker_id == client_id:
         await msg.answer('<b>Вы не можете взять свой проект</b>')
         return
@@ -82,6 +79,7 @@ async def ask_bid_text(msg: types.Message, payload: str):
 async def send_bid(msg: types.Message, state: FSMContext):
     """Отправялет заявку заказчику."""
     bid_text = msg.text
+    worker_id = msg.from_user.id
 
     if not 15 < len(bid_text) < 500:
         return HandleException('Ошибка, текст заявки должен быть от 15 до 500 символов')
@@ -92,9 +90,9 @@ async def send_bid(msg: types.Message, state: FSMContext):
     client_id = bid_data['client_id']
     project_id = bid_data['project_id']
 
-    bid = Bid(client_id, project_id, msg.from_user.id, bid_text)
+    bid = Bid(client_id, project_id, worker_id, bid_text)
     bid_id = await users_db.add_bid(bid)  # сохранение заявки
-    full_bid_text = await funcs.get_worker_bid_text(msg.from_user.id, project_id, bid_text)
+    full_bid_text = await funcs.get_worker_bid_text(worker_id, project_id, bid_text)
     keyboard = inline_funcs.for_bid(bid_id)
 
     await bot.send_message(client_id, full_bid_text, reply_markup=keyboard)  # отправка заказчику

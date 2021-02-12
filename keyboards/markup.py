@@ -66,7 +66,3 @@ phone_number.row(*_GO_BACK_BTNS)
 personal_project = ResizedKeyboardMarkup()
 personal_project.row('Я заказчик', 'Я исполнитель')
 personal_project.row(CANCEL_BTN)
-
-if __name__ == '__main__':
-    print(main_kb.keyboard)
-    print('Сбросить выбор' in ready_kb)

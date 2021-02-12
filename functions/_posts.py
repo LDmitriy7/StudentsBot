@@ -1,3 +1,4 @@
+"""Contain funcs for sending, updating and deleting posts in channel."""
 from typing import Tuple
 
 from aiogram import types
@@ -26,7 +27,7 @@ async def add_post_keyboard(post: types.Message, project_id: str, post_data: dat
     await post.edit_reply_markup(keyboard)
 
 
-async def delete_post(post_url: str):
+async def delete_post(post_url: str = None):
     """Удаляет пост из канала, если передана ссылка."""
     if post_url:
         post_id = post_url.split('/')[-1]

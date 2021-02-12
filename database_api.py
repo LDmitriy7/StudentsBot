@@ -68,23 +68,22 @@ class MongoClient:
 class MongoBase(MongoClient):
     """Содержит базовые методы для взаимодействия с базой данных."""
 
-    async def add_object(self, collection: str, object_data: dict, _id=None) -> str:
+    async def add_object(self, collection: str, object_data: dict) -> str:
         """Добавляет объект в коллекцию, возращает его _id."""
         db = await self.get_db()
-        if _id:
-            object_data['_id'] = _id
+        if object_data.get('_id') is None:
+            object_data.pop('_id', None)
         result: InsertOneResult = await db[collection].insert_one(object_data)
         return str(result.inserted_id)
 
-    async def get_object(self, collection: str, _filter: dict, many=False,
-                         pop_id=True) -> Union[dict, List[dict], None]:
+    async def get_object(self, collection: str, _filter: dict,
+                         many=False) -> Union[dict, List[dict], None]:
         """Возвращает из коллекции объект, список объектов [many=True] или None."""
         db = await self.get_db()
-        projection = {'_id': 0} if pop_id else {}
         if many:
-            result = [obj async for obj in db[collection].find(_filter, projection)]
+            result = [obj async for obj in db[collection].find(_filter)]
         else:
-            result = await db[collection].find_one(_filter, projection)
+            result = await db[collection].find_one(_filter)
         return result
 
     async def delete_object(self, collection: str, _filter: dict):
@@ -107,8 +106,8 @@ class MongoAdder(MongoBase):
     async def add_bid(self, bid: datatypes.Bid) -> str:
         return await self.add_object(BIDS, asdict(bid))
 
-    async def add_chat(self, chat_id: int, chat: datatypes.Chat) -> str:
-        return await self.add_object(CHATS, asdict(chat), _id=chat_id)
+    async def add_chat(self, chat: datatypes.Chat) -> str:
+        return await self.add_object(CHATS, asdict(chat))
 
     async def add_review(self, review: datatypes.Review) -> str:
         return await self.add_object(REVIEWS, asdict(review))
@@ -134,8 +133,8 @@ class MongoGetter(MongoBase):
         return projects
 
     async def get_project_by_id(self, project_id: str) -> Optional[datatypes.Project]:
-        oid = ObjectId(project_id)
-        project_dict = await self.get_object(PROJECTS, {'_id': oid})
+        _filter = {'_id': ObjectId(project_id)}
+        project_dict = await self.get_object(PROJECTS, _filter)
         return datatypes.Project.from_dict(project_dict)
 
     async def get_projects_by_user(self, client_id: int = None, worker_id: int = None) -> List[datatypes.Project]:
@@ -211,6 +210,10 @@ class MongoUpdater(MongoBase):
     async def update_project_status(self, project_id: str, new_status: str):
         _filter = {'_id': ObjectId(project_id)}
         await self.update_object(PROJECTS, _filter, '$set', {'status': new_status}, upsert=False)
+
+    async def update_project_post_url(self, project_id: str, post_url: str):
+        _filter = {'_id': ObjectId(project_id)}
+        await self.update_object(PROJECTS, _filter, '$set', {'data.post_url': post_url})
 
     async def update_account_subjects(self, user_id: int, subjects: List[str]):
         _filter = {'_id': user_id}

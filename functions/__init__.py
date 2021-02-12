@@ -1,17 +1,12 @@
-from functions._telegraph import *
-
-from functions.balance import *  # +
-from functions.bids import *  # +
-from functions.chats import *  # +
-from functions.posts import *  # +
-from functions.files import *  # +
+from functions._bids import *  # +
 from functions._calendar import *  # +
-from functions.reviews import *  # +
+from functions._chats import *  # +
+from functions._files import *  # +
+from functions._payment import *  # +
+from functions._posts import *  # +
+from functions._projects import *  # +
+from functions._telegraph import *  # +
+from functions.common import *  # +
 
-from functions.common import *
-from functions.personal_project import *
-from functions.projects import *
-from functions.reviews import *
-from functions.registration import *
-
-print(*[i for i in dir() if not i.startswith('_')], sep='\n')
+if __name__ == '__main__':
+    print(*[i for i in dir() if not i.startswith('_')], sep='\n')

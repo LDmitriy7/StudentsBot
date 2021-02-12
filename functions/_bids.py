@@ -1,4 +1,5 @@
-from functions import reviews as f_reviews
+"""Contain funcs for making and sending bids."""
+import functions as funcs
 from keyboards import inline_funcs
 from loader import users_db, bot
 from texts import templates
@@ -12,7 +13,7 @@ async def get_worker_bid_text(worker_id: int, project_id: str, bid_text: str) ->
     reviews = await users_db.get_reviews_by_worker(worker_id)
     project = await users_db.get_project_by_id(project_id)
 
-    avg_rating = f_reviews.count_avg_rating(reviews)
+    avg_rating = funcs.count_avg_rating(reviews)
     avg_rating_text = templates.form_avg_rating_text(avg_rating)
 
     return templates.form_worker_bid_text(

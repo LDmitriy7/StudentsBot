@@ -5,6 +5,7 @@ from datetime import date, timedelta
 from aiogram.types import InlineKeyboardButton as Button
 from aiogram.types import InlineKeyboardMarkup
 from aiogram.utils.helper import Helper
+
 from config import START_LINK
 from datatypes import Prefixes
 from loader import calendar
@@ -57,10 +58,10 @@ def for_project(project_id: str, pick_btn=False, del_btn=False, files_btn=False,
 
     def add_button(text, prefix, as_url=True):
         if as_url:
-            url = START_LINK.format(prefix + project_id)
+            url = START_LINK.format(f'{prefix}{project_id}')
             keyboard.url_row(text, url)
         else:
-            cdata = prefix + project_id
+            cdata = f'{prefix}{project_id}'
             keyboard.data_row(text, cdata)
 
     if pick_btn:
@@ -77,7 +78,7 @@ def for_project(project_id: str, pick_btn=False, del_btn=False, files_btn=False,
 def del_project(project_id: str):
     """Для окончательного удаления проекта."""
     keyboard = InlineKeyboard()
-    cdata = Prefixes.TOTAL_DEL_PROJECT_ + project_id
+    cdata = f'{Prefixes.TOTAL_DEL_PROJECT_}{project_id}'
     keyboard.data_row('Удалить проект', cdata)
     keyboard.data_row('Отменить', DEL_MESSAGE_DATA)
     return keyboard
@@ -86,7 +87,7 @@ def del_project(project_id: str):
 def for_bid(bid_id: str, pick_btn=True, refuse_btn=True):
     """Кнопки c данными в формате: {prefix}{bid_id}."""
     keyboard = InlineKeyboard()
-    pick_bid_data = Prefixes.PICK_BID_ + bid_id
+    pick_bid_data = f'{Prefixes.PICK_BID_}{bid_id}'
 
     if pick_btn:
         button1 = Button('Принять', callback_data=pick_bid_data)

@@ -4,7 +4,7 @@ from aiogram.dispatcher.middlewares import BaseMiddleware
 from states import ChangeProfile, MiscStates
 from aiogram.dispatcher import FSMContext
 from middlewares.misc import check_on_exception
-from functions import _telegraph
+import functions as funcs
 
 
 class UpdatePage(BaseMiddleware):
@@ -21,4 +21,4 @@ class UpdatePage(BaseMiddleware):
         if state_name in cls.ALL_STATE_NAMES:
             state_ctx: FSMContext = states_dict['state']
             await state_ctx.finish()
-            await _telegraph.create_author_page(msg.from_user.id)
+            await funcs.create_author_page(msg.from_user.id)
