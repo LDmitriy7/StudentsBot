@@ -4,7 +4,7 @@ from configparser import ConfigParser
 
 parser = ConfigParser()
 parser.read('../../config.ini')  # TODO: remove
-parser.read('../config.ini')  # TODO: remove
+parser.read('../config.ini')
 parser.read('config.ini')
 
 _bot = parser['Bot']
