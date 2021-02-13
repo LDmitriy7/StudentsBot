@@ -11,13 +11,11 @@ from texts import templates
 @dp.message_handler(text='Мои предметы')
 async def send_my_subjects(msg: types.Message):
     account = await users_db.get_account_by_id(msg.from_user.id)
-    subjects = account.subjects
-    if subjects:
-        text = templates.form_subjects_text(subjects)
+    if account.subjects:
+        text = templates.form_subjects_text(account.subjects)
     else:
         text = '<b>Вы еще не выбрали ни одного предмета</b>'
-    keyboard = inline_plain.subjects
-    await msg.answer(text, reply_markup=keyboard)
+    await msg.answer(text, reply_markup=inline_plain.subjects)
 
 
 @dp.callback_query_handler(text=inline_plain.subjects.CHANGE_SUBJECTS)
@@ -26,13 +24,11 @@ async def start_change_subjects(query: types.CallbackQuery):
     account = await users_db.get_account_by_id(query.from_user.id)
 
     text1 = 'Введите название предмета'
-    keyboard1 = markup.ready_kb
     text2 = 'Вы можете использовать поиск'
-    keyboard2 = inline_plain.find_subject
 
     await States.change_subjects.set()
-    await msg.answer(text1, reply_markup=keyboard1)
-    await msg.answer(text2, reply_markup=keyboard2)
+    await msg.answer(text1, reply_markup=markup.ready_kb)
+    await msg.answer(text2, reply_markup=inline_plain.find_subject)
     return {'subjects': account.subjects}
 
 
@@ -62,5 +58,6 @@ async def change_subject(msg: types.Message, state: FSMContext):
         else:
             subjects.append(subject)
             text = 'Предмет добавлен'
+
     await msg.answer(text)
     return HandleException()

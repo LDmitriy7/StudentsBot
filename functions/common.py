@@ -10,6 +10,7 @@ __all__ = ['count_avg_rating', 'get_invite_project_url', 'get_chat_link', 'get_a
 
 
 async def get_chat_link(chat_id: int) -> Optional[str]:
+    """Return chat link if chat exists."""
     chat = await users_db.get_chat_by_id(chat_id)
     return chat.link if chat else None
 

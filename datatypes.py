@@ -147,7 +147,7 @@ class Review(DataType):
             obj_data = cls._resolve_fields(review)
             rating_data = obj_data.pop('rating', None)
             rating = Rating.from_dict(rating_data)
-            return cls(**review, rating=rating)
+            return cls(**obj_data, rating=rating)
         return None
 
 

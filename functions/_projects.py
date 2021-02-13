@@ -1,10 +1,10 @@
 """Contain funcs for sending invitations and projects."""
 from typing import List, Optional, Tuple
 
-from aiogram import types
 from aiogram.utils.exceptions import BadRequest
 
 import datatypes
+from datatypes import ProjectStatuses
 import functions.common as funcs
 from config import MAIN_CHANNEL, MAIN_POST_URL
 from keyboards import inline_funcs, markup
@@ -24,11 +24,9 @@ async def send_projects(
     assert not (client_chat_btn and worker_chat_btn)
 
     for p in projects:
-        post_data = p.data
-        status = p.status
-        text = templates.form_post_text(status, post_data, with_note)
-        has_files = bool(post_data.files)
-        can_delete = del_btn and status == 'Активен'
+        has_files = bool(p.data.files)
+        can_delete = del_btn and p.status == ProjectStatuses.ACTIVE
+        text = templates.form_post_text(p.status, p.data, with_note)
 
         if client_chat_btn:
             chat_link = await funcs.get_chat_link(p.client_chat_id)

@@ -81,7 +81,7 @@ class MongoBase(MongoClient):
         """Возвращает из коллекции объект, список объектов [many=True] или None."""
         db = await self.get_db()
         if many:
-            result = [obj async for obj in db[collection].find(_filter)]
+            result = [obj async for obj in db[collection].find(_filter) if obj]
         else:
             result = await db[collection].find_one(_filter)
         return result
@@ -120,16 +120,14 @@ class MongoGetter(MongoBase):
         accounts = []
         for a in await self.get_object(ACCOUNTS, {}, many=True):
             account = datatypes.Account.from_dict(a)
-            if account:
-                accounts.append(account)
+            accounts.append(account)
         return accounts
 
     async def get_all_projects(self) -> List[datatypes.Project]:
         projects = []
         for p in await self.get_object(PROJECTS, {}, many=True):
             project = datatypes.Project.from_dict(p)
-            if project:
-                projects.append(project)
+            projects.append(project)
         return projects
 
     async def get_project_by_id(self, project_id: str) -> Optional[datatypes.Project]:
@@ -147,7 +145,8 @@ class MongoGetter(MongoBase):
 
         projects = []
         for p in await self.get_object(PROJECTS, _filter, many=True):
-            projects.append(datatypes.Project.from_dict(p))
+            project = datatypes.Project.from_dict(p)
+            projects.append(project)
         return projects
 
     async def get_projects_by_subjects(self, subjects: List[str], only_active=True) -> List[datatypes.Project]:
@@ -156,7 +155,8 @@ class MongoGetter(MongoBase):
             _filter.update(status='Активен')
         projects = []
         for p in await self.get_object(PROJECTS, _filter, many=True):
-            projects.append(datatypes.Project.from_dict(p))
+            project = datatypes.Project.from_dict(p)
+            projects.append(project)
         return projects
 
     async def get_account_by_id(self, user_id: int) -> Optional[datatypes.Account]:
@@ -213,7 +213,7 @@ class MongoUpdater(MongoBase):
 
     async def update_project_post_url(self, project_id: str, post_url: str):
         _filter = {'_id': ObjectId(project_id)}
-        await self.update_object(PROJECTS, _filter, '$set', {'data.post_url': post_url})
+        await self.update_object(PROJECTS, _filter, '$set', {'post_url': post_url})
 
     async def update_account_subjects(self, user_id: int, subjects: List[str]):
         _filter = {'_id': user_id}
