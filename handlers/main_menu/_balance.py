@@ -5,7 +5,7 @@ import functions as funcs
 from keyboards import markup, inline_plain
 from keyboards.inline_plain import BalanceKeyboard
 from loader import bot, dp, users_db
-from states import MiscStates
+from states import Payment as States
 
 
 @dp.pre_checkout_query_handler(state='*')
@@ -31,13 +31,13 @@ async def send_balance(msg: types.Message):
 
 @dp.callback_query_handler(text=BalanceKeyboard.DEPOSIT_MONEY)
 async def ask_deposit_amount(query: types.CallbackQuery):
-    await MiscStates.ask_deposit_amount.set()
+    await States.ask_deposit_amount.set()
     keyboard = markup.cancel_kb
     await query.answer()
     await query.message.answer('Введите количество (в гривнах):', reply_markup=keyboard)
 
 
-@dp.message_handler(state=MiscStates.ask_deposit_amount)
+@dp.message_handler(state=States.ask_deposit_amount)
 async def process_deposit(msg: types.Message, state: FSMContext):
     amount = msg.text
     if amount.isdigit() and int(amount) > 0:
@@ -51,13 +51,13 @@ async def process_deposit(msg: types.Message, state: FSMContext):
 
 @dp.callback_query_handler(text=BalanceKeyboard.WITHDRAW_MONEY)
 async def ask_withdraw_amount(query: types.CallbackQuery):
-    await MiscStates.ask_withdraw_amount.set()
+    await States.ask_withdraw_amount.set()
     keyboard = markup.cancel_kb
     await query.answer()
     await query.message.answer('Введите количество (в гривнах):', reply_markup=keyboard)
 
 
-@dp.message_handler(state=MiscStates.ask_withdraw_amount)
+@dp.message_handler(state=States.ask_withdraw_amount)
 async def process_withdraw(msg: types.Message, state: FSMContext):
     amount = msg.text
     balance = await funcs.get_account_balance(msg.from_user.id)

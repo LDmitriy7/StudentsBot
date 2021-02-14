@@ -6,18 +6,20 @@ from typing import Tuple
 from telethon import TelegramClient
 from telethon.tl.functions.messages import CreateChatRequest, EditChatAdminRequest, ExportChatInviteRequest
 
-from config import API_HASH, API_ID, LINKED_BOT
+from config import API_HASH, API_ID, CONV_BOT_USERNAME, BOT_USERNAME
 from datatypes import Chat, PairChats
 
 
 async def create_chat(app, title: str) -> Tuple[int, str]:
     """Return chat_id, chat_link"""
-    user = await app.get_entity(LINKED_BOT)
-    result = await app(CreateChatRequest(title=title, users=[user]))
+    conv_bot = await app.get_entity(CONV_BOT_USERNAME)
+    main_bot = await app.get_entity(BOT_USERNAME)
+    result = await app(CreateChatRequest(title=title, users=[conv_bot, main_bot]))
 
     chat_id = -result.updates[1].participants.chat_id
     chat_link = await app(ExportChatInviteRequest(chat_id))
-    await app(EditChatAdminRequest(chat_id, user, True))
+    await app(EditChatAdminRequest(chat_id, conv_bot, True))
+    await app(EditChatAdminRequest(chat_id, main_bot, True))
 
     return chat_id, chat_link.link
 

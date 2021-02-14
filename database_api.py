@@ -207,14 +207,6 @@ class MongoUpdater(MongoBase):
     async def incr_balance(self, user_id: int, amount: int):
         await self.update_object(ACCOUNTS, {'_id': user_id}, '$inc', {'balance': amount})
 
-    async def update_project_status(self, project_id: str, new_status: str):
-        _filter = {'_id': ObjectId(project_id)}
-        await self.update_object(PROJECTS, _filter, '$set', {'status': new_status}, upsert=False)
-
-    async def update_project_post_url(self, project_id: str, post_url: str):
-        _filter = {'_id': ObjectId(project_id)}
-        await self.update_object(PROJECTS, _filter, '$set', {'post_url': post_url})
-
     async def update_account_subjects(self, user_id: int, subjects: List[str]):
         _filter = {'_id': user_id}
         await self.update_object(ACCOUNTS, _filter, '$set', {'subjects': subjects})
@@ -227,9 +219,36 @@ class MongoUpdater(MongoBase):
         _filter = {'_id': user_id}
         await self.update_object(ACCOUNTS, _filter, '$set', {'page_url': page_url}, upsert=False)
 
-    async def update_profile(self, user_id: int, field: str, value):
+    async def update_profile(self, user_id: int, profile_field: str, new_value):
         _filter = {'_id': user_id}
-        await self.update_object(ACCOUNTS, _filter, '$set', {f'profile.{field}': value})
+        await self.update_object(ACCOUNTS, _filter, '$set', {f'profile.{profile_field}': new_value})
+
+    async def update_project(self, project_id: str, field: str, new_value):
+        _filter = {'_id': ObjectId(project_id)}
+        await self.update_object(PROJECTS, _filter, '$set', {field: new_value}, upsert=False)
+
+    async def update_project_data(self, project_id: str, data_field: str, new_value):
+        await self.update_project(project_id, f'data.{data_field}', new_value)
+
+
+class MongoProjectUpdater(MongoUpdater):
+    """Содержит методы для обновления данных проекта."""
+
+    async def update_project_status(self, project_id: str, new_status: str):
+        await self.update_project(project_id, 'status', new_status)
+
+    async def update_project_post_url(self, project_id: str, post_url: str):
+        await self.update_project(project_id, 'post_url', post_url)
+
+    async def update_project_worker(self, project_id: str, worker_id: int):
+        await self.update_project(project_id, 'worker_id', worker_id)
+
+    async def update_project_chats(self, project_id: str, client_chat_id: int, worker_chat_id: int):
+        await self.update_project(project_id, 'client_chat_id', client_chat_id)
+        await self.update_project(project_id, 'worker_chat_id', worker_chat_id)
+
+    async def update_project_price(self, project_id: str, price: int):
+        await self.update_project_data(project_id, 'price', price)
 
 
 class MongoProfileUpdater(MongoUpdater):
@@ -251,5 +270,5 @@ class MongoProfileUpdater(MongoUpdater):
         await self.update_profile(user_id, 'works', works)
 
 
-class MongoDB(MongoAdder, MongoGetter, MongoDeleter, MongoProfileUpdater):
+class MongoDB(MongoAdder, MongoGetter, MongoDeleter, MongoProjectUpdater, MongoProfileUpdater):
     """Наследует все наборы методов управления базой."""

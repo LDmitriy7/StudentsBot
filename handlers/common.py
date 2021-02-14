@@ -10,8 +10,9 @@ from questions.misc import HandleException
 from texts import main as texts
 
 
-@dp.message_handler(text='/start')
-async def send_welcome(msg: types.Message):
+@dp.message_handler(text='/start', state='*', chat_type='private')
+async def send_welcome(msg: types.Message, state: FSMContext):
+    await state.finish()
     await msg.answer(texts.welcome, reply_markup=markup.main_kb)
 
 
@@ -19,17 +20,25 @@ async def send_welcome(msg: types.Message):
 @dp.message_handler(commands='cancel', state='*')
 async def cancel(msg: types.Message, state: FSMContext):
     await state.finish()
-    await msg.answer('Отменено', reply_markup=markup.main_kb)
+    keyboard = markup.main_kb if msg.chat.type == 'private' else None
+    await msg.answer('Отменено', reply_markup=keyboard)
+
+
+def get_state_group(st_name: str) -> Optional[]:
+    for st_group, group_st_names in ALL_CONV_STATES_GROUPS.items():
+        if st_name in group_st_names:
+            return st_group
+    return None
 
 
 @dp.message_handler(text='Назад', state='*')
 @dp.message_handler(commands='back', state='*')
 async def go_back(msg: types.Message, state: FSMContext):
-    state_name = await state.get_state()
+    st_name = await state.get_state()
 
-    for states_group, all_states_names in ALL_CONV_STATES_GROUPS.items():
-        if state_name in all_states_names:  # user is in conversation
-            await questions.ask_prev_question(msg, state, states_group)
+    for st_group, all_st_names in ALL_CONV_STATES_GROUPS.items():
+        if st_name in all_st_names:  # user is in conversation
+            await questions.ask_prev_question(msg, state, st_group)
             break
     else:
         await state.finish()

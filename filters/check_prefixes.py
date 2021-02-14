@@ -1,3 +1,4 @@
+"""Custom filters for checking on prefix in update's text/data."""
 from typing import Union
 
 from aiogram import types

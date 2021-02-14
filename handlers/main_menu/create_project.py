@@ -1,12 +1,9 @@
 """Все для диалога: создание поста в канале."""
 from aiogram import types
-from aiogram.dispatcher import FSMContext
 
-import datatypes
 import functions as funcs
-from keyboards import markup
 from keyboards.inline_plain import WorkTypeKeyboard
-from loader import calendar, dp, users_db
+from loader import calendar, dp
 from questions import CreateProjectConv as States
 from questions.misc import HandleException
 

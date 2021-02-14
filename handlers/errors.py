@@ -15,8 +15,8 @@ logger = logging.getLogger(__name__)
 Update = Union[types.Message, types.CallbackQuery]
 
 
-@dp.message_handler(content_types='any', state='*')
-@dp.callback_query_handler(state='*')
+@dp.message_handler(content_types='any', state='*', chat_type='private')
+@dp.callback_query_handler(state='*', chat_type='private')
 async def error(update: Update, state: FSMContext):
     logger.info('ERROR ON: %s', [str(update), await state.get_state()])
     return HandleException(texts.error)

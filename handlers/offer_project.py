@@ -39,7 +39,7 @@ async def pick_project(query: types.CallbackQuery, payload: str):
         return
 
     await query.answer('Поиск свободных чатов...', show_alert=True)
-    chats = await funcs.create_and_save_chats(client_id, worker_id, payload)
+    chats = await funcs.create_and_save_groups(client_id, worker_id, payload)
 
     async def send_invite_msg(text: str, user_id: int, chat: Chat):
         keyboard = inline_funcs.link_button('Перейти в чат', chat.link)

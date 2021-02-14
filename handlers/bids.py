@@ -9,7 +9,7 @@ from keyboards import inline_funcs, markup
 from loader import bot, dp, users_db
 from questions import RegistrationConv
 from questions.misc import HandleException
-from states import Projects as States
+from states import MiscStates as States
 
 
 @dp.message_handler(DeepLinkPrefix(Prefixes.SEND_BID_))
@@ -51,7 +51,6 @@ async def send_bid(msg: types.Message, state: FSMContext):
 
     bid_id = await funcs.save_bid(client_id, project_id, worker_id, bid_text)
     full_bid_text = await funcs.get_worker_bid_text(worker_id, project_id, bid_text)
-    print(full_bid_text)
     keyboard = inline_funcs.for_bid(bid_id)
 
     await bot.send_message(client_id, full_bid_text, reply_markup=keyboard)  # отправка заказчику
@@ -66,7 +65,7 @@ async def pick_bid(query: types.CallbackQuery, payload: str):
     client_id, worker_id = bid.client_id, bid.worker_id
 
     await query.answer('Поиск свободных чатов...', show_alert=True)
-    chats = await funcs.create_and_save_chats(client_id, worker_id, bid.project_id)
+    chats = await funcs.create_and_save_groups(client_id, worker_id, bid.project_id)
 
     async def send_invite_msg(text: str, user_id: int, chat: datatypes.Chat):
         keyboard = inline_funcs.link_button('Перейти в чат', chat.link)

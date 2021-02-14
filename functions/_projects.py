@@ -1,19 +1,18 @@
 """Contain funcs for sending invitations and projects."""
-from typing import List, Optional, Tuple
+from typing import List, Optional
 
 from aiogram.utils.exceptions import BadRequest
 
 import datatypes
-from datatypes import ProjectStatuses
 import functions.common as funcs
-from config import MAIN_CHANNEL, MAIN_POST_URL
+from datatypes import ProjectStatuses
 from keyboards import inline_funcs, markup
-from loader import bot
+from loader import bot, users_db
 from questions.misc import HandleException
 from texts import templates
 
-__all__ = ['send_projects', 'send_project_invitation', 'send_personal_project', 'send_post_to_channel',
-           'send_chat_link_to_worker']
+__all__ = ['send_projects', 'send_project_invitation', 'send_personal_project',
+           'send_chat_link_to_worker', 'start_project_update']
 
 
 async def send_projects(
@@ -67,23 +66,24 @@ async def send_personal_project(chat_id: int, client_name: str, worker_id: int, 
     return True
 
 
-#####
-
-async def send_post_to_channel(
-        project_id: str, project_status: str, post_data: datatypes.ProjectData
-) -> str:
-    """Send post to channel. Return post_url."""
-    text = templates.form_post_text(project_status, post_data)
-    has_files = bool(post_data.files)
-    keyboard = inline_funcs.for_project(project_id, pick_btn=True, files_btn=has_files)
-
-    post_obj = await bot.send_message(MAIN_CHANNEL, text, reply_markup=keyboard)
-    post_url = MAIN_POST_URL.format(post_obj.message_id)
-    return post_url
-
-
 async def send_chat_link_to_worker(client_name: str, worker_id: int, worker_chat_link: str):
-    """Send invite chat link"""
+    """Send invite chat link to worker."""
     text = f'Заказчик ({client_name}) предложил вам личный проект'
     keyboard = inline_funcs.link_button('Перейти в чат', worker_chat_link)
     await bot.send_message(worker_id, text, reply_markup=keyboard)
+
+
+async def start_project_update(
+        project_id: str, price: int, client_id: int, worker_id: int,
+        client_chat_id: int, worker_chat_id: int
+):
+    """Update project and post after paying it."""
+    amount = -price
+    await users_db.incr_balance(client_id, amount)
+    await users_db.update_project_price(project_id, price)
+    await users_db.update_project_worker(project_id, worker_id)
+    await users_db.update_project_chats(project_id, client_chat_id, worker_chat_id)
+    await users_db.update_project_status(project_id, ProjectStatuses.IN_PROGRESS)
+    # обновить пост
+    project = await users_db.get_project_by_id(project_id)
+    await funcs.update_post(project_id, project.status, project.post_url, project.data)

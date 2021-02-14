@@ -4,13 +4,14 @@ from datetime import date, timedelta
 
 from aiogram.types import InlineKeyboardButton as Button
 from aiogram.types import InlineKeyboardMarkup
-from aiogram.utils.helper import Helper
+from aiogram.utils.helper import Helper, Item
 
 from config import START_LINK
 from datatypes import Prefixes
 from loader import calendar
 
 DEL_MESSAGE_DATA = 'DEL_MESSAGE'  # для удаления связанного сообщения
+REFUSE_WORK_PRICE = 'REFUSE_WORK_PRICE'  # для отказа от предложенной цены
 
 
 class InlineKeyboard(InlineKeyboardMarkup, Helper):
@@ -21,10 +22,39 @@ class InlineKeyboard(InlineKeyboardMarkup, Helper):
         self.row(Button(text, url=url))
 
 
+class GroupMenuKeyboard(InlineKeyboard, Helper):
+    CALL_ADMIN = Item()
+    OFFER_PRICE = Item()
+    CONFIRM_PROJECT = Item()
+    FEEDBACK = Item()
+
+
+def group_menu(call_admin=False, offer_price=False, confirm_project=False, feedback=False) -> GroupMenuKeyboard:
+    keyboard = GroupMenuKeyboard()
+
+    if call_admin:
+        keyboard.data_row('Вызвать админа', callback_data=keyboard.CALL_ADMIN)
+    if offer_price:
+        keyboard.data_row('Предложить цену', callback_data=keyboard.OFFER_PRICE)
+    if confirm_project:
+        keyboard.data_row('Подтвердить выполнение', callback_data=keyboard.CONFIRM_PROJECT)
+    if feedback:
+        keyboard.data_row('Оставить отзыв', callback_data=keyboard.FEEDBACK)
+    return keyboard
+
+
 def link_button(text: str, url: str):
     """Одна кнопка-ссылка."""
     keyboard = InlineKeyboard()
     keyboard.url_row(text, url)
+    return keyboard
+
+
+def invite_project(worker_id: int):
+    """Кнопка 'Заполнить проект' со стартовой ссылкой {prefix}{worker_id}."""
+    keyboard = InlineKeyboard()
+    url = START_LINK.format(f'{Prefixes.INVITE_PROJECT_}{worker_id}')
+    keyboard.url_row('Заполнить проект', url)
     return keyboard
 
 
@@ -44,11 +74,30 @@ def pick_project(project_id: str):
     return keyboard
 
 
-def invite_project(worker_id: int):
-    """Кнопка 'Заполнить проект' со стартовой ссылкой {prefix}{worker_id}."""
+def del_project(project_id: str):
+    """Для окончательного удаления проекта."""
     keyboard = InlineKeyboard()
-    url = START_LINK.format(f'{Prefixes.INVITE_PROJECT_}{worker_id}')
-    keyboard.url_row('Заполнить проект', url)
+    cdata = f'{Prefixes.TOTAL_DEL_PROJECT_}{project_id}'
+    keyboard.data_row('Удалить проект', cdata)
+    keyboard.data_row('Отменить', DEL_MESSAGE_DATA)
+    return keyboard
+
+
+def pay_for_project(price: int, project_id: str):
+    """Кнопки: Оплатить(prefix_price_project), Отказаться."""
+    keyboard = InlineKeyboard()
+    cdata = f'{Prefixes.PAY_FOR_PROJECT_}{price}_{project_id}'
+    keyboard.data_row(f'Оплатить {price} грн', cdata)
+    keyboard.data_row('Отказаться', REFUSE_WORK_PRICE)
+    return keyboard
+
+
+def total_confirm_project(project_id: str):
+    """Кнопки: Подтвердить(prefix_project), Отменить."""
+    keyboard = InlineKeyboard()
+    cdata = f'{Prefixes.CONFIRM_PROJECT_}{project_id}'
+    keyboard.data_row('Подтвердить', cdata)
+    keyboard.data_row('Отменить', DEL_MESSAGE_DATA)
     return keyboard
 
 
@@ -72,15 +121,6 @@ def for_project(project_id: str, pick_btn=False, del_btn=False, files_btn=False,
         keyboard.url_row('Перейти в чат', chat_link)
     if del_btn:
         add_button('Удалить проект', Prefixes.DEL_PROJECT_, as_url=False)
-    return keyboard
-
-
-def del_project(project_id: str):
-    """Для окончательного удаления проекта."""
-    keyboard = InlineKeyboard()
-    cdata = f'{Prefixes.TOTAL_DEL_PROJECT_}{project_id}'
-    keyboard.data_row('Удалить проект', cdata)
-    keyboard.data_row('Отменить', DEL_MESSAGE_DATA)
     return keyboard
 
 

@@ -5,7 +5,7 @@ from loader import dp
 
 
 # Logic Levels:
-# [handlers, middlewares] > functions > utils > [texts, keyboards, datatypes]
+# [handlers, middlewares, filters] > functions > utils > [texts, keyboards, datatypes]
 
 async def on_startup(*args):
     import logging

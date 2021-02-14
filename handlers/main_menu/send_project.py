@@ -22,14 +22,14 @@ async def send_project(msg: types.Message, state: FSMContext):
     project_id = await users_db.add_project(project)
 
     if send_to == SendTo.CHANNEL:
-        post_url = await funcs.send_post_to_channel(project_id, status, project_data)
+        post_url = await funcs.send_post(project_id, status, project_data)
         await users_db.update_project_post_url(project_id, post_url)
         text = f'<a href="{post_url}">Проект</a> успешно создан'
         await msg.answer(text, reply_markup=markup.main_kb)
 
     elif send_to == SendTo.WORKER:
         await msg.answer('Идет отправка...', reply_markup=markup.main_kb)
-        chats = await funcs.create_and_save_chats(client_id, worker_id, project_id)
+        chats = await funcs.create_and_save_groups(client_id, worker_id, project_id)
         try:
             await funcs.send_chat_link_to_worker(msg.from_user.full_name, worker_id, chats.worker_chat.link)
         except:

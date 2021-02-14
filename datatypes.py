@@ -4,9 +4,46 @@ from __future__ import annotations
 from abc import ABC
 from dataclasses import dataclass, field, fields
 from typing import List, Optional, Union
-
-from aiogram.utils.helper import Helper, Item
+from aiogram import types
+from aiogram.utils.helper import Helper, Item, HelperMode
 from bson import ObjectId
+
+Update = Union[types.Message, types.CallbackQuery]
+
+
+class Prefixes(Helper):
+    """Command-prefixes for deep-links and query.data"""
+    GET_PROJECT_ = Item()  # для получения проекта
+    DEL_PROJECT_ = Item()  # для запроса удаления проекта
+    TOTAL_DEL_PROJECT_ = Item()  # для удаления проекта
+    PAY_FOR_PROJECT_ = Item()  # для оплаты проекта
+    INVITE_PROJECT_ = Item()  # для предложения проекта автором
+    OFFER_PROJECT_ = Item()  # для предложения проекта заказчиком
+    PICK_PROJECT_ = Item()  # для принятия персонального проекта автором
+    CONFIRM_PROJECT_ = Item()  # для подтверждения выполнения проекта
+
+    GET_FILES_ = Item()  # для получения файлов к проекту
+
+    SEND_BID_ = Item()  # для заявки на проект
+    PICK_BID_ = Item()  # для принятия заявки
+
+
+class ProjectStatuses(Helper):
+    ACTIVE = 'Активен'
+    IN_PROGRESS = 'Выполняется'
+    COMPLETED = 'Выполнен'
+    REVIEWED = 'Оставлен отзыв'
+
+
+class UserRoles(Helper):
+    mode = HelperMode.lowercase
+    CLIENT = Item()
+    WORKER = Item()
+
+
+class SendTo(Helper):
+    CHANNEL = Item()
+    WORKER = Item()
 
 
 @dataclass
@@ -79,7 +116,7 @@ class Bid(DataType):
 @dataclass
 class Chat(DataType):
     project_id: str
-    chat_type: str
+    user_role: str
     user_id: int
     link: str
     pair_id: int
@@ -149,31 +186,3 @@ class Review(DataType):
             rating = Rating.from_dict(rating_data)
             return cls(**obj_data, rating=rating)
         return None
-
-
-class Prefixes(Helper):
-    """Command-prefixes for deep-links and query.data"""
-    GET_PROJECT_ = Item()  # для получения проекта
-    DEL_PROJECT_ = Item()  # для запроса удаления проекта
-    TOTAL_DEL_PROJECT_ = Item()  # для удаления проекта
-    PAY_FOR_PROJECT_ = Item()  # для оплаты проекта
-    INVITE_PROJECT_ = Item()  # для предложения проекта автором
-    OFFER_PROJECT_ = Item()  # для предложения проекта заказчиком
-    PICK_PROJECT_ = Item()  # для принятия персонального проекта автором
-
-    GET_FILES_ = Item()  # для получения файлов к проекту
-
-    SEND_BID_ = Item()  # для заявки на проект
-    PICK_BID_ = Item()  # для принятия заявки
-
-
-class ProjectStatuses(Helper):
-    ACTIVE = 'Активен'
-    IN_PROGRESS = 'Выполняется'
-    COMPLETED = 'Выполнен'
-    REVIEWED = 'Оставлен отзыв'
-
-
-class SendTo(Helper):
-    CHANNEL = Item()
-    WORKER = Item()
