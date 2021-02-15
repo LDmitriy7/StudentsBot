@@ -4,16 +4,21 @@ from typing import Union
 
 from aiogram import types
 
+from datatypes import HandleException
 from keyboards import inline_funcs
 from loader import calendar
-from questions.misc import HandleException
 from utils.inline_calendar import NotInitedException
 
 __all__ = ['handle_calendar_callback']
 
 
-async def handle_calendar_callback(query: types.CallbackQuery, callback_data) -> Union[date, HandleException]:
-    """Return date or exception for turning/reiniting calendar."""
+async def handle_calendar_callback(callback_data, query: types.CallbackQuery = None) -> Union[date, HandleException]:
+    """Return date or exception for turning/reiniting calendar.
+    By default: query = current CallbackQuery.
+    """
+    if query is None:
+        query = types.CallbackQuery.get_current()
+
     try:
         _date = calendar.handle_callback(query.from_user.id, callback_data)
     except NotInitedException:

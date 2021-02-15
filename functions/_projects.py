@@ -5,42 +5,50 @@ from aiogram.utils.exceptions import BadRequest
 
 import datatypes
 import functions.common as funcs
-from datatypes import ProjectStatuses
+from datatypes import ProjectStatuses, HandleException
 from keyboards import inline_funcs, markup
 from loader import bot, users_db
-from questions.misc import HandleException
 from texts import templates
+from aiogram import types
 
 __all__ = ['send_projects', 'send_project_invitation', 'send_personal_project',
            'send_chat_link_to_worker', 'start_project_update']
 
 
-async def send_projects(
-        chat_id: int, projects: List[datatypes.Project], with_note=False,
-        pick_btn=False, del_btn=False, client_chat_btn=False, worker_chat_btn=False
-):
-    """Отправляет проекты по списку (добавляет кнопки, если они выбраны и доступны)."""
-    assert not (client_chat_btn and worker_chat_btn)
+async def get_project_keyboard(project: datatypes.Project, pick_btn, del_btn, client_chat_btn, worker_chat_btn):
+    """Возращает инлайн-клавиатуру для проекта."""
+    has_files = bool(project.data.files)
+    can_delete = del_btn and project.status == ProjectStatuses.ACTIVE
+
+    if client_chat_btn:
+        chat_link = await funcs.get_chat_link(project.client_chat_id)
+    elif worker_chat_btn:
+        chat_link = await funcs.get_chat_link(project.worker_chat_id)
+    else:
+        chat_link = None
+
+    keyboard = inline_funcs.for_project(
+        project.id,
+        pick_btn=pick_btn,
+        del_btn=can_delete,
+        files_btn=has_files,
+        chat_link=chat_link
+    )
+    return keyboard
+
+
+async def send_projects(projects: List[datatypes.Project], with_note=False,
+                        pick_btn=False, del_btn=False, client_chat_btn=False, worker_chat_btn=False,
+                        chat_id: int = None):
+    """Отправляет проекты по списку (добавляет кнопки, если они выбраны и доступны).
+    By_default: chat_id = current User id
+    """
+    if chat_id is None:
+        chat_id = types.User.get_current().id
 
     for p in projects:
-        has_files = bool(p.data.files)
-        can_delete = del_btn and p.status == ProjectStatuses.ACTIVE
         text = templates.form_post_text(p.status, p.data, with_note)
-
-        if client_chat_btn:
-            chat_link = await funcs.get_chat_link(p.client_chat_id)
-        elif worker_chat_btn:
-            chat_link = await funcs.get_chat_link(p.worker_chat_id)
-        else:
-            chat_link = None
-
-        keyboard = inline_funcs.for_project(
-            p.id,
-            pick_btn=pick_btn,
-            del_btn=can_delete,
-            files_btn=has_files,
-            chat_link=chat_link
-        )
+        keyboard = await get_project_keyboard(p, pick_btn, del_btn, client_chat_btn, worker_chat_btn)
         await bot.send_message(chat_id, text, reply_markup=keyboard)
 
 

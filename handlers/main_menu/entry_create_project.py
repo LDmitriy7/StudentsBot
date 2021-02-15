@@ -1,12 +1,11 @@
 """Все для входа в создание проекта с отправкой в канал/лично/самостоятельно."""
 from aiogram import types
 
-from datatypes import Prefixes, SendTo
+from datatypes import Prefixes, SendTo, HandleException
 from filters import DeepLinkPrefix
 from keyboards import inline_plain, markup
 from loader import dp, users_db
 from questions import CreateProjectConv, RegistrationConv
-from questions.misc import HandleException
 from texts import main as texts
 
 

@@ -7,8 +7,7 @@ from aiogram import types
 
 from loader import dp
 from questions import ALL_CONV_STATES_GROUPS
-from questions.misc import ConvStatesGroup, ConvStatesGroupMeta
-from questions.misc import HandleException
+from datatypes import HandleException, ConvStatesGroupMeta, ConvStatesGroup
 
 
 @dataclass

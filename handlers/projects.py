@@ -14,7 +14,7 @@ async def send_files(msg: types.Message, payload: str):
     """Отправляет все файлы к проекту."""
     project = await users_db.get_project_by_id(payload)
     if project:
-        await funcs.send_files(msg.from_user.id, project.data.files)
+        await funcs.send_files(project.data.files)
     else:
         await msg.answer('Этот проект уже удален')
 

@@ -7,7 +7,7 @@ from keyboards import markup
 from keyboards.inline_plain import change_profile
 from loader import dp, users_db
 from questions import registration as questions
-from questions.misc import HandleException
+from datatypes import HandleException
 from states import ChangeProfile as States
 from texts import templates
 

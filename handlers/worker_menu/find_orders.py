@@ -14,6 +14,6 @@ async def find_orders(msg: types.Message):
     projects = await users_db.get_projects_by_subjects(account.subjects)
     if projects:
         await msg.answer('<b>Подходящие заказы:</b>')
-        await funcs.send_projects(msg.from_user.id, projects, pick_btn=True)
+        await funcs.send_projects(projects, pick_btn=True)
     else:
         await msg.answer('<b>Не найдено подходящих заказов</b>')

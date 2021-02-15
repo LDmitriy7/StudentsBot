@@ -3,12 +3,23 @@ from __future__ import annotations
 
 from abc import ABC
 from dataclasses import dataclass, field, fields
-from typing import List, Optional, Union
+from typing import List, Optional, Union, Awaitable, Callable
+
 from aiogram import types
 from aiogram.utils.helper import Helper, Item, HelperMode
 from bson import ObjectId
 
 Update = Union[types.Message, types.CallbackQuery]
+KeyboardMarkup = Union[types.ReplyKeyboardMarkup, types.InlineKeyboardMarkup]
+AsyncFunction = Callable[[types.Message], Awaitable]
+
+
+class HandleException:
+    def __init__(self, on_exception: Union[None, str, Awaitable, AsyncFunction] = None):
+        self.on_exception = on_exception
+
+    def __repr__(self):
+        return f'{self.on_exception}'
 
 
 class Prefixes(Helper):

@@ -5,7 +5,7 @@ import functions as funcs
 from keyboards.inline_plain import WorkTypeKeyboard
 from loader import calendar, dp
 from questions import CreateProjectConv as States
-from questions.misc import HandleException
+from datatypes import HandleException
 
 
 @dp.callback_query_handler(text=WorkTypeKeyboard.WORK_TYPE_BTNS, state=States.work_type)
@@ -20,7 +20,7 @@ async def process_subject(msg: types.Message):
 
 @dp.callback_query_handler(calendar.filter(), state=States.date)
 async def process_date(query: types.CallbackQuery, callback_data: dict):
-    handle_result = await funcs.handle_calendar_callback(query, callback_data)
+    handle_result = await funcs.handle_calendar_callback(callback_data)
     if isinstance(handle_result, HandleException):
         return handle_result  # распространяем исключение
     await query.answer(f'Выбрано: {handle_result}')
@@ -55,7 +55,7 @@ async def process_note(msg: types.Message):
 
 @dp.message_handler(content_types=['photo', 'document'], state=States.files)
 async def process_file(msg: types.Message):
-    file_obj = funcs.get_file_obj(msg)
+    file_obj = funcs.get_file_tuple(msg)
     return {'files': [file_obj]}, HandleException()
 
 

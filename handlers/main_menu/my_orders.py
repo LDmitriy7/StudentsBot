@@ -10,8 +10,7 @@ async def send_orders(msg: types.Message):
     if projects:
         await msg.answer('<b>Список заказов:</b>')
         await funcs.send_projects(
-            msg.from_user.id, projects,
-            with_note=True, del_btn=True, client_chat_btn=True
+            projects, with_note=True, del_btn=True, client_chat_btn=True
         )
     else:
         await msg.answer('<b>У вас нет ни одного заказа</b>')

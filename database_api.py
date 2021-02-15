@@ -3,11 +3,12 @@
 from dataclasses import asdict
 from typing import List, Optional, Union
 
+from aiogram.utils.helper import Helper
 from bson import ObjectId
 from motor.motor_asyncio import AsyncIOMotorClient, AsyncIOMotorDatabase
 from pymongo.results import InsertOneResult
-from aiogram.utils.helper import Helper
-import datatypes as datatypes
+
+import datatypes
 
 ACCOUNTS = 'accounts'
 PROJECTS = 'projects'

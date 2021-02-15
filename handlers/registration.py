@@ -7,7 +7,7 @@ import functions as funcs
 from keyboards import markup
 from loader import dp, users_db
 from questions import RegistrationConv as States
-from questions.misc import HandleException
+from datatypes import HandleException
 
 
 @dp.message_handler(text='Пропустить', state=States.phone_number)

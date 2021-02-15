@@ -6,7 +6,7 @@ import questions.misc
 from keyboards import inline_funcs, markup
 from loader import dp
 from questions import ALL_CONV_STATES_GROUPS
-from questions.misc import HandleException
+from datatypes import HandleException
 from texts import main as texts
 
 
@@ -22,13 +22,6 @@ async def cancel(msg: types.Message, state: FSMContext):
     await state.finish()
     keyboard = markup.main_kb if msg.chat.type == 'private' else None
     await msg.answer('Отменено', reply_markup=keyboard)
-
-
-def get_state_group(st_name: str) -> Optional[]:
-    for st_group, group_st_names in ALL_CONV_STATES_GROUPS.items():
-        if st_name in group_st_names:
-            return st_group
-    return None
 
 
 @dp.message_handler(text='Назад', state='*')

@@ -1,15 +1,22 @@
 from dataclasses import asdict, fields
 from typing import List, Optional
 
+from aiogram import types
+
 import datatypes
 from config import MAIN_CHANNEL, MAIN_POST_URL, START_LINK
-from datatypes import Prefixes
+from datatypes import Prefixes, Update
 from keyboards import inline_funcs
 from loader import bot, users_db
 from texts import templates
 
 __all__ = ['count_avg_rating', 'get_invite_project_url', 'get_chat_link', 'get_all_nicknames',
-           'send_post', 'update_post', 'delete_post']
+           'send_post', 'update_post', 'delete_post', 'get_chat_of_update']
+
+
+def get_chat_of_update(update: Update) -> types.Chat:
+    """Return chat of update (Message or CallbackQuery)."""
+    return update.chat if isinstance(update, types.Message) else update.message.chat
 
 
 async def get_chat_link(chat_id: int) -> Optional[str]:

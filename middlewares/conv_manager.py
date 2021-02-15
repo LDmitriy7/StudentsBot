@@ -5,7 +5,8 @@ from loguru import logger
 from loader import dp
 from middlewares.misc import get_states_group, parse_handle_results, process_exception, process_user_data
 from questions import ALL_CONV_STATES
-from questions.misc import ConvState, ask_question
+from questions.misc import ask_question
+from datatypes import ConvState
 
 
 class ConvManager(BaseMiddleware):

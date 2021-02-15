@@ -3,12 +3,11 @@ from aiogram.dispatcher import FSMContext
 
 import datatypes
 import functions as funcs
-from datatypes import Prefixes
+from datatypes import Prefixes, HandleException
 from filters import DeepLinkPrefix, QueryPrefix
 from keyboards import inline_funcs, markup
 from loader import bot, dp, users_db
 from questions import RegistrationConv
-from questions.misc import HandleException
 from states import MiscStates as States
 
 
