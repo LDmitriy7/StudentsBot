@@ -4,10 +4,10 @@ from aiogram.dispatcher import FSMContext
 
 import datatypes
 import functions as funcs
+from datatypes import HandleException
 from keyboards import markup
 from loader import dp, users_db
 from questions import RegistrationConv as States
-from datatypes import HandleException
 
 
 @dp.message_handler(text='Пропустить', state=States.phone_number)

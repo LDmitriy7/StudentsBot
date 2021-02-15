@@ -10,13 +10,13 @@ from loader import dp
 async def on_startup(*args):
     import logging
     import handlers
-    import middlewares
+    # import middlewares
     import filters
 
     logging.basicConfig(level=20)
     logger = logging.getLogger(__name__)
     logger.debug('Import %s', handlers)
-    logger.debug('Import %s', middlewares)
+    # logger.debug('Import %s', middlewares)
     logger.debug('Import %s', filters)
 
 

@@ -4,7 +4,7 @@ from typing import List
 
 from aiogram import types
 
-from qustions import Quest, QuestText, QuestFunc
+from _qustions import Quest, QuestText, QuestFunc
 
 
 async def ask_question(msg: types.Message, question: List[Quest]):

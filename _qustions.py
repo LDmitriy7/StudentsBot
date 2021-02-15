@@ -1,6 +1,6 @@
 from dataclasses import dataclass
 from typing import Union
-
+import inspect
 from aiogram.dispatcher.filters.state import State, StatesGroupMeta, StatesGroup
 
 from datatypes import KeyboardMarkup, AsyncFunction
@@ -40,11 +40,12 @@ class ConvState(State):
 class ConvStatesGroupMeta(StatesGroupMeta):
     def __new__(mcs, class_name, bases, namespace, **kwargs):
         for prop in namespace.values():
-            if type(prop) is State:
-                raise TypeError(f'{class_name} attrs can be instance of ConvState, not State')
+            if not isinstance(prop, ConvState):
+                raise TypeError(f'{class_name} attrs must be instance of {ConvState}')
 
         return super().__new__(mcs, class_name, bases, namespace)
 
 
 class ConvStatesGroup(StatesGroup, metaclass=ConvStatesGroupMeta):
-    """Class attrs must be ConvState instances. All subclasses will be used in ConvManager."""
+    """Class attrs must be ConvState instances."""
+

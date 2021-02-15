@@ -10,13 +10,6 @@ from questions import ALL_CONV_STATES_GROUPS
 from datatypes import HandleException, ConvStatesGroupMeta, ConvStatesGroup
 
 
-@dataclass
-class HandleResult:
-    exception: Optional[HandleException]
-    states_group: Optional[ConvStatesGroup]
-    user_data: Optional[dict]
-
-
 async def process_user_data(new_data: dict):
     # TODO: docs
     if new_data is None:
