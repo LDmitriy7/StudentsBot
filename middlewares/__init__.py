@@ -1,8 +1,13 @@
 from loader import dp
-from middlewares.conv_manager import ConvManager
-from middlewares.subscribe import CheckSubscription
 from middlewares.my_profile import UpdatePage
+# from middlewares.conv_manager import ConvManager
+from middlewares.subscribe import CheckSubscription
+from middlewares.test import UserDataUpdater, SwitchConvState, AskQuestion
 
-dp.setup_middleware(ConvManager())
-dp.setup_middleware(CheckSubscription())
-dp.setup_middleware(UpdatePage())
+
+def setup(middlewares: list):
+    for m in middlewares:
+        dp.setup_middleware(m())
+
+
+setup([UserDataUpdater, SwitchConvState, AskQuestion, CheckSubscription, UpdatePage])

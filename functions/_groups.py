@@ -58,12 +58,9 @@ async def get_group_keyboard(chat: types.Chat = None) -> inline_funcs.GroupMenuK
     pstatus = await get_project_status(chat)
     user_role = await get_user_role(chat)
 
-    call_admin, offer_price, confirm_project, feedback = True, False, False, False
+    call_admin = True
+    offer_price = pstatus == ProjectStatuses.ACTIVE and user_role == UserRoles.WORKER
+    confirm_project = pstatus == ProjectStatuses.IN_PROGRESS and user_role == UserRoles.CLIENT
+    feedback = pstatus == ProjectStatuses.COMPLETED and user_role == UserRoles.CLIENT
 
-    if pstatus == ProjectStatuses.ACTIVE and user_role == UserRoles.WORKER:
-        offer_price = True
-    elif pstatus == ProjectStatuses.IN_PROGRESS and user_role == UserRoles.CLIENT:
-        confirm_project = True
-    elif pstatus == ProjectStatuses.COMPLETED and user_role == UserRoles.CLIENT:
-        feedback = True
     return inline_funcs.group_menu(call_admin, offer_price, confirm_project, feedback)

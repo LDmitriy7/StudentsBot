@@ -1,9 +1,17 @@
 from dataclasses import dataclass
 from typing import Union
-import inspect
+
 from aiogram.dispatcher.filters.state import State, StatesGroupMeta, StatesGroup
 
-from datatypes import KeyboardMarkup, AsyncFunction
+from data_types.common import KeyboardMarkup, AsyncFunction, ExceptionBody
+
+
+@dataclass
+class HandleException:
+    on_exception: ExceptionBody = None
+
+    def __repr__(self):
+        return f'{self.on_exception}'
 
 
 @dataclass
@@ -27,7 +35,7 @@ Quest = Union[QuestText, QuestFunc]
 
 
 class ConvState(State):
-    """All States must have question attr. It will be used in ConvManager."""
+    """States with question attribute. It should be used to ask next question in conversation."""
 
     def __init__(self, question: Union[Quest, list[Quest]]):
         if not isinstance(question, list):
@@ -40,12 +48,12 @@ class ConvState(State):
 class ConvStatesGroupMeta(StatesGroupMeta):
     def __new__(mcs, class_name, bases, namespace, **kwargs):
         for prop in namespace.values():
-            if not isinstance(prop, ConvState):
-                raise TypeError(f'{class_name} attrs must be instance of {ConvState}')
+            if isinstance(prop, State) and not isinstance(prop, ConvState):
+                err_text = f'{class_name} attrs must be instance of {ConvState.__name__}, not {State.__name__}'
+                raise TypeError(err_text)
 
         return super().__new__(mcs, class_name, bases, namespace)
 
 
 class ConvStatesGroup(StatesGroup, metaclass=ConvStatesGroupMeta):
-    """Class attrs must be ConvState instances."""
-
+    """StatesGroup with ConvState instances attributes (not State)."""

@@ -1,21 +1,22 @@
 """Contain funcs for sending invitations and projects."""
 from typing import List, Optional
 
+from aiogram import types
 from aiogram.utils.exceptions import BadRequest
 
-import datatypes
 import functions.common as funcs
-from datatypes import ProjectStatuses, HandleException
+from data_types import data_classes
+from data_types.common import HandleException
+from data_types.constants import ProjectStatuses
 from keyboards import inline_funcs, markup
 from loader import bot, users_db
 from texts import templates
-from aiogram import types
 
 __all__ = ['send_projects', 'send_project_invitation', 'send_personal_project',
            'send_chat_link_to_worker', 'start_project_update']
 
 
-async def get_project_keyboard(project: datatypes.Project, pick_btn, del_btn, client_chat_btn, worker_chat_btn):
+async def get_project_keyboard(project: data_classes.Project, pick_btn, del_btn, client_chat_btn, worker_chat_btn):
     """Возращает инлайн-клавиатуру для проекта."""
     has_files = bool(project.data.files)
     can_delete = del_btn and project.status == ProjectStatuses.ACTIVE
@@ -37,7 +38,7 @@ async def get_project_keyboard(project: datatypes.Project, pick_btn, del_btn, cl
     return keyboard
 
 
-async def send_projects(projects: List[datatypes.Project], with_note=False,
+async def send_projects(projects: List[data_classes.Project], with_note=False,
                         pick_btn=False, del_btn=False, client_chat_btn=False, worker_chat_btn=False,
                         chat_id: int = None):
     """Отправляет проекты по списку (добавляет кнопки, если они выбраны и доступны).
@@ -59,11 +60,17 @@ async def send_project_invitation(client_name: str, worker_id: int, chat_link: s
     try:
         await bot.send_message(worker_id, text, reply_markup=keyboard)
     except BadRequest:
-        return HandleException('Не могу отправить этому исполнителю')
+        return HandleException()
 
 
-async def send_personal_project(chat_id: int, client_name: str, worker_id: int, worker_chat_link: str) -> bool:
-    """Try to send project to worker, return True on success."""
+async def send_personal_project(chat_id: int, worker_id: int, worker_chat_link: str, client_name: str = None) -> bool:
+    """Try to send project to worker, return True on success.
+    By default: client = current User
+    """
+
+    if client_name is None:
+        client_name = types.User.get_current().full_name
+
     result = await send_project_invitation(client_name, worker_id, worker_chat_link)
     if isinstance(result, HandleException):  # распространяем исключение
         return False

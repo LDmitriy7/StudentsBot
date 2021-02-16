@@ -60,7 +60,7 @@ async def ask_withdraw_amount(query: types.CallbackQuery):
 @dp.message_handler(state=States.ask_withdraw_amount)
 async def process_withdraw(msg: types.Message, state: FSMContext):
     amount = msg.text
-    balance = await funcs.get_account_balance(msg.from_user.id)
+    balance = await funcs.get_account_balance()
 
     if amount.isdigit() and 0 < int(amount) < balance:
         price = -int(amount)

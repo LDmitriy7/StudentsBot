@@ -13,7 +13,7 @@ def find_subjects(query: types.InlineQuery = None) -> list[types.InlineQueryResu
     if query is None:
         query = types.InlineQuery.get_current()
 
-    def make_result(subject: str, index: int):
+    def make_result(index: int, subject: str):
         imc = types.InputMessageContent(message_text=subject)
         return types.InlineQueryResultArticle(
             id=str(index),
@@ -21,5 +21,5 @@ def find_subjects(query: types.InlineQuery = None) -> list[types.InlineQueryResu
             input_message_content=imc,
         )
 
-    subjects = subfuncs.find_objects(query.query, ALL_SUBJECTS)
-    return [make_result(r, i) for i, r in enumerate(subjects)]
+    subjects = subfuncs.find_strings(query.query, ALL_SUBJECTS)
+    return [make_result(i, s) for i, s in enumerate(subjects)]

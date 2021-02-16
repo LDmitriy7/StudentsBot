@@ -9,6 +9,7 @@ from datatypes import Prefixes, Update
 from keyboards import inline_funcs
 from loader import bot, users_db
 from texts import templates
+import subfuncs
 
 __all__ = ['count_avg_rating', 'get_invite_project_url', 'get_chat_link', 'get_all_nicknames',
            'send_post', 'update_post', 'delete_post', 'get_chat_of_update']
@@ -33,17 +34,9 @@ def get_invite_project_url(user_id: int) -> str:
 
 def count_avg_rating(reviews: List[datatypes.Review]) -> dict:
     """Count average user's rating dict from reviews."""
-    avg_rating = {field.name: 0 for field in fields(datatypes.Rating)}
-    for review in reviews:
-        rating_dict = asdict(review.rating)
-        for rate, amount in rating_dict.items():
-            avg_rating[rate] += amount
-
-    reviews_amount = len(reviews) or 1
-    for rate, amount in avg_rating.items():
-        avg_rating[rate] /= reviews_amount
-
-    return avg_rating
+    all_fields = [field.name for field in fields(datatypes.Rating)]
+    rating_dicts = [asdict(r.rating) for r in reviews]
+    return subfuncs.count_avg_values(rating_dicts, all_fields)
 
 
 async def get_all_nicknames() -> set:

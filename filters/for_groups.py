@@ -1,15 +1,16 @@
 from typing import Union
 
+from aiogram import types
 from aiogram.dispatcher.filters import BoundFilter
 
 import functions as funcs
-from datatypes import Update, ProjectStatuses, UserRoles
+from data_types import ProjectStatuses, UserRoles
 from loader import users_db
 
 
-async def find_pair_chat(update: Update) -> Union[dict, bool]:
+async def find_pair_chat(*args) -> Union[dict, bool]:
     """Try to find a pair chat (group) and return it id ('pchat_id')."""
-    chat = funcs.get_chat_of_update(update)
+    chat = types.Chat.get_current()
     if chat.type == 'group':
         chat_obj = await users_db.get_chat_by_id(chat.id)
         if chat_obj:
@@ -25,8 +26,8 @@ class ProjectStatus(BoundFilter):
             raise ValueError('Invalid project status.')
         self.pstatus = pstatus
 
-    async def check(self, update: Update) -> bool:
-        chat = funcs.get_chat_of_update(update)
+    async def check(self, *args) -> bool:
+        chat = types.Chat.get_current()
         pstatus = await funcs.get_project_status(chat)
         return pstatus == self.pstatus
 
@@ -39,7 +40,7 @@ class ChatUserRole(BoundFilter):
             raise ValueError('Invalid chat\'s user role.')
         self.user_role = user_role
 
-    async def check(self, update: Update) -> bool:
-        chat = funcs.get_chat_of_update(update)
+    async def check(self, *args) -> bool:
+        chat = types.Chat.get_current()
         user_role = await funcs.get_user_role(chat)
         return user_role == self.user_role

@@ -30,21 +30,6 @@ async def process_user_data(new_data: dict):
                 udata[key] = value
 
 
-async def process_exception(msg: types.Message, exception: HandleException):
-    if not (msg and exception):
-        return False
-
-    e_body = exception.on_exception
-    if isinstance(e_body, str):
-        await msg.answer(e_body)
-    elif isinstance(e_body, Awaitable):
-        await e_body
-    elif isinstance(e_body, Callable):
-        await e_body(msg)
-
-    return True
-
-
 def get_states_group(state_name, result: HandleResult):
     """Return ConvStatesGroup or None."""
     cur_states_group = result.states_group

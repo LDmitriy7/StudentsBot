@@ -4,7 +4,7 @@ import datatypes
 import functions as funcs
 from keyboards import inline_funcs, inline_plain, markup
 from loader import dp
-from questions.misc import QuestFunc, QuestText
+from data_types.for_quests import QuestFunc, QuestText
 from datatypes import ConvState, ConvStatesGroup
 from texts import templates
 

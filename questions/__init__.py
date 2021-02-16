@@ -2,9 +2,8 @@
 
 from aiogram.dispatcher.filters.state import State
 
+from data_types.for_quests import ConvStatesGroup
 from questions.create_project import CreateProjectConv
-from questions.misc import ask_question
-from datatypes import ConvState, ConvStatesGroup
 from questions.registration import RegistrationConv
 
 __all__ = [
