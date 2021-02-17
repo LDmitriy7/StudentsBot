@@ -1,11 +1,10 @@
 from aiogram import types
+from aiogram.contrib import fsm_storage, middlewares
 
-import datatypes
 import functions as funcs
+from data_types import ConvState, ConvStatesGroup, QuestText, QuestFunc, data_classes
 from keyboards import inline_funcs, inline_plain, markup
 from loader import dp
-from data_types.for_quests import QuestFunc, QuestText
-from datatypes import ConvState, ConvStatesGroup
 from texts import templates
 
 work_type = [
@@ -41,7 +40,7 @@ file = QuestText(
 @QuestFunc
 async def confirm(msg: types.Message):
     udata = await dp.current_state().get_data()
-    post_data = datatypes.ProjectData.from_dict(udata)
+    post_data = data_classes.ProjectData.from_dict(udata)
 
     post_text = templates.form_post_text('Активен', post_data, with_note=True)
     keyboard = markup.confirm_project_kb

@@ -1,6 +1,5 @@
+from data_types import ConvState, ConvStatesGroup, QuestText
 from keyboards import markup
-from questions.misc import QuestText
-from datatypes import ConvState, ConvStatesGroup
 
 nickname = QuestText('Придумайте себе никнейм', markup.go_back_kb)
 

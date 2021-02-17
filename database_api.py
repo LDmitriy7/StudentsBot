@@ -8,7 +8,7 @@ from bson import ObjectId
 from motor.motor_asyncio import AsyncIOMotorClient, AsyncIOMotorDatabase
 from pymongo.results import InsertOneResult
 
-import datatypes
+from data_types import data_classes
 
 ACCOUNTS = 'accounts'
 PROJECTS = 'projects'
@@ -101,42 +101,42 @@ class MongoBase(MongoClient):
 class MongoAdder(MongoBase):
     """Содержит методы для добавления объектов в коллекции."""
 
-    async def add_project(self, project: datatypes.Project) -> str:
+    async def add_project(self, project: data_classes.Project) -> str:
         return await self.add_object(PROJECTS, asdict(project))
 
-    async def add_bid(self, bid: datatypes.Bid) -> str:
+    async def add_bid(self, bid: data_classes.Bid) -> str:
         return await self.add_object(BIDS, asdict(bid))
 
-    async def add_chat(self, chat: datatypes.Chat) -> str:
+    async def add_chat(self, chat: data_classes.Chat) -> str:
         return await self.add_object(CHATS, asdict(chat))
 
-    async def add_review(self, review: datatypes.Review) -> str:
+    async def add_review(self, review: data_classes.Review) -> str:
         return await self.add_object(REVIEWS, asdict(review))
 
 
 class MongoGetter(MongoBase):
     """Содержит методы для поиска объектов в коллекциях."""
 
-    async def get_all_accounts(self) -> List[datatypes.Account]:
+    async def get_all_accounts(self) -> List[data_classes.Account]:
         accounts = []
         for a in await self.get_object(ACCOUNTS, {}, many=True):
-            account = datatypes.Account.from_dict(a)
+            account = data_classes.Account.from_dict(a)
             accounts.append(account)
         return accounts
 
-    async def get_all_projects(self) -> List[datatypes.Project]:
+    async def get_all_projects(self) -> List[data_classes.Project]:
         projects = []
         for p in await self.get_object(PROJECTS, {}, many=True):
-            project = datatypes.Project.from_dict(p)
+            project = data_classes.Project.from_dict(p)
             projects.append(project)
         return projects
 
-    async def get_project_by_id(self, project_id: str) -> Optional[datatypes.Project]:
+    async def get_project_by_id(self, project_id: str) -> Optional[data_classes.Project]:
         _filter = {'_id': ObjectId(project_id)}
         project_dict = await self.get_object(PROJECTS, _filter)
-        return datatypes.Project.from_dict(project_dict)
+        return data_classes.Project.from_dict(project_dict)
 
-    async def get_projects_by_user(self, client_id: int = None, worker_id: int = None) -> List[datatypes.Project]:
+    async def get_projects_by_user(self, client_id: int = None, worker_id: int = None) -> List[data_classes.Project]:
         if client_id:
             _filter = {'client_id': client_id}
         elif worker_id:
@@ -146,39 +146,39 @@ class MongoGetter(MongoBase):
 
         projects = []
         for p in await self.get_object(PROJECTS, _filter, many=True):
-            project = datatypes.Project.from_dict(p)
+            project = data_classes.Project.from_dict(p)
             projects.append(project)
         return projects
 
-    async def get_projects_by_subjects(self, subjects: List[str], only_active=True) -> List[datatypes.Project]:
+    async def get_projects_by_subjects(self, subjects: List[str], only_active=True) -> List[data_classes.Project]:
         _filter = {'data.subject': {'$in': subjects}}
         if only_active:
             _filter.update(status='Активен')
         projects = []
         for p in await self.get_object(PROJECTS, _filter, many=True):
-            project = datatypes.Project.from_dict(p)
+            project = data_classes.Project.from_dict(p)
             projects.append(project)
         return projects
 
-    async def get_account_by_id(self, user_id: int) -> Optional[datatypes.Account]:
+    async def get_account_by_id(self, user_id: int) -> Optional[data_classes.Account]:
         _filter = {'_id': user_id}
         account = await self.get_object(ACCOUNTS, _filter)
-        return datatypes.Account.from_dict(account)
+        return data_classes.Account.from_dict(account)
 
-    async def get_chat_by_id(self, chat_id: int) -> Optional[datatypes.Chat]:
+    async def get_chat_by_id(self, chat_id: int) -> Optional[data_classes.Chat]:
         _filter = {'_id': chat_id}
         chat = await self.get_object(CHATS, _filter)
-        return datatypes.Chat.from_dict(chat)
+        return data_classes.Chat.from_dict(chat)
 
-    async def get_bid_by_id(self, bid_id: str) -> Optional[datatypes.Bid]:
+    async def get_bid_by_id(self, bid_id: str) -> Optional[data_classes.Bid]:
         _filter = {'_id': ObjectId(bid_id)}
         bid = await self.get_object(BIDS, _filter)
-        return datatypes.Bid.from_dict(bid)
+        return data_classes.Bid.from_dict(bid)
 
-    async def get_reviews_by_worker(self, worker_id: int) -> List[datatypes.Review]:
+    async def get_reviews_by_worker(self, worker_id: int) -> List[data_classes.Review]:
         reviews = []
         for r in await self.get_object(REVIEWS, {'worker_id': worker_id}, many=True):
-            reviews.append(datatypes.Review.from_dict(r))
+            reviews.append(data_classes.Review.from_dict(r))
         return reviews
 
 
@@ -212,7 +212,7 @@ class MongoUpdater(MongoBase):
         _filter = {'_id': user_id}
         await self.update_object(ACCOUNTS, _filter, '$set', {'subjects': subjects})
 
-    async def update_account_profile(self, user_id: int, profile: datatypes.Profile):
+    async def update_account_profile(self, user_id: int, profile: data_classes.Profile):
         _filter = {'_id': user_id}
         await self.update_object(ACCOUNTS, _filter, '$set', {'profile': asdict(profile)})
 
@@ -271,5 +271,6 @@ class MongoProfileUpdater(MongoUpdater):
         await self.update_profile(user_id, 'works', works)
 
 
-class MongoDB(MongoAdder, MongoGetter, MongoDeleter, MongoProjectUpdater, MongoProfileUpdater):
+class MongoDB(MongoAdder, MongoGetter, MongoDeleter,
+              MongoProjectUpdater, MongoProfileUpdater):
     """Наследует все наборы методов управления базой."""

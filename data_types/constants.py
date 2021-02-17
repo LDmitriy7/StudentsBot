@@ -1,6 +1,12 @@
 from aiogram.utils.helper import Helper, Item, HelperMode
 
 
+class TextQueries(Helper):
+    INVITE_PROJECT = Item()  # для инлайн-запроса на приглашение в проект
+    DEL_MESSAGE = Item()  # для удаления связанного сообщения
+    REFUSE_WORK_PRICE = Item()  # для отказа от предложенной цены
+
+
 class Prefixes(Helper):
     """Command-prefixes for deep-links and query.data"""
     GET_PROJECT_ = Item()  # для получения проекта

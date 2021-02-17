@@ -3,23 +3,12 @@
 from datetime import date, timedelta
 
 from aiogram.types import InlineKeyboardButton as Button
-from aiogram.types import InlineKeyboardMarkup
 from aiogram.utils.helper import Helper, Item
 
-from config import START_LINK
-from datatypes import Prefixes
+from config import BOT_START_LINK
+from data_types import Prefixes, TextQueries
+from data_types.keyboards import InlineKeyboard
 from loader import calendar
-
-DEL_MESSAGE_DATA = 'DEL_MESSAGE'  # для удаления связанного сообщения
-REFUSE_WORK_PRICE = 'REFUSE_WORK_PRICE'  # для отказа от предложенной цены
-
-
-class InlineKeyboard(InlineKeyboardMarkup, Helper):
-    def data_row(self, text: str, callback_data: str):
-        self.row(Button(text, callback_data=callback_data))
-
-    def url_row(self, text: str, url: str):
-        self.row(Button(text, url=url))
 
 
 class GroupMenuKeyboard(InlineKeyboard, Helper):
@@ -53,7 +42,7 @@ def link_button(text: str, url: str):
 def invite_project(worker_id: int):
     """Кнопка 'Заполнить проект' со стартовой ссылкой {prefix}{worker_id}."""
     keyboard = InlineKeyboard()
-    url = START_LINK.format(f'{Prefixes.INVITE_PROJECT_}{worker_id}')
+    url = BOT_START_LINK.format(f'{Prefixes.INVITE_PROJECT_}{worker_id}')
     keyboard.url_row('Заполнить проект', url)
     return keyboard
 
@@ -79,7 +68,7 @@ def del_project(project_id: str):
     keyboard = InlineKeyboard()
     cdata = f'{Prefixes.TOTAL_DEL_PROJECT_}{project_id}'
     keyboard.data_row('Удалить проект', cdata)
-    keyboard.data_row('Отменить', DEL_MESSAGE_DATA)
+    keyboard.data_row('Отменить', TextQueries.DEL_MESSAGE)
     return keyboard
 
 
@@ -88,7 +77,7 @@ def pay_for_project(price: int, project_id: str):
     keyboard = InlineKeyboard()
     cdata = f'{Prefixes.PAY_FOR_PROJECT_}{price}_{project_id}'
     keyboard.data_row(f'Оплатить {price} грн', cdata)
-    keyboard.data_row('Отказаться', REFUSE_WORK_PRICE)
+    keyboard.data_row('Отказаться', TextQueries.REFUSE_WORK_PRICE)
     return keyboard
 
 
@@ -97,7 +86,7 @@ def total_confirm_project(project_id: str):
     keyboard = InlineKeyboard()
     cdata = f'{Prefixes.CONFIRM_PROJECT_}{project_id}'
     keyboard.data_row('Подтвердить', cdata)
-    keyboard.data_row('Отменить', DEL_MESSAGE_DATA)
+    keyboard.data_row('Отменить', TextQueries.DEL_MESSAGE)
     return keyboard
 
 
@@ -107,7 +96,7 @@ def for_project(project_id: str, pick_btn=False, del_btn=False, files_btn=False,
 
     def add_button(text, prefix, as_url=True):
         if as_url:
-            url = START_LINK.format(f'{prefix}{project_id}')
+            url = BOT_START_LINK.format(f'{prefix}{project_id}')
             keyboard.url_row(text, url)
         else:
             cdata = f'{prefix}{project_id}'
@@ -133,7 +122,7 @@ def for_bid(bid_id: str, pick_btn=True, refuse_btn=True):
         button1 = Button('Принять', callback_data=pick_bid_data)
         keyboard.insert(button1)
     if refuse_btn:
-        button2 = Button('Отклонить', callback_data=DEL_MESSAGE_DATA)
+        button2 = Button('Отклонить', callback_data=TextQueries.DEL_MESSAGE)
         keyboard.insert(button2)
     return keyboard
 

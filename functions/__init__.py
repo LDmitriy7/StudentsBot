@@ -11,6 +11,7 @@ from functions._storage import *
 from functions._subjects import *
 from functions._exceptions import *
 from functions._questions import *
+from functions._channel import *
 
 if __name__ == '__main__':
     print(*[i for i in dir() if not i.startswith('_')], sep='\n')

@@ -1,8 +1,9 @@
 """Содержит функции для формирования текстов по шаблонам."""
 
-import datatypes
 from copy import deepcopy
 from dataclasses import asdict
+
+from data_types import data_classes
 
 _POST_TEMPLATE = """
 <b>{status}</b>
@@ -67,7 +68,7 @@ def form_subjects_text(subjects: list) -> str:
     return result
 
 
-def form_post_text(status: str, post_data: datatypes.ProjectData, with_note=False) -> str:
+def form_post_text(status: str, post_data: data_classes.ProjectData, with_note=False) -> str:
     """Form text for post for channel."""
     post_data = deepcopy(post_data)
 
@@ -86,8 +87,7 @@ def form_post_text(status: str, post_data: datatypes.ProjectData, with_note=Fals
     note = post_data.note
     post_data.note = f'<b>Ваша заметка:</b> {note}' if note and with_note else ''
 
-    text = _POST_TEMPLATE.format(**asdict(post_data), status=status)
-    return text
+    return _POST_TEMPLATE.format(**asdict(post_data), status=status)
 
 
 def form_worker_bid_text(worker_nickname: str, worker_url: str, post_url: str, avg_rating: str, bid_text: str) -> str:

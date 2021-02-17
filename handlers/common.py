@@ -6,7 +6,8 @@ import questions.misc
 from keyboards import inline_funcs, markup
 from loader import dp
 from questions import ALL_CONV_STATES_GROUPS
-from datatypes import HandleException
+from data_types import HandleException
+from data_types.constants import TextQueries
 from texts import main as texts
 
 
@@ -39,6 +40,6 @@ async def go_back(msg: types.Message, state: FSMContext):
     return HandleException()  # exception in any case
 
 
-@dp.callback_query_handler(text=inline_funcs.DEL_MESSAGE_DATA)
+@dp.callback_query_handler(text=TextQueries.DEL_MESSAGE)
 async def delete_msg(query: types.CallbackQuery):
     await query.message.delete()

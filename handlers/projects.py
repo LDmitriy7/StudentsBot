@@ -3,7 +3,7 @@
 from aiogram import types
 
 import functions as funcs
-from datatypes import Prefixes, ProjectStatuses
+from data_types import Prefixes, ProjectStatuses
 from filters import DeepLinkPrefix, QueryPrefix
 from keyboards import inline_funcs
 from loader import dp, users_db

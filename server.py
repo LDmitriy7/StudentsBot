@@ -6,9 +6,9 @@ from loader import dp
 
 # Logic Levels:
 # > [handlers, middlewares, filters, questions]
-# >> [functions, loader]
+# >> [functions, loader, keyboards]
 # >>> [subfuncs, utils, database]
-# >>>> [texts, keyboards, data_types, config]
+# >>>> [texts, data_types, config]
 
 async def on_startup(*args):
     import logging

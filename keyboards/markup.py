@@ -1,25 +1,10 @@
 """Набор всех обычных текстовых клавиатур."""
-from aiogram.types import ReplyKeyboardMarkup, KeyboardButton
+from aiogram.types import KeyboardButton
+from data_types.keyboards import ResizedKeyboardMarkup
 
-
-class ResizedKeyboardMarkup(ReplyKeyboardMarkup):
-    """ReplyKeyboardMarkup with [resize_keyboard=True, row_width=2]"""
-
-    def __init__(self, row_width: int = 2):
-        super().__init__(resize_keyboard=True, row_width=row_width)
-
-    def __repr__(self):
-        return super().__str__()
-
-    def __contains__(self, item):
-        buttons = []
-        for row in self.keyboard:
-            buttons.extend(row)
-        return item in buttons
-
-
+BACK_BTN = 'Назад'
 CANCEL_BTN = 'Отменить'
-_GO_BACK_BTNS = ['Назад', CANCEL_BTN]
+_GO_BACK_BTNS = [BACK_BTN, CANCEL_BTN]
 
 # главная клавиатура
 main_kb = ResizedKeyboardMarkup()
@@ -30,7 +15,7 @@ main_kb.add(
 
 # клавиатура для авторов
 worker_kb = ResizedKeyboardMarkup()
-worker_kb.add('Мои работы', 'Поиск заказов', 'Мой профиль', 'Мои предметы', 'Назад')
+worker_kb.add('Мои работы', 'Поиск заказов', 'Мой профиль', 'Мои предметы', BACK_BTN)
 
 # клавиатура для отмены или шага назад
 go_back_kb = ResizedKeyboardMarkup()

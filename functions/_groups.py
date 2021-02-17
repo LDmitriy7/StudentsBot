@@ -2,10 +2,11 @@ from typing import Optional
 
 from aiogram import types
 
-import datatypes
-from datatypes import PairChats, ProjectStatuses, UserRoles
+from data_types import ProjectStatuses, UserRoles
+from data_types.data_classes import PairChats, Project
 from keyboards import inline_funcs
 from loader import bot, users_db
+from subfuncs import decorators as current
 from utils.chat_creator import create_pair_chats
 
 __all__ = ['create_and_save_groups', 'get_project_status', 'get_user_role',
@@ -27,7 +28,8 @@ async def create_and_save_groups(client_id: int, worker_id: int, project_id: str
     return pair_chats
 
 
-async def get_project_for_chat(chat: types.Chat) -> Optional[datatypes.Project]:
+@current.set_chat
+async def get_project_for_chat(chat: types.Chat = None) -> Optional[Project]:
     """Get linked project for chat or None."""
     chat = await users_db.get_chat_by_id(chat.id)
     try:
@@ -37,24 +39,23 @@ async def get_project_for_chat(chat: types.Chat) -> Optional[datatypes.Project]:
     return project
 
 
-async def get_project_status(chat: types.Chat) -> Optional[str]:
+@current.set_chat
+async def get_project_status(chat: types.Chat = None) -> Optional[str]:
     """Return status of linked project or None."""
-    project = await get_project_for_chat(chat)
+    project = await get_project_for_chat(chat=chat)
     return project.status if project else None
 
 
-async def get_user_role(chat: types.Chat) -> Optional[str]:
+@current.set_chat
+async def get_user_role(chat: types.Chat = None) -> Optional[str]:
     """Return user role in chat or None."""
     chat = await users_db.get_chat_by_id(chat.id)
     return chat.user_role if chat else None
 
 
+@current.set_chat
 async def get_group_keyboard(chat: types.Chat = None) -> inline_funcs.GroupMenuKeyboard:
-    """Создает меню для группы, основываясь на статусе проекта и роли юзера.
-    By default: chat = current Chat."""
-    if chat is None:
-        chat = types.Chat.get_current()
-
+    """Создает меню для группы, основываясь на статусе проекта и роли юзера."""
     pstatus = await get_project_status(chat)
     user_role = await get_user_role(chat)
 

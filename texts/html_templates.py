@@ -26,7 +26,7 @@ REVIEW_TEMPLATE = """
 """
 
 AVG_RATING_TEMPLATE = """
-<p>Качество: {quality} ({quality_num})</p>
-<p>Сроки: {terms} ({terms_num})</p>
-<p>Контактность: {contact} ({contact_num})</p>
+<p>Качество: {quality} ({quality_num:.2f})</p>
+<p>Сроки: {terms} ({terms_num:.2f})</p>
+<p>Контактность: {contact} ({contact_num:.2f})</p>
 """

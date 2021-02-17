@@ -2,7 +2,7 @@ from aiogram import types
 from aiogram.dispatcher import FSMContext
 
 import functions as funcs
-from datatypes import ProjectStatuses, UserRoles, Prefixes
+from data_types import ProjectStatuses, UserRoles, Prefixes, TextQueries
 from filters import find_pair_chat, QueryPrefix
 from keyboards import inline_funcs
 from keyboards.inline_funcs import GroupMenuKeyboard
@@ -43,7 +43,7 @@ async def offer_price(msg: types.Message, pchat_id: int, state: FSMContext):
 )
 async def pay_for_project(query: types.CallbackQuery, pchat_id: int, payload: str):
     client_id, msg = query.from_user.id, query.message
-    client_balance = await funcs.get_account_balance(client_id)
+    client_balance = await funcs.get_account_balance()
     price, project_id = payload.split('_')
     price = int(price)
 
@@ -59,7 +59,7 @@ async def pay_for_project(query: types.CallbackQuery, pchat_id: int, payload: st
 
 
 @dp.callback_query_handler(
-    find_pair_chat, text=inline_funcs.REFUSE_WORK_PRICE,
+    find_pair_chat, text=TextQueries.REFUSE_WORK_PRICE,
     pstatus=ProjectStatuses.ACTIVE, user_role=UserRoles.CLIENT
 )
 async def refuse_work_price(query: types.CallbackQuery, pchat_id: int):

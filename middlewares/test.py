@@ -3,8 +3,7 @@ from aiogram.dispatcher.middlewares import BaseMiddleware
 
 import functions as funcs
 import subfuncs
-from data_types.common import HandleException
-from data_types.for_quests import ConvState, ConvStatesGroup
+from data_types.for_quests import ConvState, ConvStatesGroup, HandleException
 from loader import dp
 
 

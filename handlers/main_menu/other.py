@@ -20,7 +20,7 @@ async def send_guide(msg: types.Message):
 @dp.message_handler(text='Меню исполнителя')
 async def worker_menu(msg: types.Message):
     account = await users_db.get_account_by_id(msg.from_user.id)
-    profile = account.profile if account else None
+    profile = account and account.profile or None
     if profile:
         await msg.answer('Меню исполнителя:', reply_markup=markup.worker_kb)
     else:

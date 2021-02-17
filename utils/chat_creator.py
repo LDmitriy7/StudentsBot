@@ -7,7 +7,7 @@ from telethon import TelegramClient
 from telethon.tl.functions.messages import CreateChatRequest, EditChatAdminRequest, ExportChatInviteRequest
 
 from config import API_HASH, API_ID, CONV_BOT_USERNAME, BOT_USERNAME
-from datatypes import Chat, PairChats
+from data_types.data_classes import Chat, PairChats
 
 
 async def create_chat(app, title: str) -> Tuple[int, str]:

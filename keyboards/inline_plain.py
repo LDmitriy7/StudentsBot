@@ -1,21 +1,14 @@
 """Простые инлайновые клавиатуры."""
-from typing import List
 
 from aiogram.types import InlineKeyboardButton as Button
-from aiogram.types import InlineKeyboardMarkup
-from aiogram.utils.helper import Helper, Item
+from aiogram.utils.helper import Item
+from data_types.keyboards import InlineKeyboard
+from data_types.constants import TextQueries
 
-INVITE_PROJECT_QUERY = 'invite_project'
 
-
-def _get_same_inline_button(buttons: List[str]):
+def _get_same_inline_button(buttons: list[str]):
     """Создает инлайн-кнопки из обычных, где [callback_data = text]"""
     return [Button(btn, callback_data=btn) for btn in buttons]
-
-
-class InlineKeyboard(InlineKeyboardMarkup, Helper):
-    def add_row(self, text: str, callback_data: str):
-        self.row(Button(text, callback_data=callback_data))
 
 
 class WorkTypeKeyboard(InlineKeyboard):
@@ -49,7 +42,7 @@ find_subject.row(Button('Найти предмет', switch_inline_query_current
 
 # для предложения проекта заказчику
 invite_project = InlineKeyboard()
-invite_project.row(Button('Выбрать чат', switch_inline_query=INVITE_PROJECT_QUERY))
+invite_project.row(Button('Выбрать чат', switch_inline_query=TextQueries.INVITE_PROJECT))
 
 # для выбора типа работы
 work_types = WorkTypeKeyboard(row_width=2)
@@ -57,17 +50,17 @@ work_types.add(*work_types.WORK_TYPE_INLINE_BTNS)
 
 # для пополнения баланса и вывода
 balance = BalanceKeyboard()
-balance.add_row('Пополнить баланс', balance.DEPOSIT_MONEY)
-balance.add_row('Вывести деньги', balance.WITHDRAW_MONEY)
+balance.data_row('Пополнить баланс', balance.DEPOSIT_MONEY)
+balance.data_row('Вывести деньги', balance.WITHDRAW_MONEY)
 
 # для изменения предметов
 subjects = SubjectsKeyboard()
-subjects.add_row('Изменить предметы', subjects.CHANGE_SUBJECTS)
+subjects.data_row('Изменить предметы', subjects.CHANGE_SUBJECTS)
 
 # для изменения профиля
 change_profile = MyProfileKeyboard()
-change_profile.add_row('Изменить никнейм', change_profile.CHANGE_NICKNAME)
-change_profile.add_row('Изменить телефон', change_profile.CHANGE_PHONE_NUMBER)
-change_profile.add_row('Изменить email', change_profile.CHANGE_EMAIL)
-change_profile.add_row('Изменить биографию', change_profile.CHANGE_BIOGRAPHY)
-change_profile.add_row('Изменить примеры работ', change_profile.CHANGE_WORKS)
+change_profile.data_row('Изменить никнейм', change_profile.CHANGE_NICKNAME)
+change_profile.data_row('Изменить телефон', change_profile.CHANGE_PHONE_NUMBER)
+change_profile.data_row('Изменить email', change_profile.CHANGE_EMAIL)
+change_profile.data_row('Изменить биографию', change_profile.CHANGE_BIOGRAPHY)
+change_profile.data_row('Изменить примеры работ', change_profile.CHANGE_WORKS)

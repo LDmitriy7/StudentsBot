@@ -15,7 +15,7 @@ _telegraph = parser['Telegraph']
 
 BOT_TOKEN = _bot['bot_token']
 BOT_USERNAME = _bot['bot_username']
-START_LINK = 'https://t.me/' + _bot["bot_username"] + '?start={}'
+BOT_START_LINK = 'https://t.me/' + _bot["bot_username"] + '?start={}'
 PAYMENTS_PROVIDER_TOKEN = _bot['payments_provider_token']
 
 CONV_BOT_USERNAME = '@' + _conv_bot['bot_username']
@@ -24,7 +24,7 @@ GROUP_ADMIN_ID = _conv_bot.getint('group_admin_id')
 API_ID = _application.getint('api_id')
 API_HASH = _application['api_hash']
 
-MAIN_CHANNEL = '@' + _channel['main_channel']
-MAIN_POST_URL = 't.me/' + _channel['main_channel'] + '/{}'
+CHANNEL_USERNAME = '@' + _channel['main_channel']
+CHANNEL_POST_URL = 't.me/' + _channel['main_channel'] + '/{}'
 
 TELEGRAPH_TOKEN = _telegraph['access_token']

@@ -1,4 +1,4 @@
-from typing import Union, TypeVar, Optional
+from typing import Union, TypeVar
 
 
 def to_seq(obj) -> Union[list, tuple]:

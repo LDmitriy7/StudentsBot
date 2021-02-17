@@ -2,16 +2,14 @@ from aiogram import types
 
 import subfuncs
 from texts.subjects import ALL_SUBJECTS
+from subfuncs import decorators as current
 
 __all__ = ['find_subjects']
 
 
+@current.set_query
 def find_subjects(query: types.InlineQuery = None) -> list[types.InlineQueryResultArticle]:
-    """Поиск предметов, содержащих текст запроса в названии.
-    By default: query = current InlineQuery"""
-
-    if query is None:
-        query = types.InlineQuery.get_current()
+    """Поиск предметов, содержащих текст запроса в названии."""
 
     def make_result(index: int, subject: str):
         imc = types.InputMessageContent(message_text=subject)

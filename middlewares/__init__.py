@@ -1,6 +1,5 @@
 from loader import dp
 from middlewares.my_profile import UpdatePage
-# from middlewares.conv_manager import ConvManager
 from middlewares.subscribe import CheckSubscription
 from middlewares.test import UserDataUpdater, SwitchConvState, AskQuestion
 

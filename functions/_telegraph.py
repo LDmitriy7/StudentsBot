@@ -4,6 +4,8 @@ from typing import List
 from functions.common import count_avg_rating, get_invite_project_url
 from loader import bot, users_db
 from utils import telegraph_api
+from aiogram import types
+from subfuncs import decorators as current
 
 __all__ = ['create_author_page']
 
@@ -13,14 +15,15 @@ async def get_file_urls(file_ids: list) -> List[str]:
     return [await (await bot.get_file(file_id)).get_url() for file_id in file_ids]
 
 
-async def create_author_page(user_id: int) -> str:
+@current.set_user
+async def create_author_page(user: types.User = None) -> str:
     """Create or edit author page and return page_url."""
-    account = await users_db.get_account_by_id(user_id)
-    reviews = await users_db.get_reviews_by_worker(user_id)
+    account = await users_db.get_account_by_id(user.id)
+    reviews = await users_db.get_reviews_by_worker(user.id)
 
     p = account.profile
     photo_urls = await get_file_urls(p.works)
-    invite_project_url = get_invite_project_url(user_id)
+    invite_project_url = get_invite_project_url(user.id)
     avg_rating = count_avg_rating(reviews)
 
     html_content = telegraph_api.make_html_content(
