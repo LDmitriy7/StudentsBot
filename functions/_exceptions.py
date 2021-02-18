@@ -1,5 +1,5 @@
 from aiogram import types
-from data_types import HandleException
+from aiogram.contrib.middlewares.conversation import HandleException
 from collections.abc import Awaitable, Callable
 
 __all__ = ['process_exception']

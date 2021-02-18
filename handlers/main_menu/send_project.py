@@ -1,9 +1,8 @@
 from aiogram import types
 from aiogram.dispatcher import FSMContext
 
-import datatypes
 import functions as funcs
-from datatypes import SendTo, ProjectStatuses
+from data_types import data_classes, SendTo, ProjectStatuses
 from keyboards import markup, inline_funcs
 from loader import dp, users_db
 from questions import CreateProjectConv as States
@@ -17,8 +16,8 @@ async def send_project(msg: types.Message, state: FSMContext):
     status = ProjectStatuses.ACTIVE
     send_to = udata.get('send_to')
 
-    project_data = datatypes.ProjectData.from_dict(udata)
-    project = datatypes.Project(project_data, status, client_id, worker_id)
+    project_data = data_classes.ProjectData.from_dict(udata)
+    project = data_classes.Project(project_data, status, client_id, worker_id)
     project_id = await users_db.add_project(project)
 
     if send_to == SendTo.CHANNEL:

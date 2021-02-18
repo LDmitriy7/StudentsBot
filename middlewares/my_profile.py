@@ -1,12 +1,12 @@
 """Post-Middleware after changing profile in worker_menu/my_profile."""
 from aiogram import types
+from aiogram.contrib.middlewares.conversation import HandleException
 from aiogram.dispatcher import FSMContext
 from aiogram.dispatcher.middlewares import BaseMiddleware
-from data_types.states import ChangeProfile, MiscStates
-from data_types import HandleException
 
 import functions as funcs
 import subfuncs
+from data_types.states import ChangeProfile, MiscStates
 
 
 class UpdatePage(BaseMiddleware):
@@ -23,4 +23,4 @@ class UpdatePage(BaseMiddleware):
         if state_name in cls.FIT_STATE_NAMES:
             state_ctx: FSMContext = states_dict['state']
             await state_ctx.finish()
-            await funcs.create_author_page()
+            await funcs.save_author_page()

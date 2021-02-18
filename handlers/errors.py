@@ -4,11 +4,11 @@ import logging
 from typing import Union
 
 from aiogram import types
+from aiogram.contrib.middlewares.conversation import HandleException
 from aiogram.dispatcher import FSMContext
 from aiogram.utils.exceptions import MessageNotModified, MessageToDeleteNotFound, BotBlocked
 
 from loader import dp
-from data_types import HandleException
 from texts import main as texts
 
 logger = logging.getLogger(__name__)

@@ -3,9 +3,9 @@ from typing import List, Optional
 
 from aiogram import types
 from aiogram.utils.exceptions import BadRequest
+from aiogram.contrib.middlewares.conversation import HandleException
 
 import functions.common as funcs
-from data_types import HandleException
 from data_types import data_classes
 from data_types.constants import ProjectStatuses
 from keyboards import inline_funcs, markup

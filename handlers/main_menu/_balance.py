@@ -5,7 +5,7 @@ import functions as funcs
 from keyboards import markup, inline_plain
 from keyboards.inline_plain import BalanceKeyboard
 from loader import bot, dp, users_db
-from states import Payment as States
+from data_types.states import Payment as States
 
 
 @dp.pre_checkout_query_handler(state='*')
@@ -23,7 +23,7 @@ async def accrue_money(msg: types.Message):
 
 @dp.message_handler(text='Баланс 🤑')
 async def send_balance(msg: types.Message):
-    balance = await funcs.get_account_balance(msg.from_user.id)
+    balance = await funcs.get_account_balance()
     text = f'Ваш баланс: {balance} грн'
     keyboard = inline_plain.balance
     await msg.answer(text, reply_markup=keyboard)

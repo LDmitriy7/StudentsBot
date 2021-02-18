@@ -11,7 +11,7 @@ from texts import templates
 import subfuncs
 
 __all__ = ['count_avg_rating', 'get_invite_project_url', 'get_chat_link', 'get_all_nicknames',
-           'send_post', 'update_post', 'delete_post', 'get_chat_of_update']
+           'send_post', 'update_post', 'delete_post']
 
 
 async def get_chat_link(chat_id: int) -> Optional[str]:

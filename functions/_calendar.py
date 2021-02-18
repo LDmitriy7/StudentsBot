@@ -3,12 +3,13 @@ from datetime import date
 from typing import Union
 
 from aiogram import types
+from aiogram.contrib.questions import QuestFunc
+from aiogram.contrib.middlewares.conversation import HandleException
 
-from data_types import HandleException
 from keyboards import inline_funcs
 from loader import calendar
-from utils.inline_calendar import NotInitedException
 from subfuncs import decorators as current
+from utils.inline_calendar import NotInitedException
 
 __all__ = ['handle_calendar_callback']
 
@@ -27,11 +28,15 @@ async def handle_calendar_callback(callback_data, query: types.CallbackQuery = N
     return _date
 
 
-async def _reinit_calendar(msg: types.Message):
+@QuestFunc
+@current.set_query
+async def _reinit_calendar(query: types.CallbackQuery = None):
     keyboard = inline_funcs.make_calendar()
-    await msg.edit_reply_markup(keyboard)
+    await query.message.edit_reply_markup(keyboard)
 
 
-async def _turn_calendar(msg: types.Message):
+@QuestFunc
+@current.set_query
+async def _turn_calendar(query: types.CallbackQuery = None):
     keyboard = calendar.get_keyboard()
-    await msg.edit_reply_markup(keyboard)
+    await query.message.edit_reply_markup(keyboard)

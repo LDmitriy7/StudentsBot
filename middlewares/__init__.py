@@ -1,7 +1,9 @@
+from aiogram.contrib.middlewares.conversation import UserDataUpdater, SwitchConvState
+from aiogram.contrib.middlewares.membership import CheckMembership
+
+from config import CHANNEL_USERNAME
 from loader import dp
 from middlewares.my_profile import UpdatePage
-from middlewares.subscribe import CheckSubscription
-from middlewares.test import UserDataUpdater, SwitchConvState, AskQuestion
 
 
 def setup(middlewares: list):
@@ -9,4 +11,5 @@ def setup(middlewares: list):
         dp.setup_middleware(m())
 
 
-setup([UserDataUpdater, SwitchConvState, AskQuestion, CheckSubscription, UpdatePage])
+dp.setup_middleware(CheckMembership(CHANNEL_USERNAME, f'Сначала подпишитесь на канал {CHANNEL_USERNAME}'))
+setup([UserDataUpdater, SwitchConvState, UpdatePage])

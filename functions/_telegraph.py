@@ -7,7 +7,7 @@ from utils import telegraph_api
 from aiogram import types
 from subfuncs import decorators as current
 
-__all__ = ['create_author_page']
+__all__ = ['save_author_page']
 
 
 async def get_file_urls(file_ids: list) -> List[str]:
@@ -16,8 +16,8 @@ async def get_file_urls(file_ids: list) -> List[str]:
 
 
 @current.set_user
-async def create_author_page(user: types.User = None) -> str:
-    """Create or edit author page and return page_url."""
+async def save_author_page(user: types.User = None) -> str:
+    """Create or edit author page, save and return page_url."""
     account = await users_db.get_account_by_id(user.id)
     reviews = await users_db.get_reviews_by_worker(user.id)
 
@@ -31,4 +31,5 @@ async def create_author_page(user: types.User = None) -> str:
         invite_project_url, photo_urls, avg_rating, reviews
     )
     page_url = await telegraph_api.create_page(p.nickname, html_content, account.page_url)
+    await users_db.update_account_page_url(user.id, page_url)
     return page_url

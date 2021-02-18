@@ -1,10 +1,10 @@
 from aiogram import types
-from aiogram.contrib import fsm_storage, middlewares
+from aiogram.contrib.questions import QuestText, QuestFunc, ConvState, ConvStatesGroup
 
 import functions as funcs
-from data_types import ConvState, ConvStatesGroup, QuestText, QuestFunc, data_classes
+from data_types import data_classes, ProjectStatuses
 from keyboards import inline_funcs, inline_plain, markup
-from loader import dp
+from loader import dp, bot
 from texts import templates
 
 work_type = [
@@ -16,10 +16,11 @@ subject = QuestText('Отправьте название предмета', inli
 
 
 @QuestFunc
-async def date(msg: types.Message):
+async def date():
+    chat = types.Chat.get_current()
     text = 'Выберите дату сдачи'
     keyboard = inline_funcs.make_calendar()
-    await msg.answer(text, reply_markup=keyboard)
+    await bot.send_message(chat.id, text, reply_markup=keyboard)
 
 
 description = QuestText(
@@ -38,14 +39,15 @@ file = QuestText(
 
 
 @QuestFunc
-async def confirm(msg: types.Message):
+async def confirm():
+    chat = types.Chat.get_current()
     udata = await dp.current_state().get_data()
     post_data = data_classes.ProjectData.from_dict(udata)
 
-    post_text = templates.form_post_text('Активен', post_data, with_note=True)
+    post_text = templates.form_post_text(ProjectStatuses.ACTIVE, post_data, with_note=True)
     keyboard = markup.confirm_project_kb
-    await msg.answer('<b>Проверьте свой пост:</b>', reply_markup=keyboard)
-    await msg.answer(post_text)
+    await bot.send_message(chat.id, '<b>Проверьте свой пост:</b>')
+    await bot.send_message(chat.id, post_text, reply_markup=keyboard)
     await funcs.send_files(post_data.files)
 
 
