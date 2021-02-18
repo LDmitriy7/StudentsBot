@@ -16,7 +16,14 @@ class DataType:
             if isinstance(self._id, ObjectId):
                 return str(self._id)
             return self._id
-        raise AttributeError(f'{self.__class__} does not have _id field.')
+        raise AttributeError(f'{self.__class__} does not have id field.')
+
+    @id.setter
+    def id(self, value: Union[str, int, None]):
+        if hasattr(self, '_id'):
+            setattr(self, '_id', value)
+        else:
+            raise AttributeError(f'{self.__class__} does not have id field.')
 
     @classmethod
     def _resolve_fields(cls, obj_data: dict) -> dict:

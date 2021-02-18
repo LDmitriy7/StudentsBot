@@ -6,7 +6,8 @@ import functions as funcs
 import texts
 from data_types import Prefixes, SendTo, TextQueries
 from filters import DeepLinkPrefix
-from keyboards import inline_plain, markup
+from keyboards import inline_plain
+from keyboards.inline_plain import UserRolesKeyboard
 from loader import dp, users_db
 from questions import CreateProjectConv, RegistrationConv
 
@@ -18,18 +19,18 @@ async def entry_create_post(msg: types.Message):
 
 @dp.message_handler(text='Личный проект 🤝')
 async def ask_user_role(msg: types.Message):
-    await msg.answer(texts.start_personal_project, reply_markup=markup.personal_project)
+    await msg.answer(texts.start_personal_project, reply_markup=inline_plain.personal_project)
 
 
-@dp.message_handler(text='Я исполнитель')
-async def send_invite_project_keyboard(msg: types.Message):
-    account = await users_db.get_account_by_id(msg.from_user.id)
+@dp.callback_query_handler(text=UserRolesKeyboard.WORKER)
+async def send_invite_project_keyboard(query: types.CallbackQuery):
+    account = await users_db.get_account_by_id(query.from_user.id)
     if account and account.profile:
         text = 'Выберите <b>заказчика</b> из списка своих чатов'
         keyboard = inline_plain.invite_project
-        await msg.answer(text, reply_markup=keyboard)
+        await query.message.edit_text(text, reply_markup=keyboard)
     else:
-        await msg.answer('Сначала пройдите регистрацию')
+        await query.message.edit_text('Сначала пройдите регистрацию')
         return NewState(RegistrationConv)
 
 
@@ -39,9 +40,9 @@ async def send_project_invite_to_client(query: types.InlineQuery):
     await query.answer([article], cache_time=0, is_personal=True)
 
 
-@dp.message_handler(text='Я заказчик')
-async def entry_personal_project(msg: types.Message):
-    await msg.answer('Сначала заполните проект')
+@dp.callback_query_handler(text=UserRolesKeyboard.CLIENT)
+async def entry_personal_project(query: types.CallbackQuery):
+    await query.message.edit_text('Сначала заполните проект')
     return NewData({'send_to': None}), NewState(CreateProjectConv)
 
 

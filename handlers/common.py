@@ -25,7 +25,6 @@ async def cancel(msg: types.Message, state: FSMContext):
 
 
 @dp.message_handler(text='Назад', state='*')
-@dp.message_handler(commands='back', state='*')
 async def go_back(msg: types.Message, state: FSMContext):
     on_conv_exit = QuestText('Отменено', markup.main_kb)
     return NewState(on_conv_exit=on_conv_exit)

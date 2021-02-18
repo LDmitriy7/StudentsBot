@@ -48,6 +48,6 @@ phone_number.row(KeyboardButton('Отправить номер', request_contact
 phone_number.row(*_GO_BACK_BTNS)
 
 # клавиатура для выбора роли в персональном проекте
-personal_project = ResizedKeyboardMarkup()
-personal_project.row('Я заказчик', 'Я исполнитель')
-personal_project.row(CANCEL_BTN)
+# personal_project = ResizedKeyboardMarkup()
+# personal_project.row('Я заказчик', 'Я исполнитель')
+# personal_project.row(CANCEL_BTN)

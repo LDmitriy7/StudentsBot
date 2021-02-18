@@ -4,7 +4,7 @@ from typing import List, Optional
 from aiogram import types
 
 from config import CHANNEL_USERNAME, CHANNEL_POST_URL, BOT_START_LINK
-from data_types import Prefixes, Update, data_classes
+from data_types import Prefixes, Update, data_classes, ProjectStatuses
 from keyboards import inline_funcs
 from loader import bot, users_db
 from texts import templates
@@ -45,9 +45,8 @@ async def get_all_nicknames() -> set:
 # posts
 
 
-async def send_post(
-        project_id: str, project_status: str, post_data: data_classes.ProjectData
-) -> str:
+async def send_post(project_id: str, post_data: data_classes.ProjectData,
+                    project_status: str = ProjectStatuses.ACTIVE) -> str:
     """Send post to channel. Return post_url."""
     text = templates.form_post_text(project_status, post_data)
     has_files = bool(post_data.files)
@@ -55,6 +54,7 @@ async def send_post(
 
     post_obj = await bot.send_message(CHANNEL_USERNAME, text, reply_markup=keyboard)
     post_url = CHANNEL_POST_URL.format(post_obj.message_id)
+    await users_db.update_project_post_url(project_id, post_url)
     return post_url
 
 

@@ -1,5 +1,6 @@
 """Кнопки 'Предложить идею', 'Инструкция' и 'Меню исполнителя'."""
 from aiogram import types
+from aiogram.contrib.middlewares.conversation import NewState
 
 from keyboards import markup
 from loader import dp, users_db
@@ -20,9 +21,8 @@ async def send_guide(msg: types.Message):
 @dp.message_handler(text='Меню исполнителя')
 async def worker_menu(msg: types.Message):
     account = await users_db.get_account_by_id(msg.from_user.id)
-    profile = account and account.profile or None
-    if profile:
+    if account and account.profile:
         await msg.answer('Меню исполнителя:', reply_markup=markup.worker_kb)
     else:
         await msg.answer('Сначала пройдите регистрацию')
-        return RegistrationConv
+        return NewState(RegistrationConv)

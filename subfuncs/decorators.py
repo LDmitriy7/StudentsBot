@@ -1,6 +1,6 @@
 import functools
 from typing import Awaitable, Callable
-from aiogram import types
+from aiogram import types, Dispatcher
 
 AsyncFunction = Callable[..., Awaitable]
 
@@ -24,7 +24,7 @@ def set_chat(func) -> AsyncFunction:
     async def wrapper(*args, chat: types.Chat = None, **kwargs):
         if chat is None:
             chat = types.Chat.get_current()
-        return await func(*args, chat=chat, **kwargs)
+        return await func(chat=chat, *args, **kwargs)
 
     return wrapper
 
@@ -36,7 +36,7 @@ def set_query(func) -> AsyncFunction:
     async def wrapper(*args, query: types.CallbackQuery = None, **kwargs):
         if query is None:
             query = types.CallbackQuery.get_current()
-        return await func(*args, query=query, **kwargs)
+        return await func(query=query, *args, **kwargs)
 
     return wrapper
 
@@ -48,7 +48,7 @@ def set_inline_query(func) -> AsyncFunction:
     async def wrapper(*args, query: types.InlineQuery = None, **kwargs):
         if query is None:
             query = types.InlineQuery.get_current()
-        return await func(*args, query=query, **kwargs)
+        return await func(query=query, *args, **kwargs)
 
     return wrapper
 
@@ -61,5 +61,17 @@ def set_msg(func) -> AsyncFunction:
         if msg is None:
             msg = types.Message.get_current()
         return await func(msg=msg, *args, **kwargs)
+
+    return wrapper
+
+
+def set_udata(func) -> AsyncFunction:
+    """Set udata = storage data for current User+Chat [if udata is not provided]."""
+
+    @functools.wraps(func)
+    async def wrapper(udata: dict = None, *args, **kwargs):
+        if udata is None:
+            udata = await Dispatcher.get_current().current_state().get_data()
+        return await func(udata=udata, *args, **kwargs)
 
     return wrapper

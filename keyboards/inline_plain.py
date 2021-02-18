@@ -32,6 +32,11 @@ class BalanceKeyboard(InlineKeyboard):
     WITHDRAW_MONEY = Item()
 
 
+class UserRolesKeyboard(InlineKeyboard):
+    CLIENT = Item()
+    WORKER = Item()
+
+
 class SubjectsKeyboard(InlineKeyboard):
     CHANGE_SUBJECTS = Item()
 
@@ -64,3 +69,8 @@ change_profile.data_row('Изменить телефон', change_profile.CHANGE
 change_profile.data_row('Изменить email', change_profile.CHANGE_EMAIL)
 change_profile.data_row('Изменить биографию', change_profile.CHANGE_BIOGRAPHY)
 change_profile.data_row('Изменить примеры работ', change_profile.CHANGE_WORKS)
+
+# для выбора роли в персональном проекте
+personal_project = UserRolesKeyboard()
+personal_project.data_row('Я заказчик', personal_project.CLIENT)
+personal_project.data_row('Я исполнитель', personal_project.WORKER)

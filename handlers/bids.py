@@ -1,14 +1,13 @@
-from aiogram import types
+from aiogram.contrib.middlewares.conversation import HandleException
 from aiogram.dispatcher import FSMContext
 
-import datatypes
 import functions as funcs
-from datatypes import Prefixes, HandleException
+from data_types import Prefixes, data_classes
+from data_types.states import MiscStates as States
 from filters import DeepLinkPrefix, QueryPrefix
 from keyboards import inline_funcs, markup
-from loader import bot, dp, users_db
+from loader import dp, users_db, bot
 from questions import RegistrationConv
-from states import MiscStates as States
 
 
 @dp.message_handler(DeepLinkPrefix(Prefixes.SEND_BID_))
@@ -66,7 +65,7 @@ async def pick_bid(query: types.CallbackQuery, payload: str):
     await query.answer('Поиск свободных чатов...', show_alert=True)
     chats = await funcs.create_and_save_groups(client_id, worker_id, bid.project_id)
 
-    async def send_invite_msg(text: str, user_id: int, chat: datatypes.Chat):
+    async def send_invite_msg(text: str, user_id: int, chat: data_classes.Chat):
         keyboard = inline_funcs.link_button('Перейти в чат', chat.link)
         if user_id == query.from_user.id:
             await query.message.edit_text(text, reply_markup=keyboard)
@@ -77,3 +76,34 @@ async def pick_bid(query: types.CallbackQuery, payload: str):
     worker_text = f'Заказчик ({query.from_user.full_name}) принял вашу заявку, перейдите в чат'
     await send_invite_msg(client_text, client_id, chats.client_chat)
     await send_invite_msg(worker_text, worker_id, chats.worker_chat)
+
+
+@dp.callback_query_handler(QueryPrefix(Prefixes.PICK_PROJECT_), state='*')
+async def pick_project(query: types.CallbackQuery, payload: str):
+    project = await users_db.get_project_by_id(payload)
+    client_id, worker_id = project.client_id, query.from_user.id
+
+    if worker_id == client_id:
+        await query.answer('Вы не можете сами принять проект')
+        return
+
+    account = await users_db.get_account_by_id(worker_id)
+    if not (account and account.profile):
+        await query.answer('Сначала пройдите регистрацию в боте', markup.main_kb)
+        await bot.send_message(worker_id, 'Загляните в меню исполнителя')
+        return
+
+    await query.answer('Поиск свободных чатов...', show_alert=True)
+    chats = await funcs.create_and_save_groups(client_id, worker_id, payload)
+
+    async def send_invite_msg(text: str, user_id: int, chat: Chat):
+        keyboard = inline_funcs.link_button('Перейти в чат', chat.link)
+        await bot.send_message(user_id, text, reply_markup=keyboard)
+
+    client_text = f'Исполнитель ({query.from_user.full_name}) взял ваш проект'
+    worker_text = 'Вы взяли персональный проект, перейдите в чат'
+    await send_invite_msg(client_text, client_id, chats.client_chat)
+    await send_invite_msg(worker_text, worker_id, chats.worker_chat)
+
+    new_text = '<b>Проект принят, бот отправил ссылки в чаты лично</b>'
+    await bot.edit_message_text(new_text, inline_message_id=query.inline_message_id)
