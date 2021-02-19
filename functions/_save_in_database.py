@@ -9,7 +9,6 @@ __all__ = ['save_bid', 'save_profile', 'save_project']
 @current.set_msg
 @current.set_udata
 async def save_bid(msg: types.Message = None, udata: dict = None) -> data_classes.Bid:
-    print(udata)
     bid = data_classes.Bid.from_dict({'worker_id': msg.from_user.id, 'text': msg.text, **udata})
     bid.id = await users_db.add_bid(bid)
     return bid

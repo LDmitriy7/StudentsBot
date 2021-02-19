@@ -6,11 +6,10 @@
 
 from handlers import common  # команды "Отменить", "Назад", удаление сообщения ++
 
-# from handlers import offer_project  # инлайн отправка и принятие личного проекта +
-
 from handlers import main_menu  # обработка команд с главной клавиатуры ++ [-balance]
-from handlers import registration  # все для диалога: регистрация профиля и страницы исполнителя +
-# from handlers import bids  # отправка и принятие заявки на проект +
+from handlers import registration  # все для диалога: регистрация профиля и страницы исполнителя ++
+
+from handlers import bids  # отправка и принятие заявки на проект ++
 
 """
 from handlers import worker_menu  # обработка команд с клавиатуры исполнителя +
@@ -20,5 +19,5 @@ from handlers import group_handlers
 """
 
 # from handlers import projects  # обработка кнопок для проекта: посмотреть файлы, удалить проект ++
-# from handlers import search_subjects  # инлайн-поиск предметов ++
-# from handlers import errors  # подавление некоторых ошибок и предупредительное сообщение ++
+from handlers import search_subjects  # инлайн-поиск предметов ++
+from handlers import errors  # подавление некоторых ошибок и предупредительное сообщение ++
