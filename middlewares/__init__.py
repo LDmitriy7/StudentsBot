@@ -1,4 +1,4 @@
-from aiogram.contrib.middlewares.conversation import UserDataUpdater, SwitchConvState
+from aiogram.contrib.middlewares.conversation import UserDataUpdater, SwitchConvState, AnswerOnReturn
 from aiogram.contrib.middlewares.membership import CheckMembership
 
 from config import CHANNEL_USERNAME
@@ -12,4 +12,4 @@ def setup(middlewares: list):
 
 
 dp.setup_middleware(CheckMembership(CHANNEL_USERNAME, f'Сначала подпишитесь на канал {CHANNEL_USERNAME}'))
-setup([UserDataUpdater, SwitchConvState, UpdatePage])
+setup([UserDataUpdater, SwitchConvState, AnswerOnReturn, UpdatePage])

@@ -1,6 +1,6 @@
 """Handle commands "Отменить", "Назад" and query for deleting bound message."""
 from aiogram import types
-from aiogram.contrib.middlewares.conversation import NewState
+from aiogram.contrib.middlewares.conversation import UpdateData
 from aiogram.contrib.questions import QuestText
 from aiogram.dispatcher import FSMContext
 
@@ -27,7 +27,7 @@ async def cancel(msg: types.Message, state: FSMContext):
 @dp.message_handler(text='Назад', state='*')
 async def go_back(msg: types.Message, state: FSMContext):
     on_conv_exit = QuestText('Отменено', markup.main_kb)
-    return NewState(on_conv_exit=on_conv_exit)
+    return UpdateData(new_state='previous', on_conv_exit=on_conv_exit)
 
 
 @dp.callback_query_handler(text=TextQueries.DEL_MESSAGE)

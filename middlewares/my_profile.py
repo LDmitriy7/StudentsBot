@@ -1,6 +1,5 @@
 """Post-Middleware after changing profile in worker_menu/my_profile."""
 from aiogram import types
-from aiogram.contrib.middlewares.conversation import HandleException
 from aiogram.dispatcher import FSMContext
 from aiogram.dispatcher.middlewares import BaseMiddleware
 
@@ -16,8 +15,8 @@ class UpdatePage(BaseMiddleware):
 
     @classmethod
     async def on_post_process_message(cls, msg: types.Message, results: list, states_dict):
-        if subfuncs.recursive_search_obj(HandleException, results):
-            return
+        # if subfuncs.recursive_search_obj(HandleException, results):
+        #     return
 
         state_name = states_dict.get('raw_state')
         if state_name in cls.FIT_STATE_NAMES:

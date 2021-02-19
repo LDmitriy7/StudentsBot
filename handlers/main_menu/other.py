@@ -1,6 +1,6 @@
 """Кнопки 'Предложить идею', 'Инструкция' и 'Меню исполнителя'."""
 from aiogram import types
-from aiogram.contrib.middlewares.conversation import NewState
+from aiogram.contrib.middlewares.conversation import UpdateData
 
 from keyboards import markup
 from loader import dp, users_db
@@ -25,4 +25,4 @@ async def worker_menu(msg: types.Message):
         await msg.answer('Меню исполнителя:', reply_markup=markup.worker_kb)
     else:
         await msg.answer('Сначала пройдите регистрацию')
-        return NewState(RegistrationConv)
+        return UpdateData(new_state=RegistrationConv)

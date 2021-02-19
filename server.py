@@ -16,7 +16,7 @@ async def on_startup(*args):
     import middlewares
     import handlers
 
-    logging.basicConfig(level=30)
+    logging.basicConfig(level=20)
     logger = logging.getLogger(__name__)
     logger.debug('Import %s', filters)
     logger.debug('Import %s', middlewares)

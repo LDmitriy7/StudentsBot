@@ -1,6 +1,6 @@
 """Все для входа в создание проекта с отправкой в канал/лично/самостоятельно."""
 from aiogram import types
-from aiogram.contrib.middlewares.conversation import HandleException, NewData, NewState
+# from aiogram.contrib.middlewares.conversation import HandleException, NewData, NewState
 
 import functions as funcs
 import texts

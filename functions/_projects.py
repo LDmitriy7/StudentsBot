@@ -3,7 +3,6 @@ from typing import List, Optional
 
 from aiogram import types
 from aiogram.utils.exceptions import BadRequest
-from aiogram.contrib.middlewares.conversation import HandleException
 
 import functions.common as funcs
 from data_types import data_classes
@@ -51,14 +50,15 @@ async def send_projects(projects: List[data_classes.Project], with_note=False,
         await bot.send_message(chat.id, text, reply_markup=keyboard)
 
 
-async def send_project_invitation(client_name: str, worker_id: int, chat_link: str) -> Optional[HandleException]:
+async def send_project_invitation(client_name: str, worker_id: int, chat_link: str) -> bool:
     """Try to send invitation to worker, return Message or HandleException."""
     text = f'Заказчик ({client_name}) предложил вам личный проект'
     keyboard = inline_funcs.link_button('Перейти в чат', chat_link)
     try:
         await bot.send_message(worker_id, text, reply_markup=keyboard)
+        return True
     except BadRequest:
-        return HandleException()
+        return False
 
 
 @current.set_chat
@@ -70,7 +70,7 @@ async def send_personal_project(worker_id: int, worker_chat_link: str, client_na
         client_name = types.User.get_current().full_name
 
     result = await send_project_invitation(client_name, worker_id, worker_chat_link)
-    if isinstance(result, HandleException):  # распространяем исключение
+    if result is False:  # распространяем исключение
         return False
 
     keyboard = inline_funcs.link_button('Перейти в чат', worker_chat_link)
