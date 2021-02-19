@@ -1,4 +1,4 @@
-"""Imports all group_handlers sets.
+"""Imports all handlers sets.
 1) common (special) group_handlers must be at the top
 2) balance should be closer to the top (for guaranteed deposits)
 3) errors must be at the end.
@@ -18,6 +18,6 @@ from handlers import group_handlers
 
 """
 
-# from handlers import projects  # обработка кнопок для проекта: посмотреть файлы, удалить проект ++
+from handlers import projects  # обработка кнопок для проекта: посмотреть файлы, удалить проект ++
 from handlers import search_subjects  # инлайн-поиск предметов ++
 from handlers import errors  # подавление некоторых ошибок и предупредительное сообщение ++
