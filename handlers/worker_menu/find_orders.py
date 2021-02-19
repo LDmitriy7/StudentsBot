@@ -8,8 +8,7 @@ from loader import dp, users_db
 async def find_orders(msg: types.Message):
     account = await users_db.get_account_by_id(msg.from_user.id)
     if not account.subjects:
-        await msg.answer('<b>Вы еще не выбрали ни одного предмета</b>')
-        return
+        return '<b>Вы еще не выбрали ни одного предмета</b>'
 
     projects = await users_db.get_projects_by_subjects(account.subjects)
     if projects:

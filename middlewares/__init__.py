@@ -12,4 +12,4 @@ def setup(middlewares: list):
 
 
 dp.setup_middleware(CheckMembership(CHANNEL_USERNAME, f'Сначала подпишитесь на канал {CHANNEL_USERNAME}'))
-setup([AnswerOnReturn, UpdateUserState, UpdatePage])
+setup([AnswerOnReturn, UpdateUserState])
