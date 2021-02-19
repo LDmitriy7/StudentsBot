@@ -9,7 +9,7 @@ def set_user(func) -> AsyncFunction:
     """Set user = current User [if user not provided]."""
 
     @functools.wraps(func)
-    async def wrapper(user: types.User = None, *args, **kwargs):
+    async def wrapper(*args, user: types.User = None, **kwargs):
         if user is None:
             user = types.User.get_current()
         return await func(user=user, *args, **kwargs)
@@ -57,7 +57,7 @@ def set_msg(func) -> AsyncFunction:
     """Set msg = current Message [if msg is not provided]."""
 
     @functools.wraps(func)
-    async def wrapper(msg: types.Message = None, *args, **kwargs):
+    async def wrapper(*args, msg: types.Message = None, **kwargs):
         if msg is None:
             msg = types.Message.get_current()
         return await func(msg=msg, *args, **kwargs)
@@ -69,7 +69,7 @@ def set_udata(func) -> AsyncFunction:
     """Set udata = storage data for current User+Chat [if udata is not provided]."""
 
     @functools.wraps(func)
-    async def wrapper(udata: dict = None, *args, **kwargs):
+    async def wrapper(*args, udata: dict = None, **kwargs):
         if udata is None:
             udata = await Dispatcher.get_current().current_state().get_data()
         return await func(udata=udata, *args, **kwargs)

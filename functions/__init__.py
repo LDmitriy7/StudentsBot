@@ -9,9 +9,7 @@ from functions.common import *  # +
 from functions._storage import *
 
 from functions._subjects import *
-from functions._exceptions import *
-from functions._questions import *
-from functions._channel import *
+from functions._bids import *
 from functions._invite_project import *
 from functions._offer_project import *
 
