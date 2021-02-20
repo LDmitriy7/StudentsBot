@@ -26,7 +26,7 @@ async def save_author_page(user: types.User = None) -> str:
     invite_project_url = get_invite_project_url(user.id)
     avg_rating = count_avg_rating(reviews)
 
-    html_content = telegraph_api.make_html_content(
+    html_content = await telegraph_api.make_html_content(
         p.deals_amount, p.biography, account.subjects,
         invite_project_url, photo_urls, avg_rating, reviews
     )

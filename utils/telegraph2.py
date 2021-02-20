@@ -48,7 +48,7 @@ def _make_html_avg_rating(avg_rating: dict) -> str:
     return templates.AVG_RATING_TEMPLATE.format(**rates, **rates_num)
 
 
-async def make_html_content(
+def make_html_content(
         deals_amount: int, biography: str, subjects: list[str], invite_project_url: str,
         photo_urls: list[str], avg_rating: dict, reviews: list[data_classes.Review]) -> str:
     """Создает весь html-контент для личной страницы исполнителя."""
@@ -58,7 +58,7 @@ async def make_html_content(
         subjects=', '.join(subjects) or '<b>Не выбраны</b>',
         invite_project_url=invite_project_url,
         avg_rating=_make_html_avg_rating(avg_rating),
-        images=await _make_html_imgs(photo_urls),
+        images=_make_html_imgs(photo_urls),
         reviews=_make_html_reviews(reviews),
         reviews_amount=len(reviews),
     )

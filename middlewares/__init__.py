@@ -11,5 +11,7 @@ def setup(middlewares: list):
         dp.setup_middleware(m())
 
 
-dp.setup_middleware(CheckMembership(CHANNEL_USERNAME, f'Сначала подпишитесь на канал {CHANNEL_USERNAME}'))
-setup([AnswerOnReturn, UpdateUserState])
+check_subscription = CheckMembership(CHANNEL_USERNAME, f'Сначала подпишитесь на канал {CHANNEL_USERNAME}')
+dp.setup_middleware(check_subscription)
+
+setup([AnswerOnReturn, UpdateUserState, UpdatePage])
