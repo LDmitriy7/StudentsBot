@@ -32,7 +32,7 @@ async def send_balance(msg: types.Message):
 @dp.callback_query_handler(text=BalanceKeyboard.DEPOSIT_MONEY)
 async def ask_deposit_amount(query: types.CallbackQuery):
     await States.ask_deposit_amount.set()
-    keyboard = markup.cancel_kb
+    keyboard = markup.go_back_kb()
     await query.answer()
     await query.message.answer('Введите количество (в гривнах):', reply_markup=keyboard)
 
@@ -52,7 +52,7 @@ async def process_deposit(msg: types.Message, state: FSMContext):
 @dp.callback_query_handler(text=BalanceKeyboard.WITHDRAW_MONEY)
 async def ask_withdraw_amount(query: types.CallbackQuery):
     await States.ask_withdraw_amount.set()
-    keyboard = markup.cancel_kb
+    keyboard = markup.go_back_kb()
     await query.answer()
     await query.message.answer('Введите количество (в гривнах):', reply_markup=keyboard)
 

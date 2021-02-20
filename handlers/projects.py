@@ -9,7 +9,7 @@ from keyboards import inline_funcs
 from loader import dp, users_db
 
 
-@dp.message_handler(DeepLinkPrefix(Prefixes.GET_FILES_))
+@dp.message_handler(DeepLinkPrefix(Prefixes.GET_FILES_), state='*')
 async def send_files(msg: types.Message, payload: str):
     """Отправляет все файлы к проекту."""
     project = await users_db.get_project_by_id(payload)
@@ -19,7 +19,7 @@ async def send_files(msg: types.Message, payload: str):
         await msg.answer('Этот проект уже удален')
 
 
-@dp.callback_query_handler(QueryPrefix(Prefixes.DEL_PROJECT_))
+@dp.callback_query_handler(QueryPrefix(Prefixes.DEL_PROJECT_), state='*')
 async def del_project(query: types.CallbackQuery, payload: str):
     """Просит потвердить удаление проекта."""
     text = 'Вы точно хотите удалить проект?'
@@ -27,7 +27,7 @@ async def del_project(query: types.CallbackQuery, payload: str):
     await query.message.answer(text, reply_markup=keyboard)
 
 
-@dp.callback_query_handler(QueryPrefix(Prefixes.TOTAL_DEL_PROJECT_))
+@dp.callback_query_handler(QueryPrefix(Prefixes.TOTAL_DEL_PROJECT_), state='*')
 async def total_del_project(query: types.CallbackQuery, payload: str):
     """Удаляет проект, если он имеет активный статус и принадлежит юзеру."""
     project = await users_db.get_project_by_id(payload)

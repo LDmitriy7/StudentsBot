@@ -1,44 +1,30 @@
-from aiogram.contrib.questions import ConvState, ConvStatesGroup, QuestText
+from aiogram.contrib.questions import ConvState, SingleConvStatesGroup, QuestText
 
-from keyboards import markup
+from keyboards import markup, inline_plain
 
-nickname = QuestText('Придумайте себе никнейм', markup.cancel_kb)
+nickname = QuestText('Введите новый никнейм', markup.go_back_kb(back_btn=False))
 
-phone_number = QuestText('Отправьте номер телефона', markup.phone_number)
+phone_number = QuestText('Отправьте номер телефона', markup.phone_number(back_btn=False))
 
-email = QuestText('Отправьте email', markup.miss_kb)
+email = QuestText('Отправьте новый email', markup.miss_kb(back_btn=False))
 
-biography = QuestText('Напишите о себе все, что считаете нужным', markup.go_back_kb)
+biography = QuestText('Напишите о себе все, что считаете нужным', markup.go_back_kb(back_btn=False))
 
 works = QuestText(
-    'Отправьте примеры ваших работ (только фото), отправляйте фото по одному!',
-    markup.ready_kb,
+    'Добавьте новые примеры работ (только фото), отправляйте фото по одному!',
+    markup.ready_kb(back_btn=False),
 )
 
+subjects = [
+    QuestText('Введите название предмета', markup.ready_kb(back_btn=False)),
+    QuestText('Вы можете использовать поиск', inline_plain.find_subject)
+]
 
-#
-# class ChangePhoneConv(ConvStatesGroup):
-#     phone_number = ConvState(phone_number)
-#
-#
-# class ChangeEmailConv(ConvStatesGroup):
-#     email = ConvState(email)
-#
-#
-# class ChangeBiography(ConvStatesGroup):
-#     biography = ConvState(biography)
-#
-#
-# class ChangeWorks(ConvStatesGroup):
-#     works = ConvState(works)
-#
-#
-# class ChangeNickname(ConvStatesGroup):
-#     nickname = ConvState(nickname)
 
-class ChangeProfile(ConvStatesGroup):
+class ChangeProfile(SingleConvStatesGroup):
     phone_number = ConvState(phone_number)
     email = ConvState(email)
     biography = ConvState(biography)
     works = ConvState(works)
     nickname = ConvState(nickname)
+    subjects = ConvState(subjects)

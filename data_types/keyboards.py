@@ -24,3 +24,10 @@ class InlineKeyboard(InlineKeyboardMarkup, Helper):
 
     def url_row(self, text: str, url: str):
         self.row(InlineKeyboardButton(text, url=url))
+
+
+def make_keyboard(*rows: dict[str, bool]) -> ResizedKeyboardMarkup:
+    kb = ResizedKeyboardMarkup()
+    for row in rows:
+        kb.row(*[button for button, boolean in row.items() if boolean])
+    return kb

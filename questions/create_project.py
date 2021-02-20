@@ -8,7 +8,7 @@ from loader import dp, bot
 from texts import templates
 
 work_type = [
-    QuestText('Это займет пару минут', markup.go_back_kb),
+    QuestText('Это займет пару минут', markup.go_back_kb()),
     QuestText('Введите тип работы:', inline_plain.work_types),
 ]
 
@@ -25,16 +25,16 @@ async def date():
 
 description = QuestText(
     'Теперь опишите задание максимально подробно (только текст). Укажите время сдачи!',
-    markup.go_back_kb
+    markup.go_back_kb()
 )
 
-price = QuestText('Теперь введите цену (в гривнах)', markup.miss_kb)
+price = QuestText('Теперь введите цену (в гривнах)', markup.miss_kb())
 
-note = QuestText('Добавьте заметку (она будет видна только вам)', markup.miss_kb)
+note = QuestText('Добавьте заметку (она будет видна только вам)', markup.miss_kb())
 
 file = QuestText(
     'Отправьте фото или файлы к работе (Загружайте фото по одному!)',
-    markup.ready_kb
+    markup.ready_kb()
 )
 
 
