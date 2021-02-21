@@ -1,4 +1,4 @@
-from keyboards.inline_plain import find_subject, work_types, balance, subjects, change_profile
+from keyboards.inline_plain import find_subject
 
 keyboards = [find_subject, work_types, balance, subjects, change_profile]
 

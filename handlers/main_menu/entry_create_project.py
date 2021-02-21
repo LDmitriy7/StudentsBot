@@ -19,7 +19,7 @@ async def entry_create_post(msg: types.Message):
 
 @dp.message_handler(text='Личный проект 🤝')
 async def ask_user_role(msg: types.Message):
-    await msg.answer(texts.start_personal_project, reply_markup=inline_plain.personal_project)
+    await msg.answer(texts.start_personal_project, reply_markup=UserRolesKeyboard())
 
 
 @dp.callback_query_handler(text=UserRolesKeyboard.WORKER)

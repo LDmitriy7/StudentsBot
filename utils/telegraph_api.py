@@ -5,7 +5,7 @@ from dataclasses import asdict
 
 from aiograph import Telegraph
 
-from config import TELEGRAPH_TOKEN
+from config import TELEGRAPH_TOKEN, BOT_USERNAME
 from data_types import data_classes
 from texts import html_templates as templates
 
@@ -68,7 +68,7 @@ async def create_page(nickname: str, html_content: str, page_url: str = None) ->
     """Создает или редактирует [если задан page_url] страницу исполнителя. Возращает ссылку на нее."""
     title = f'Страница автора {nickname}'
     author_name = 'Бот для студентов'
-    author_url = 'https://t.me/test2_test_bot'
+    author_url = f'https://t.me/{BOT_USERNAME}'
 
     if page_url:
         page_path = page_url.removeprefix(BASE_URL)

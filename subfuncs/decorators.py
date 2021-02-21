@@ -24,7 +24,7 @@ def set_chat(func) -> AsyncFunction:
     async def wrapper(*args, chat: types.Chat = None, **kwargs):
         if chat is None:
             chat = types.Chat.get_current()
-        return await func(chat=chat, *args, **kwargs)
+        return await func(*args, **kwargs, chat=chat)
 
     return wrapper
 

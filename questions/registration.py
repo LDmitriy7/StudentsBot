@@ -1,18 +1,19 @@
 from aiogram.contrib.questions import ConvState, ConvStatesGroup, QuestText
 
 from keyboards import markup
+from keyboards.markup import BackKeyboard, MissKeyboard
 
-nickname = QuestText('Придумайте себе никнейм', markup.go_back_kb())
+nickname = QuestText('Придумайте себе никнейм', BackKeyboard())
 
 phone_number = QuestText('Отправьте номер телефона', markup.phone_number())
 
-email = QuestText('Отправьте email', markup.miss_kb())
+email = QuestText('Отправьте email', MissKeyboard())
 
-biography = QuestText('Напишите о себе все, что считаете нужным', markup.go_back_kb())
+biography = QuestText('Напишите о себе все, что считаете нужным', BackKeyboard())
 
 works = QuestText(
     'Отправьте примеры ваших работ (только фото), отправляйте фото по одному!',
-    markup.ready_kb(),
+    markup.ReadyKeyboard(),
 )
 
 

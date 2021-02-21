@@ -7,6 +7,7 @@ import texts
 from data_types import Prefixes
 from filters import DeepLinkPrefix, QueryPrefix
 from keyboards import inline_funcs, markup
+from keyboards.markup import MainKeyboard
 from loader import dp, users_db, bot
 from questions import RegistrationConv, SendBidConv
 
@@ -39,7 +40,7 @@ async def send_bid(msg: types.Message):
     full_bid_text = await funcs.get_worker_bid_text(bid.project_id)
     keyboard = inline_funcs.for_bid(bid.id)
     await bot.send_message(bid.client_id, full_bid_text, reply_markup=keyboard)
-    return UpdateData(on_conv_exit=QuestText('Заявка отправлена', markup.main_kb))
+    return UpdateData(on_conv_exit=QuestText('Заявка отправлена', MainKeyboard()))
 
 
 @dp.callback_query_handler(QueryPrefix(Prefixes.PICK_BID_), state='*')

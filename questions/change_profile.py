@@ -1,22 +1,23 @@
 from aiogram.contrib.questions import ConvState, SingleConvStatesGroup, QuestText
 
 from keyboards import markup, inline_plain
+from keyboards.markup import BackKeyboard, MissKeyboard
 
-nickname = QuestText('Введите новый никнейм', markup.go_back_kb(back_btn=False))
+nickname = QuestText('Введите новый никнейм', BackKeyboard(BACK=None))
 
 phone_number = QuestText('Отправьте номер телефона', markup.phone_number(back_btn=False))
 
-email = QuestText('Отправьте новый email', markup.miss_kb(back_btn=False))
+email = QuestText('Отправьте новый email', MissKeyboard(BACK=None))
 
-biography = QuestText('Напишите о себе все, что считаете нужным', markup.go_back_kb(back_btn=False))
+biography = QuestText('Напишите о себе все, что считаете нужным', BackKeyboard(BACK=None))
 
 works = QuestText(
     'Добавьте новые примеры работ (только фото), отправляйте фото по одному!',
-    markup.ready_kb(back_btn=False),
+    markup.ReadyKeyboard(BACK=None),
 )
 
 subjects = [
-    QuestText('Введите название предмета', markup.ready_kb(back_btn=False)),
+    QuestText('Введите название предмета', markup.ReadyKeyboard(BACK=None)),
     QuestText('Вы можете использовать поиск', inline_plain.find_subject)
 ]
 

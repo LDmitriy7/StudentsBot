@@ -4,12 +4,14 @@ from aiogram.contrib.questions import QuestText, QuestFunc, ConvState, ConvState
 import functions as funcs
 from data_types import data_classes, ProjectStatuses
 from keyboards import inline_funcs, inline_plain, markup
+from keyboards.inline_plain import WorkTypeKeyboard
+from keyboards.markup import BackKeyboard, MissKeyboard
 from loader import dp, bot
 from texts import templates
 
 work_type = [
-    QuestText('Это займет пару минут', markup.go_back_kb()),
-    QuestText('Введите тип работы:', inline_plain.work_types),
+    QuestText('Это займет пару минут', BackKeyboard(BACK=None)),
+    QuestText('Введите тип работы:', WorkTypeKeyboard()),
 ]
 
 subject = QuestText('Отправьте название предмета', inline_plain.find_subject)
@@ -25,16 +27,16 @@ async def date():
 
 description = QuestText(
     'Теперь опишите задание максимально подробно (только текст). Укажите время сдачи!',
-    markup.go_back_kb()
+    BackKeyboard()
 )
 
-price = QuestText('Теперь введите цену (в гривнах)', markup.miss_kb())
+price = QuestText('Теперь введите цену (в гривнах)', MissKeyboard())
 
-note = QuestText('Добавьте заметку (она будет видна только вам)', markup.miss_kb())
+note = QuestText('Добавьте заметку (она будет видна только вам)', MissKeyboard())
 
 file = QuestText(
     'Отправьте фото или файлы к работе (Загружайте фото по одному!)',
-    markup.ready_kb()
+    markup.ReadyKeyboard()
 )
 
 
@@ -45,7 +47,7 @@ async def confirm():
     post_data = data_classes.ProjectData.from_dict(udata)
 
     post_text = templates.form_post_text(ProjectStatuses.ACTIVE, post_data, with_note=True)
-    keyboard = markup.confirm_project_kb
+    keyboard = markup.ConfirmProjectKeyboard()
     await bot.send_message(chat.id, '<b>Проверьте свой пост:</b>')
     await bot.send_message(chat.id, post_text, reply_markup=keyboard)
     await funcs.send_files(post_data.files)

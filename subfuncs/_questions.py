@@ -8,7 +8,7 @@ from typing import Optional
 #
 #     if new_state_name is None:  # user has left conversation
 #         await state.finish()
-#         await msg.answer('Отменено', reply_markup=markup.main_kb)
+#         await msg.answer('Отменено', reply_markup=markup.MainKeyboard())
 #     else:
 #         new_state: ConvState = ALL_CONV_STATES[new_state_name]
 #         await ask_question(msg, new_state.question)

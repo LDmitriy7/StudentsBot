@@ -27,8 +27,7 @@ class ProjectStatus(BoundFilter):
         self.pstatus = pstatus
 
     async def check(self, *args) -> bool:
-        chat = types.Chat.get_current()
-        pstatus = await funcs.get_project_status(chat)
+        pstatus = await funcs.get_project_status()
         return pstatus == self.pstatus
 
 
@@ -41,6 +40,5 @@ class ChatUserRole(BoundFilter):
         self.user_role = user_role
 
     async def check(self, *args) -> bool:
-        chat = types.Chat.get_current()
-        user_role = await funcs.get_user_role(chat)
+        user_role = await funcs.get_user_role()
         return user_role == self.user_role

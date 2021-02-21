@@ -40,14 +40,14 @@ async def get_project_for_chat(chat: types.Chat = None) -> Optional[Project]:
 
 
 @current.set_chat
-async def get_project_status(chat: types.Chat = None) -> Optional[str]:
+async def get_project_status(*, chat: types.Chat = None) -> Optional[str]:
     """Return status of linked project or None."""
     project = await get_project_for_chat(chat=chat)
     return project.status if project else None
 
 
 @current.set_chat
-async def get_user_role(chat: types.Chat = None) -> Optional[str]:
+async def get_user_role(*, chat: types.Chat = None) -> Optional[str]:
     """Return user role in chat or None."""
     chat = await users_db.get_chat_by_id(chat.id)
     return chat.user_role if chat else None
@@ -56,12 +56,16 @@ async def get_user_role(chat: types.Chat = None) -> Optional[str]:
 @current.set_chat
 async def get_group_keyboard(chat: types.Chat = None) -> inline_funcs.GroupMenuKeyboard:
     """Создает меню для группы, основываясь на статусе проекта и роли юзера."""
-    pstatus = await get_project_status(chat)
-    user_role = await get_user_role(chat)
+    pstatus = await get_project_status()
+    user_role = await get_user_role()
 
-    call_admin = True
-    offer_price = pstatus == ProjectStatuses.ACTIVE and user_role == UserRoles.WORKER
-    confirm_project = pstatus == ProjectStatuses.IN_PROGRESS and user_role == UserRoles.CLIENT
-    feedback = pstatus == ProjectStatuses.COMPLETED and user_role == UserRoles.CLIENT
+    def make_keyboard():
+        CALL_ADMIN = True
+        OFFER_PRICE = pstatus == ProjectStatuses.ACTIVE and user_role == UserRoles.WORKER
+        CONFIRM_PROJECT = pstatus == ProjectStatuses.IN_PROGRESS and user_role == UserRoles.CLIENT
+        FEEDBACK = pstatus == ProjectStatuses.COMPLETED and user_role == UserRoles.CLIENT
 
-    return inline_funcs.group_menu(call_admin, offer_price, confirm_project, feedback)
+        exclude_btns = {key: None for key, value in locals().items() if not value}
+        return inline_funcs.GroupMenuKeyboard(**exclude_btns)
+
+    return make_keyboard()

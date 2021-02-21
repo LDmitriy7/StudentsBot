@@ -9,7 +9,7 @@ from loader import calendar, dp
 from questions import CreateProjectConv as States
 
 
-@dp.callback_query_handler(text=WorkTypeKeyboard.WORK_TYPE_BTNS, state=States.work_type)
+@dp.callback_query_handler(text=WorkTypeKeyboard.BUTTONS, state=States.work_type)
 async def process_work_type(query: types.CallbackQuery):
     return UpdateData({'work_type': query.data})
 

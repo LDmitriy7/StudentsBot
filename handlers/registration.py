@@ -4,7 +4,7 @@ from aiogram.contrib.middlewares.conversation import UpdateData
 from aiogram.contrib.questions import QuestText
 
 import functions as funcs
-from keyboards import markup
+from keyboards.markup import WorkerKeyboard
 from loader import dp
 from questions import RegistrationConv as States
 
@@ -64,4 +64,4 @@ async def process_nickname(msg: types.Message):
 
     await funcs.save_profile(nickname=msg.text)
     await funcs.save_author_page()  # создание страницы автора
-    return UpdateData(on_conv_exit=QuestText('Регистрация пройдена', markup.worker_kb))
+    return UpdateData(on_conv_exit=QuestText('Регистрация пройдена', WorkerKeyboard()))

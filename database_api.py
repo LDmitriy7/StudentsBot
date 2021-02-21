@@ -5,17 +5,20 @@ from typing import List, Optional, Union
 
 from aiogram.utils.helper import Helper
 from bson import ObjectId
+from eval_ellipsis import EvalEllipsis
 from motor.motor_asyncio import AsyncIOMotorClient, AsyncIOMotorDatabase
 from pymongo.results import InsertOneResult
 
 from data_types import data_classes
 
-ACCOUNTS = 'accounts'
-PROJECTS = 'projects'
-BIDS = 'bids'
-CHATS = 'chats'
-REVIEWS = 'reviews'
-WITHDRAWALS = 'withdrawals'
+ACCOUNTS = ...
+PROJECTS = ...
+BIDS = ...
+CHATS = ...
+REVIEWS = ...
+WITHDRAWALS = ...
+
+EvalEllipsis.to_lower_case(locals())
 
 
 class Indexes(Helper):

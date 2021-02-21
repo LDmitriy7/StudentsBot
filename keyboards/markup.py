@@ -1,58 +1,76 @@
 """Набор всех обычных текстовых клавиатур."""
 from aiogram.types import KeyboardButton
+from typing import Optional
 
-from data_types.keyboards import ResizedKeyboardMarkup, make_keyboard
+from data_types.keyboards import ResizedKeyboard, make_keyboard
+from dataclasses import dataclass
+
+_B = Optional[str]
 
 
-class Buttons:
+class CButtons:
     BACK = 'Назад'
     CANCEL = 'Отменить'
     READY = 'Готово'
     MISS = 'Пропустить'
     RESET = 'Сбросить'
     START_OVER = 'Начать заново'
-    GO_BACK = [BACK, CANCEL]
 
 
-# главная клавиатура
-main_kb = ResizedKeyboardMarkup()
-main_kb.add(
-    'Создать пост ➕', 'Личный проект 🤝', 'Мои заказы 💼', 'Баланс 🤑',
-    'Предложить идею ✍', 'Инструкция 📑', 'Меню исполнителя'
-)
+# --- общие клавиатуры ---
 
-# клавиатура для авторов
-worker_kb = ResizedKeyboardMarkup()
-worker_kb.add('Мои работы', 'Поиск заказов', 'Мой профиль', 'Мои предметы', Buttons.BACK)
+@dataclass
+class BackKeyboard(ResizedKeyboard):
+    BACK: _B = CButtons.BACK
+    CANCEL: _B = CButtons.CANCEL
 
 
-def go_back_kb(back_btn=True, cancel_btn=True):
-    btns = {Buttons.BACK: back_btn, Buttons.CANCEL: cancel_btn}
-    return make_keyboard(btns)
+@dataclass
+class MissKeyboard(ResizedKeyboard):
+    MISS: _B = CButtons.MISS
+    BACK: _B = CButtons.BACK
+    CANCEL: _B = CButtons.CANCEL
 
 
-def miss_kb(miss_btn=True, back_btn=True, cancel_btn=True):
-    """Клавиатура для пропуска выбора"""
-    btns = {Buttons.MISS: miss_btn}, {Buttons.BACK: back_btn, Buttons.CANCEL: cancel_btn}
-    return make_keyboard(*btns)
-
-
-def ready_kb(ready_btn=True, start_over_btn=True, back_btn=True, cancel_btn=True):
-    row = {Buttons.READY: ready_btn, Buttons.START_OVER: start_over_btn}
-    row2 = {Buttons.BACK: back_btn, Buttons.CANCEL: cancel_btn}
-    return make_keyboard(row, row2)
+@dataclass
+class ReadyKeyboard(ResizedKeyboard):
+    READY: _B = CButtons.READY
+    START_OVER: _B = CButtons.START_OVER
+    BACK: _B = CButtons.BACK
+    CANCEL: _B = CButtons.CANCEL
 
 
 # --- частные клавиатуры ---
 
-# клавиатура для отправки проекта
-confirm_project_kb = ResizedKeyboardMarkup()
-confirm_project_kb.row('Отправить проект')
-confirm_project_kb.row(*Buttons.GO_BACK)
+@dataclass
+class MainKeyboard(ResizedKeyboard):
+    CREATE_POST: _B = 'Создать пост ➕'
+    PERSONAL_PROJECT: _B = 'Личный проект 🤝'
+    MY_ORDERS: _B = 'Мои заказы 💼'
+    BALANCE: _B = 'Баланс 🤑'
+    OFFER_IDEA: _B = 'Предложить идею ✍'
+    GUIDE: _B = 'Инструкция 📑'
+    WORKER_MENU: _B = 'Меню исполнителя'
+
+
+@dataclass
+class WorkerKeyboard(ResizedKeyboard):
+    MY_WORKS: _B = 'Мои работы'
+    SEARCH_ORDERS: _B = 'Поиск заказов'
+    MY_PROFILE: _B = 'Мой профиль'
+    MY_SUBJECTS: _B = 'Мои предметы'
+    BACK: _B = CButtons.BACK
+
+
+@dataclass
+class ConfirmProjectKeyboard(ResizedKeyboard):
+    SEND: _B = 'Отправить проект'
+    BACK: _B = CButtons.BACK
+    CANCEL: _B = CButtons.CANCEL
 
 
 # клавиатура для отправки номера
 def phone_number(miss_btn=True, back_btn=True, cancel_btn=True):
-    row = {KeyboardButton('Отправить номер', request_contact=True): True, Buttons.MISS: miss_btn}
-    row2 = {Buttons.BACK: back_btn, Buttons.CANCEL: cancel_btn}
+    row = {KeyboardButton('Отправить номер', request_contact=True): True, CButtons.MISS: miss_btn}
+    row2 = {CButtons.BACK: back_btn, CButtons.CANCEL: cancel_btn}
     return make_keyboard(row, row2)

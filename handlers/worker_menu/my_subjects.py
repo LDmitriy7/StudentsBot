@@ -1,9 +1,10 @@
 from aiogram import types
-from aiogram.dispatcher import FSMContext
-from aiogram.contrib.questions import QuestText
 from aiogram.contrib.middlewares.conversation import UpdateData
+from aiogram.contrib.questions import QuestText
+from aiogram.dispatcher import FSMContext
 
-from keyboards import inline_plain, markup
+from keyboards.inline_plain import SubjectsKeyboard
+from keyboards.markup import WorkerKeyboard
 from loader import dp, users_db
 from questions import ChangeProfile as States
 from texts import templates
@@ -16,10 +17,10 @@ async def send_my_subjects(msg: types.Message):
         text = templates.form_subjects_text(account.subjects)
     else:
         text = '<b>Вы еще не выбрали ни одного предмета</b>'
-    return QuestText(text, inline_plain.subjects)
+    return QuestText(text, SubjectsKeyboard())
 
 
-@dp.callback_query_handler(text=inline_plain.subjects.CHANGE_SUBJECTS)
+@dp.callback_query_handler(text=SubjectsKeyboard.CHANGE_SUBJECTS)
 async def start_change_subjects(query: types.CallbackQuery):
     account = await users_db.get_account_by_id(query.from_user.id)
     return UpdateData({'subjects': account.subjects}, new_state=States.subjects)
@@ -35,7 +36,7 @@ async def reset_subjects(msg: types.Message):
 async def finish_change_subjects(msg: types.Message, state: FSMContext):
     udata = await state.get_data()
     await users_db.update_account_subjects(msg.from_user.id, udata.get('subjects', []))
-    return UpdateData(on_conv_exit=QuestText('Предметы обновлены', markup.worker_kb))
+    return UpdateData(), QuestText('Предметы обновлены', WorkerKeyboard())
 
 
 @dp.message_handler(state=States.subjects)

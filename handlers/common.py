@@ -11,19 +11,19 @@ from loader import dp
 
 @dp.message_handler(text='/start', state='*', chat_type='private')
 async def send_welcome(msg: types.Message):
-    return UpdateData(new_state='exit'), QuestText(texts.welcome, markup.main_kb)
+    return UpdateData(new_state='exit'), QuestText(texts.welcome, markup.MainKeyboard())
 
 
 @dp.message_handler(text='Отменить', state='*')
 @dp.message_handler(commands='cancel', state='*')
 async def cancel(msg: types.Message):
-    keyboard = markup.main_kb if msg.chat.type == 'private' else None
+    keyboard = markup.MainKeyboard() if msg.chat.type == 'private' else None
     return UpdateData(new_state='exit'), QuestText('Отменено', keyboard)
 
 
 @dp.message_handler(text='Назад', state='*')
 async def go_back(msg: types.Message):
-    on_conv_exit = QuestText('Отменено', markup.main_kb)
+    on_conv_exit = QuestText('Отменено', markup.MainKeyboard())
     return UpdateData(new_state='previous', on_conv_exit=on_conv_exit)
 
 

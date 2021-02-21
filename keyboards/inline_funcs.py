@@ -1,35 +1,25 @@
 """Инлайновые клавиатуры с генерацией данных."""
 
+from dataclasses import dataclass
 from datetime import date, timedelta
+from typing import Optional
 
 from aiogram.types import InlineKeyboardButton as Button
-from aiogram.utils.helper import Helper, Item
 
 from config import BOT_START_LINK
 from data_types import Prefixes, TextQueries
-from data_types.keyboards import InlineKeyboard
+from data_types.keyboards import InlineKeyboard, InlineButton
 from loader import calendar
 
-
-class GroupMenuKeyboard(InlineKeyboard, Helper):
-    CALL_ADMIN = Item()
-    OFFER_PRICE = Item()
-    CONFIRM_PROJECT = Item()
-    FEEDBACK = Item()
+_B = Optional[InlineButton]
 
 
-def group_menu(call_admin=False, offer_price=False, confirm_project=False, feedback=False) -> GroupMenuKeyboard:
-    keyboard = GroupMenuKeyboard()
-
-    if call_admin:
-        keyboard.data_row('Вызвать админа', callback_data=keyboard.CALL_ADMIN)
-    if offer_price:
-        keyboard.data_row('Предложить цену', callback_data=keyboard.OFFER_PRICE)
-    if confirm_project:
-        keyboard.data_row('Подтвердить выполнение', callback_data=keyboard.CONFIRM_PROJECT)
-    if feedback:
-        keyboard.data_row('Оставить отзыв', callback_data=keyboard.FEEDBACK)
-    return keyboard
+@dataclass
+class GroupMenuKeyboard(InlineKeyboard):
+    CALL_ADMIN: _B = InlineButton('Вызвать админа')
+    OFFER_PRICE: _B = InlineButton('Предложить цену')
+    CONFIRM_PROJECT: _B = InlineButton('Подтвердить выполнение')
+    FEEDBACK: _B = InlineButton('Оставить отзыв')
 
 
 def link_button(text: str, url: str):

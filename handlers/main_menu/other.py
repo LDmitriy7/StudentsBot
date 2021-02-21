@@ -2,7 +2,7 @@
 from aiogram import types
 from aiogram.contrib.middlewares.conversation import UpdateData
 
-from keyboards import markup
+from keyboards.markup import WorkerKeyboard
 from loader import dp, users_db
 from questions.registration import RegistrationConv
 from texts import main as texts
@@ -22,7 +22,7 @@ async def send_guide(msg: types.Message):
 async def worker_menu(msg: types.Message):
     account = await users_db.get_account_by_id(msg.from_user.id)
     if account and account.profile:
-        await msg.answer('Меню исполнителя:', reply_markup=markup.worker_kb)
+        await msg.answer('Меню исполнителя:', reply_markup=WorkerKeyboard())
     else:
         await msg.answer('Сначала пройдите регистрацию')
         return UpdateData(new_state=RegistrationConv)

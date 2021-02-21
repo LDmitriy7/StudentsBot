@@ -1,14 +1,12 @@
 from dataclasses import asdict, fields
 from typing import List, Optional
 
-from aiogram import types
-
+import subfuncs
 from config import CHANNEL_USERNAME, CHANNEL_POST_URL, BOT_START_LINK
-from data_types import Prefixes, Update, data_classes, ProjectStatuses
+from data_types import Prefixes, data_classes, ProjectStatuses
 from keyboards import inline_funcs
 from loader import bot, users_db
 from texts import templates
-import subfuncs
 
 __all__ = ['count_avg_rating', 'get_invite_project_url', 'get_chat_link', 'get_all_nicknames',
            'send_post', 'update_post', 'delete_post']
