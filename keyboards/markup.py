@@ -1,9 +1,12 @@
 """Набор всех обычных текстовых клавиатур."""
-from aiogram.types import KeyboardButton
+from dataclasses import dataclass
 from typing import Optional
 
+from aiogram.types import KeyboardButton
+
 from data_types.keyboards import ResizedKeyboard, make_keyboard
-from dataclasses import dataclass
+
+__all__ = ['Miss', 'Ready', 'ForWorker', 'ConfirmProject', 'Main', 'Back', 'phone_number']
 
 _B = Optional[str]
 
@@ -20,20 +23,20 @@ class CButtons:
 # --- общие клавиатуры ---
 
 @dataclass
-class BackKeyboard(ResizedKeyboard):
+class Back(ResizedKeyboard):
     BACK: _B = CButtons.BACK
     CANCEL: _B = CButtons.CANCEL
 
 
 @dataclass
-class MissKeyboard(ResizedKeyboard):
+class Miss(ResizedKeyboard):
     MISS: _B = CButtons.MISS
     BACK: _B = CButtons.BACK
     CANCEL: _B = CButtons.CANCEL
 
 
 @dataclass
-class ReadyKeyboard(ResizedKeyboard):
+class Ready(ResizedKeyboard):
     READY: _B = CButtons.READY
     START_OVER: _B = CButtons.START_OVER
     BACK: _B = CButtons.BACK
@@ -43,7 +46,7 @@ class ReadyKeyboard(ResizedKeyboard):
 # --- частные клавиатуры ---
 
 @dataclass
-class MainKeyboard(ResizedKeyboard):
+class Main(ResizedKeyboard):
     CREATE_POST: _B = 'Создать пост ➕'
     PERSONAL_PROJECT: _B = 'Личный проект 🤝'
     MY_ORDERS: _B = 'Мои заказы 💼'
@@ -54,7 +57,7 @@ class MainKeyboard(ResizedKeyboard):
 
 
 @dataclass
-class WorkerKeyboard(ResizedKeyboard):
+class ForWorker(ResizedKeyboard):
     MY_WORKS: _B = 'Мои работы'
     SEARCH_ORDERS: _B = 'Поиск заказов'
     MY_PROFILE: _B = 'Мой профиль'
@@ -63,7 +66,7 @@ class WorkerKeyboard(ResizedKeyboard):
 
 
 @dataclass
-class ConfirmProjectKeyboard(ResizedKeyboard):
+class ConfirmProject(ResizedKeyboard):
     SEND: _B = 'Отправить проект'
     BACK: _B = CButtons.BACK
     CANCEL: _B = CButtons.CANCEL

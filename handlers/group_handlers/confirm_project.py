@@ -5,11 +5,11 @@ from aiogram.utils.markdown import hbold as b
 from data_types import ProjectStatuses, UserRoles, Prefixes
 from filters import find_pair_chat, QueryPrefix
 from keyboards import inline_funcs
-from keyboards.inline_funcs import GroupMenuKeyboard
+from keyboards.inline_funcs import GroupMenu
 from loader import dp, users_db, bot
 
 
-@dp.callback_query_handler(text=GroupMenuKeyboard.CONFIRM_PROJECT,
+@dp.callback_query_handler(text=GroupMenu.CONFIRM_PROJECT,
                            pstatus=ProjectStatuses.IN_PROGRESS,
                            user_role=UserRoles.CLIENT)
 async def ask_confirm_project(query: types.CallbackQuery):

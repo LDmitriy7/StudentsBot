@@ -7,10 +7,12 @@ from aiogram.types import InlineKeyboardButton as IButton
 from data_types.constants import TextQueries
 from data_types.keyboards import InlineKeyboard, InlineButton, SameInlineKeyboard
 
+__all__ = ['WorkTypes', 'MyProfile', 'Balance', 'UserRoles', 'Subjects', 'find_subject', 'invite_project']
+
 _B = Optional[InlineButton]
 
 
-class WorkTypeKeyboard(SameInlineKeyboard):
+class WorkTypes(SameInlineKeyboard):
     BUTTONS = [
         'Онлайн помощь', 'Домашняя работа', 'Лабораторная', 'Реферат', 'Курсовая',
         'Дипломная', 'Практика', 'Эссе', 'Доклад', 'Статья', 'Тезисы',
@@ -19,7 +21,7 @@ class WorkTypeKeyboard(SameInlineKeyboard):
 
 
 @dataclass
-class MyProfileKeyboard(InlineKeyboard):
+class MyProfile(InlineKeyboard):
     CHANGE_NICKNAME: _B = InlineButton('Изменить никнейм')
     CHANGE_PHONE_NUMBER: _B = InlineButton('Изменить телефон')
     CHANGE_EMAIL: _B = InlineButton('Изменить email')
@@ -28,19 +30,19 @@ class MyProfileKeyboard(InlineKeyboard):
 
 
 @dataclass
-class BalanceKeyboard(InlineKeyboard):
+class Balance(InlineKeyboard):
     DEPOSIT_MONEY: _B = InlineButton('Пополнить баланс')
     WITHDRAW_MONEY: _B = InlineButton('Вывести деньги')
 
 
 @dataclass
-class UserRolesKeyboard(InlineKeyboard):
+class UserRoles(InlineKeyboard):
     CLIENT: _B = InlineButton('Я заказчик')
     WORKER: _B = InlineButton('Я исполнитель')
 
 
 @dataclass
-class SubjectsKeyboard(InlineKeyboard):
+class Subjects(InlineKeyboard):
     CHANGE_SUBJECTS: _B = InlineButton('Изменить предметы')
 
 

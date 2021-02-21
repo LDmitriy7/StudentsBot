@@ -3,11 +3,10 @@ from aiogram.contrib.middlewares.conversation import UpdateData
 from aiogram.contrib.questions import QuestText
 
 import functions as funcs
+import keyboards as KB
 import texts
 from data_types import Prefixes
 from filters import DeepLinkPrefix, QueryPrefix
-from keyboards import inline_funcs, markup
-from keyboards.markup import MainKeyboard
 from loader import dp, users_db, bot
 from questions import RegistrationConv, SendBidConv
 
@@ -38,9 +37,9 @@ async def send_bid(msg: types.Message):
 
     bid = await funcs.save_bid()
     full_bid_text = await funcs.get_worker_bid_text(bid.project_id)
-    keyboard = inline_funcs.for_bid(bid.id)
+    keyboard = KB.for_bid(bid.id)
     await bot.send_message(bid.client_id, full_bid_text, reply_markup=keyboard)
-    return UpdateData(on_conv_exit=QuestText('Заявка отправлена', MainKeyboard()))
+    return UpdateData(), QuestText('Заявка отправлена', KB.Main())
 
 
 @dp.callback_query_handler(QueryPrefix(Prefixes.PICK_BID_), state='*')

@@ -8,7 +8,7 @@ import functions.common as funcs
 from data_types import data_classes
 from data_types.constants import ProjectStatuses
 from keyboards import inline_funcs
-from keyboards.markup import MainKeyboard
+from keyboards.markup import Main
 from loader import bot, users_db
 from subfuncs import decorators as current
 from texts import templates
@@ -75,7 +75,7 @@ async def send_personal_project(worker_id: int, worker_chat_link: str, client_na
         return False
 
     keyboard = inline_funcs.link_button('Перейти в чат', worker_chat_link)
-    await bot.send_message(chat.id, 'Проект отправлен', reply_markup=MainKeyboard())
+    await bot.send_message(chat.id, 'Проект отправлен', reply_markup=Main())
     await bot.send_message(chat.id, 'Ожидайте исполнителя в чате', reply_markup=keyboard)
     return True
 

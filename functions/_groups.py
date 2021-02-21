@@ -54,10 +54,10 @@ async def get_user_role(*, chat: types.Chat = None) -> Optional[str]:
 
 
 @current.set_chat
-async def get_group_keyboard(chat: types.Chat = None) -> inline_funcs.GroupMenuKeyboard:
+async def get_group_keyboard(*, chat: types.Chat = None) -> inline_funcs.GroupMenu:
     """Создает меню для группы, основываясь на статусе проекта и роли юзера."""
-    pstatus = await get_project_status()
-    user_role = await get_user_role()
+    pstatus = await get_project_status(chat=chat)
+    user_role = await get_user_role(chat=chat)
 
     def make_keyboard():
         CALL_ADMIN = True
@@ -66,6 +66,6 @@ async def get_group_keyboard(chat: types.Chat = None) -> inline_funcs.GroupMenuK
         FEEDBACK = pstatus == ProjectStatuses.COMPLETED and user_role == UserRoles.CLIENT
 
         exclude_btns = {key: None for key, value in locals().items() if not value}
-        return inline_funcs.GroupMenuKeyboard(**exclude_btns)
+        return inline_funcs.GroupMenu(**exclude_btns)
 
     return make_keyboard()

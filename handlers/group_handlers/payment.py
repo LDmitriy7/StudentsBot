@@ -6,13 +6,13 @@ import functions as funcs
 from data_types import ProjectStatuses, UserRoles, Prefixes, TextQueries
 from filters import find_pair_chat, QueryPrefix
 from keyboards import inline_funcs
-from keyboards.inline_funcs import GroupMenuKeyboard
+from keyboards.inline_funcs import GroupMenu
 from loader import dp, users_db, bot
 from questions import ForGroups as States
 
 
 @dp.callback_query_handler(find_pair_chat,
-                           text=GroupMenuKeyboard.OFFER_PRICE,
+                           text=GroupMenu.OFFER_PRICE,
                            pstatus=ProjectStatuses.ACTIVE,
                            user_role=UserRoles.WORKER)
 async def ask_work_price(query: types.CallbackQuery):

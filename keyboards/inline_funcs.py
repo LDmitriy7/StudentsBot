@@ -15,7 +15,7 @@ _B = Optional[InlineButton]
 
 
 @dataclass
-class GroupMenuKeyboard(InlineKeyboard):
+class GroupMenu(InlineKeyboard):
     CALL_ADMIN: _B = InlineButton('Вызвать админа')
     OFFER_PRICE: _B = InlineButton('Предложить цену')
     CONFIRM_PROJECT: _B = InlineButton('Подтвердить выполнение')

@@ -4,12 +4,13 @@ from aiogram.contrib.middlewares.conversation import UpdateData
 from aiogram.contrib.questions import QuestFunc
 
 import functions as funcs
-from keyboards.inline_plain import WorkTypeKeyboard
+from keyboards.inline_plain import WorkTypes
+from keyboards.markup import Ready
 from loader import calendar, dp
 from questions import CreateProjectConv as States
 
 
-@dp.callback_query_handler(text=WorkTypeKeyboard.BUTTONS, state=States.work_type)
+@dp.callback_query_handler(text=WorkTypes.BUTTONS, state=States.work_type)
 async def process_work_type(query: types.CallbackQuery):
     return UpdateData({'work_type': query.data})
 
@@ -38,7 +39,7 @@ async def process_description(msg: types.Message):
 
 @dp.message_handler(state=States.price)
 async def process_price(msg: types.Message):
-    if msg.text == 'Пропустить':
+    if msg.text == KB.Miss.MISS:
         price = None
     elif msg.text.isdigit():
         price = int(msg.text)
@@ -49,7 +50,7 @@ async def process_price(msg: types.Message):
 
 @dp.message_handler(state=States.note)
 async def process_note(msg: types.Message):
-    note = None if msg.text == 'Пропустить' else msg.text
+    note = None if msg.text == KB.Miss.MISS else msg.text
     return UpdateData({'note': note})
 
 
@@ -59,8 +60,8 @@ async def process_file(msg: types.Message):
     return UpdateData(extend_data={'files': file_obj}, new_state=None)
 
 
-@dp.message_handler(text=['Готово', 'Начать заново'], state=States.files)
+@dp.message_handler(text=[Ready.READY, Ready.START_OVER], state=States.files)
 async def process_file_finish(msg: types.Message):
-    if msg.text == 'Начать заново':
+    if msg.text == Ready.START_OVER:
         return UpdateData(delete_keys='files', new_state=None), 'Теперь отправляйте заново'
     return UpdateData(extend_data={'files': []})

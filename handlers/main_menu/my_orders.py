@@ -1,10 +1,11 @@
 from aiogram import types
 
 import functions as funcs
+import keyboards as KB
 from loader import dp, users_db
 
 
-@dp.message_handler(text='Мои заказы 💼')
+@dp.message_handler(text=KB.Main.MY_ORDERS)
 async def send_orders(msg: types.Message):
     projects = await users_db.get_projects_by_user(client_id=msg.from_user.id)
     if projects:

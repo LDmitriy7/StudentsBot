@@ -1,12 +1,3 @@
-from typing import Union, TypeVar
-
-
-def to_seq(obj) -> Union[list, tuple]:
-    if isinstance(obj, (list, tuple)):
-        return obj
-    return [obj]
-
-
 def find_strings(query_text: str, objects: set[str], limit=20) -> set[str]:
     """Find strings with query_text (case insensitive)"""
     results = set()
@@ -34,23 +25,4 @@ def count_avg_values(objects_list: list[dict], obj_fields: list) -> dict:
     return avg_values
 
 
-T = TypeVar('T')
 
-
-def recursive_search_obj(obj_type: type[T], container: Union[list, tuple]) -> T:
-    """Recursive search for instance of obj_type in lists/tuples."""
-    if isinstance(container, (list, tuple)):
-        for item in container:
-            obj = recursive_search_obj(obj_type, item)
-            if obj is not None:  # object found
-                return obj
-    else:
-        if isinstance(container, obj_type):
-            return container
-
-
-if __name__ == '__main__':
-    r = recursive_search_obj(str, [([], [1, ['atr'], {'a': 1}],)])
-    # r = recursive_search_obj(dict, [('str', {'files': []})])
-    # r = recursive_search_obj(int, 1)
-    print(r)
