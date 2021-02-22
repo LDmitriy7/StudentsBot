@@ -2,15 +2,13 @@
 from typing import List
 
 from aiogram import types
+from aiogram.contrib.currents import SetCurrent
 from aiogram.utils.exceptions import BadRequest
 
 import functions.common as funcs
-from data_types import data_classes
-from data_types.constants import ProjectStatuses
-from keyboards import inline_funcs
-from keyboards.markup import Main
+from data_types import data_classes, ProjectStatuses
+from keyboards import inline_funcs, Main
 from loader import bot, users_db
-from subfuncs import decorators as current
 from texts import templates
 
 __all__ = ['send_projects', 'send_project_invitation', 'send_personal_project',
@@ -39,10 +37,10 @@ async def get_project_keyboard(project: data_classes.Project, pick_btn, del_btn,
     return keyboard
 
 
-@current.set_chat
+@SetCurrent.chat
 async def send_projects(projects: List[data_classes.Project], with_note=False,
                         pick_btn=False, del_btn=False, client_chat_btn=False, worker_chat_btn=False,
-                        chat: types.Chat = None):
+                        *, chat: types.Chat):
     """Отправляет проекты по списку (добавляет кнопки, если они выбраны и доступны)."""
 
     for p in projects:
@@ -62,9 +60,9 @@ async def send_project_invitation(client_name: str, worker_id: int, chat_link: s
         return False
 
 
-@current.set_chat
-async def send_personal_project(worker_id: int, worker_chat_link: str, client_name: str = None,
-                                chat: types.Chat = None) -> bool:
+@SetCurrent.chat
+async def send_personal_project(worker_id: int, worker_chat_link: str, client_name: str = None, *,
+                                chat: types.Chat) -> bool:
     """Try to send project to worker, return True on success."""
 
     if client_name is None:

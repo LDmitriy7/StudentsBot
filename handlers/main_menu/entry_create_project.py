@@ -26,7 +26,7 @@ async def send_invite_project_keyboard(query: types.CallbackQuery):
     account = await users_db.get_account_by_id(query.from_user.id)
     if account and account.profile:
         text = 'Выберите <b>заказчика</b> из списка своих чатов'
-        keyboard = KB.invite_project
+        keyboard = KB.choose_invite_chat
         await query.message.edit_text(text, reply_markup=keyboard)
     else:
         await query.message.edit_text('Сначала пройдите регистрацию')

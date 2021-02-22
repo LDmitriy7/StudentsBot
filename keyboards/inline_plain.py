@@ -7,9 +7,16 @@ from aiogram.types import InlineKeyboardButton as IButton
 from data_types.constants import TextQueries
 from data_types.keyboards import InlineKeyboard, InlineButton, SameInlineKeyboard
 
-__all__ = ['WorkTypes', 'MyProfile', 'Balance', 'UserRoles', 'Subjects', 'find_subject', 'invite_project']
+__all__ = [
+    'WorkTypes', 'MyProfile', 'Balance', 'UserRoles', 'Subjects',
+    'find_subject', 'choose_invite_chat', 'Rates'
+]
 
 _B = Optional[InlineButton]
+
+
+class Rates(SameInlineKeyboard):
+    BUTTONS = ['1', '2', '3', '4', '5']
 
 
 class WorkTypes(SameInlineKeyboard):
@@ -51,5 +58,5 @@ find_subject = InlineKeyboard()
 find_subject.row(IButton('Найти предмет', switch_inline_query_current_chat=''))
 
 # для предложения проекта заказчику
-invite_project = InlineKeyboard()
-invite_project.row(IButton('Выбрать чат', switch_inline_query=TextQueries.INVITE_PROJECT))
+choose_invite_chat = InlineKeyboard()
+choose_invite_chat.row(IButton('Выбрать чат', switch_inline_query=TextQueries.INVITE_PROJECT))

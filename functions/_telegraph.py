@@ -5,7 +5,7 @@ from functions.common import count_avg_rating, get_invite_project_url
 from loader import bot, users_db
 from utils import telegraph_api
 from aiogram import types
-from subfuncs import decorators as current
+from aiogram.contrib.currents import SetCurrent
 
 __all__ = ['save_author_page']
 
@@ -15,8 +15,8 @@ async def get_file_urls(file_ids: list) -> List[str]:
     return [await (await bot.get_file(file_id)).get_url() for file_id in file_ids]
 
 
-@current.set_user
-async def save_author_page(user: types.User = None) -> str:
+@SetCurrent.user
+async def save_author_page(*, user: types.User) -> str:
     """Create or edit author page, save and return page_url."""
     account = await users_db.get_account_by_id(user.id)
     reviews = await users_db.get_reviews_by_worker(user.id)

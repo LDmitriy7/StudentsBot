@@ -4,7 +4,7 @@ from typing import Literal
 from aiogram import types
 
 from loader import bot
-from subfuncs import decorators as current
+from aiogram.contrib.currents import SetCurrent
 
 __all__ = ['get_file_tuple', 'send_file', 'send_files']
 
@@ -33,8 +33,8 @@ async def send_file(chat_id: int, file_type: FileType, file_id: str):
         raise TypeError('Forbidden file type')
 
 
-@current.set_chat
-async def send_files(files: list[FileTuple], title='<b>Файлы к проекту:</b>', chat: types.Chat = None):
+@SetCurrent.chat
+async def send_files(files: list[FileTuple], title='<b>Файлы к проекту:</b>', *, chat: types.Chat):
     """Send title and photos/documents if provided."""
 
     if files:

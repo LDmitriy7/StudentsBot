@@ -4,13 +4,12 @@ from aiogram.contrib.middlewares.conversation import UpdateData
 from aiogram.contrib.questions import QuestFunc
 
 import functions as funcs
-from keyboards.inline_plain import WorkTypes
-from keyboards.markup import Ready
+import keyboards as KB
 from loader import calendar, dp
 from questions import CreateProjectConv as States
 
 
-@dp.callback_query_handler(text=WorkTypes.BUTTONS, state=States.work_type)
+@dp.callback_query_handler(text=KB.WorkTypes.BUTTONS, state=States.work_type)
 async def process_work_type(query: types.CallbackQuery):
     return UpdateData({'work_type': query.data})
 
@@ -60,8 +59,8 @@ async def process_file(msg: types.Message):
     return UpdateData(extend_data={'files': file_obj}, new_state=None)
 
 
-@dp.message_handler(text=[Ready.READY, Ready.START_OVER], state=States.files)
+@dp.message_handler(text=[KB.Ready.READY, KB.Ready.START_OVER], state=States.files)
 async def process_file_finish(msg: types.Message):
-    if msg.text == Ready.START_OVER:
+    if msg.text == KB.Ready.START_OVER:
         return UpdateData(delete_keys='files', new_state=None), 'Теперь отправляйте заново'
     return UpdateData(extend_data={'files': []})

@@ -3,4 +3,4 @@ from handlers.group_handlers import commands  # обработка всех ко
 from handlers.group_handlers import entry_dialog  # вступительное сообщение о проекте ++
 from handlers.group_handlers import payment  # ++
 from handlers.group_handlers import confirm_project  # подтверждение выполнения проекта
-# from group_handlers import feedback  # написание отзыва
+from handlers.group_handlers import feedback  # написание отзыва

@@ -146,6 +146,7 @@ class Review(DataType):
     client_name: str
     worker_id: int
     project_id: str
+    subject: str
     rating: Rating
     text: str
     _id: ObjectId = None
