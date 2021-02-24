@@ -2,6 +2,7 @@
 
 from dataclasses import dataclass
 from typing import Optional
+
 from aiogram.types import InlineKeyboardButton as IButton
 
 from data_types.constants import TextQueries

@@ -1,14 +1,14 @@
 from aiogram import types
 
 import subfuncs
+from subfuncs.currents2 import Currents
 from texts.subjects import ALL_SUBJECTS
-from aiogram.contrib.currents import SetCurrent
 
 __all__ = ['find_subjects']
 
 
-@SetCurrent.inline_query
-async def find_subjects(*, query: types.InlineQuery) -> list[types.InlineQueryResultArticle]:
+@Currents.set
+async def find_subjects(*, iquery: types.InlineQuery) -> list[types.InlineQueryResultArticle]:
     """Поиск предметов, содержащих текст запроса в названии."""
 
     def make_result(index: int, subject: str):
@@ -19,5 +19,5 @@ async def find_subjects(*, query: types.InlineQuery) -> list[types.InlineQueryRe
             input_message_content=imc,
         )
 
-    subjects = subfuncs.find_strings(query.query, ALL_SUBJECTS)
+    subjects = subfuncs.find_strings(iquery.query, ALL_SUBJECTS)
     return [make_result(i, s) for i, s in enumerate(subjects)]

@@ -10,23 +10,23 @@ from loader import dp
 
 
 @dp.message_handler(text='/start', state='*', chat_type='private')
-async def send_welcome(msg: types.Message):
+async def send_welcome():
     return UpdateData(new_state='exit'), QuestText(texts.welcome, KB.Main())
 
 
 @dp.message_handler(text=KB.Back.CANCEL, state='*')
 @dp.message_handler(commands='cancel', state='*')
-async def cancel(msg: types.Message):
-    keyboard = KB.Main() if msg.chat.type == 'private' else None
+async def cancel(*, chat_type: str):
+    keyboard = KB.Main() if chat_type == 'private' else None
     return UpdateData(new_state='exit'), QuestText('Отменено', keyboard)
 
 
 @dp.message_handler(text=KB.Back.BACK, state='*')
-async def go_back(msg: types.Message):
+async def go_back():
     on_conv_exit = QuestText('Отменено', KB.Main())
     return UpdateData(new_state='previous', on_conv_exit=on_conv_exit)
 
 
 @dp.callback_query_handler(text=TextQueries.DEL_MESSAGE, state='*')
-async def delete_msg(query: types.CallbackQuery):
-    await query.message.delete()
+async def delete_msg(*, query_msg: types.Message):
+    await query_msg.delete()

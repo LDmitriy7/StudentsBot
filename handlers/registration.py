@@ -10,7 +10,7 @@ from questions import RegistrationConv as States
 
 
 @dp.message_handler(text=KB.Miss.MISS, state=States.phone_number)
-async def miss_phone_number(msg: types.Message):
+async def miss_phone_number():
     return UpdateData({'phone_number': None})
 
 
@@ -21,20 +21,20 @@ async def process_phone_number(msg: types.Message):
 
 
 @dp.message_handler(state=States.email)
-async def process_email(msg: types.Message):
-    if msg.text == KB.Miss.MISS:
+async def process_email(*, text: str):
+    if text == KB.Miss.MISS:
         email = None
-    elif '@' in msg.text:
-        email = msg.text
+    elif '@' in text:
+        email = text
     else:
         return "Похоже, вы ошиблись в email'е"
     return UpdateData({'email': email})
 
 
 @dp.message_handler(state=States.biography)
-async def process_biography(msg: types.Message):
-    if len(msg.text) > 15:
-        return UpdateData({'biography': msg.text})
+async def process_biography(*, text: str):
+    if len(text) > 15:
+        return UpdateData({'biography': text})
     else:
         return 'Напишите не меньше 15 символов'
 
@@ -46,22 +46,21 @@ async def process_works(msg: types.Message):
 
 
 @dp.message_handler(text=[KB.Ready.READY, KB.Ready.START_OVER], state=States.works)
-async def process_works_finish(msg: types.Message):
-    if msg.text == KB.Ready.START_OVER:
+async def process_works_finish(*, text: str):
+    if text == KB.Ready.START_OVER:
         return UpdateData(delete_keys='works', new_state=None), 'Теперь отправляйте фото заново'
     return UpdateData(extend_data={'works': []})
 
 
 @dp.message_handler(state=States.nickname)
-async def process_nickname(msg: types.Message):
-    username = msg.from_user.username
+async def process_nickname(*, text: str, username: str):
     all_nicknames = await funcs.get_all_nicknames()
 
-    if msg.text.lower() == username.lower():
+    if username and text.lower() == username.lower():
         return 'Пожалуйста, не используйте свой юзернейм'
-    if msg.text in all_nicknames:
+    if text in all_nicknames:
         return 'Этот никнейм уже занят'
 
-    await funcs.save_profile(nickname=msg.text)
+    await funcs.save_profile(nickname=text)
     await funcs.save_author_page()  # создание страницы автора
     return UpdateData(), QuestText('Регистрация пройдена', KB.ForWorker())

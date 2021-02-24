@@ -15,8 +15,8 @@ from questions import CreateProjectConv as States
 @dp.message_handler(text=ConfirmProject.SEND, state=States.confirm, udata={'send_to': SendTo.CHANNEL})
 async def send_project_to_channel(msg: types.Message):
     project = await funcs.save_project()
-    post_url = await funcs.send_post(project.id, project.data)
-    return UpdateData(), QuestText(f'<a href="{post_url}">Проект</a> успешно создан', Main())
+    post = await funcs.send_post(project.id, project.data)
+    return UpdateData(), QuestText(f'<a href="{post.url}">Проект</a> успешно создан', Main())
 
 
 @dp.message_handler(text=ConfirmProject.SEND, state=States.confirm, udata={'send_to': SendTo.WORKER})

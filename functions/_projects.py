@@ -2,13 +2,13 @@
 from typing import List
 
 from aiogram import types
-from aiogram.contrib.currents import SetCurrent
 from aiogram.utils.exceptions import BadRequest
 
 import functions.common as funcs
 from data_types import data_classes, ProjectStatuses
 from keyboards import inline_funcs, Main
 from loader import bot, users_db
+from subfuncs.currents2 import Currents
 from texts import templates
 
 __all__ = ['send_projects', 'send_project_invitation', 'send_personal_project',
@@ -37,7 +37,7 @@ async def get_project_keyboard(project: data_classes.Project, pick_btn, del_btn,
     return keyboard
 
 
-@SetCurrent.chat
+@Currents.set
 async def send_projects(projects: List[data_classes.Project], with_note=False,
                         pick_btn=False, del_btn=False, client_chat_btn=False, worker_chat_btn=False,
                         *, chat: types.Chat):
@@ -60,7 +60,7 @@ async def send_project_invitation(client_name: str, worker_id: int, chat_link: s
         return False
 
 
-@SetCurrent.chat
+@Currents.set
 async def send_personal_project(worker_id: int, worker_chat_link: str, client_name: str = None, *,
                                 chat: types.Chat) -> bool:
     """Try to send project to worker, return True on success."""

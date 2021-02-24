@@ -1,5 +1,5 @@
-from aiogram.dispatcher.filters import BoundFilter
 from aiogram import Dispatcher
+from aiogram.dispatcher.filters import BoundFilter
 
 
 class StorageData(BoundFilter):

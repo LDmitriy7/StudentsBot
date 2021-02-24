@@ -1,8 +1,10 @@
-from filters import DeepLinkPrefix, QueryPrefix, InlinePrefix
-from datatypes import Prefixes
-from aiogram import types
-from loader import users_db
 import asyncio
+
+from aiogram import types
+from datatypes import Prefixes
+
+from filters import DeepLinkPrefix, InlinePrefix
+from loader import users_db
 
 
 async def get_all_projects():
@@ -31,7 +33,7 @@ def test_normal_prefixes2():
     for payload in project_ids:
         for prefix in NORMAL_PREFIXES:
             query.data = prefix + payload
-            _filter = QueryPrefix(prefix)
+            _filter = prefix=prefix)
             assert _filter(query) == {'payload': payload}
 
 
@@ -55,5 +57,5 @@ def test_broken_prefixes2():
     for payload in project_ids:
         for prefix in NORMAL_PREFIXES:
             query.data = prefix[:-1] + payload
-            _filter = QueryPrefix(prefix)
+            _filter = prefix=prefix)
             assert _filter(query) is False

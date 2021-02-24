@@ -1,5 +1,6 @@
-from utils.telegraph_api import make_html_content, create_page
 import asyncio
+
+from utils.telegraph_api import make_html_content, create_page
 
 invite_project_url = 'https://t.me/test2_test_bot?start=offer_project_724477101'
 works = ['https://docs.aiohttp.org/en/stable/_static/aiohttp-icon-128x128.png']

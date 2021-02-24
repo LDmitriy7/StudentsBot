@@ -2,9 +2,9 @@ from aiogram import types
 from aiogram.contrib.middlewares.conversation import UpdateData
 from aiogram.utils.markdown import hbold as b
 
-from filters import find_pair_chat
 import functions as funcs
 import keyboards as KB
+from filters import find_pair_chat
 from loader import dp, bot
 from questions import FeedbackConv
 

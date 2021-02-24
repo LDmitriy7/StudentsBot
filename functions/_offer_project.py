@@ -1,4 +1,5 @@
 from aiogram import types
+
 from keyboards import inline_funcs
 
 __all__ = ['make_offer_project_article']

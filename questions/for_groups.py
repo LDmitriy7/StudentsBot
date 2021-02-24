@@ -1,8 +1,8 @@
 from aiogram import types
-from aiogram.contrib.currents import SetCurrent
 from aiogram.contrib.questions import SingleConvStatesGroup, ConvState, ConvStatesGroup, QuestFunc
 
 import keyboards as KB
+from subfuncs.currents2 import Currents
 
 ask_work_price = 'Введите цену в гривнах'
 
@@ -12,34 +12,34 @@ class ForGroups(SingleConvStatesGroup):
 
 
 @QuestFunc
-@SetCurrent.query
-async def ask_quality(*, query: types.CallbackQuery):
+@Currents.set
+async def ask_quality(*, query_msg: types.Message):
     text = 'Оцените качество выполненной работы'
     keyboard = KB.Rates(row_width=5)
-    await query.message.edit_text(text, reply_markup=keyboard)
+    await query_msg.edit_text(text, reply_markup=keyboard)
 
 
 @QuestFunc
-@SetCurrent.query
-async def ask_terms(*, query: types.CallbackQuery):
+@Currents.set
+async def ask_terms(*, query_msg: types.Message):
     text = 'Оцените сроки выполнения работы'
     keyboard = KB.Rates(row_width=5)
-    await query.message.edit_text(text, reply_markup=keyboard)
+    await query_msg.edit_text(text, reply_markup=keyboard)
 
 
 @QuestFunc
-@SetCurrent.query
-async def ask_contact(*, query: types.CallbackQuery):
+@Currents.set
+async def ask_contact(*, query_msg: types.Message):
     text = 'Оцените контактность исполнителя'
     keyboard = KB.Rates(row_width=5)
-    await query.message.edit_text(text, reply_markup=keyboard)
+    await query_msg.edit_text(text, reply_markup=keyboard)
 
 
 @QuestFunc
-@SetCurrent.query
-async def ask_text(*, query: types.CallbackQuery):
+@Currents.set
+async def ask_text(*, query_msg: types.Message):
     text = 'Напишите небольшой отзыв'
-    await query.message.edit_text(text)
+    await query_msg.edit_text(text)
 
 
 class FeedbackConv(ConvStatesGroup):

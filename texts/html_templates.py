@@ -19,10 +19,9 @@ PAGE_TEMPLATE = """
 REVIEW_TEMPLATE = """
 <aside>{client_name}:</aside>
 <blockquote>{text}</blockquote>
-
 <p>Качество: {quality}</p>
 <p>Сроки: {terms}</p>
-<p>Контактность: {contact}</p>
+<p>Контактность: {contact}</p>\
 """
 
 AVG_RATING_TEMPLATE = """

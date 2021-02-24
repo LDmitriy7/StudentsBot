@@ -2,9 +2,10 @@
 from typing import Literal
 
 from aiogram import types
+from aiogram.utils.markdown import hbold as b
 
 from loader import bot
-from aiogram.contrib.currents import SetCurrent
+from subfuncs.currents2 import Currents
 
 __all__ = ['get_file_tuple', 'send_file', 'send_files']
 
@@ -33,11 +34,11 @@ async def send_file(chat_id: int, file_type: FileType, file_id: str):
         raise TypeError('Forbidden file type')
 
 
-@SetCurrent.chat
-async def send_files(files: list[FileTuple], title='<b>Файлы к проекту:</b>', *, chat: types.Chat):
+@Currents.set
+async def send_files(files: list[FileTuple], title=b('Файлы к проекту:'), *, chat_id: int):
     """Send title and photos/documents if provided."""
 
     if files:
-        await bot.send_message(chat.id, title)
+        await bot.send_message(chat_id, title)
         for f in files:
-            await send_file(chat.id, *f)
+            await send_file(chat_id, *f)

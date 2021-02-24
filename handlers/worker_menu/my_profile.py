@@ -2,7 +2,6 @@
 from aiogram import types
 from aiogram.contrib.middlewares.conversation import UpdateData
 from aiogram.contrib.questions import QuestText
-from aiogram.dispatcher import FSMContext
 
 import functions as funcs
 import keyboards as KB
@@ -108,10 +107,9 @@ async def process_works(msg: types.Message):
 
 
 @dp.message_handler(text=[KB.Ready.READY, KB.Ready.START_OVER], state=States.works)
-async def process_works_finish(msg: types.Message, state: FSMContext):
+async def process_works_finish(msg: types.Message, *, udata: dict):
     if msg.text == KB.Ready.START_OVER:
         return UpdateData(delete_keys='works', new_state=None), 'Осторожно, вы сбросили все работы'
 
-    udata = await state.get_data()
     await users_db.update_profile_works(msg.from_user.id, udata.get('works', []))
     return UpdateData(), QuestText('Примеры работ обновлены', KB.ForWorker())

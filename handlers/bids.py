@@ -6,7 +6,7 @@ import functions as funcs
 import keyboards as KB
 import texts
 from data_types import Prefixes
-from filters import DeepLinkPrefix, QueryPrefix
+from filters import DeepLinkPrefix
 from loader import dp, users_db, bot
 from questions import RegistrationConv, SendBidConv
 
@@ -42,7 +42,7 @@ async def send_bid(msg: types.Message):
     return UpdateData(), QuestText('Заявка отправлена', KB.Main())
 
 
-@dp.callback_query_handler(QueryPrefix(Prefixes.PICK_BID_), state='*')
+@dp.callback_query_handler(prefix=Prefixes.PICK_BID_, state='*')
 async def pick_bid(query: types.CallbackQuery, payload: str):
     """Принять заявку: пригласить обоих пользователей в чат."""
     bid = await users_db.get_bid_by_id(payload)
@@ -55,7 +55,7 @@ async def pick_bid(query: types.CallbackQuery, payload: str):
     await funcs.send_chat_link(bid.worker_id, worker_text, chats.worker_chat.link)
 
 
-@dp.callback_query_handler(QueryPrefix(Prefixes.PICK_PROJECT_), state='*')
+@dp.callback_query_handler(prefix=Prefixes.PICK_PROJECT_, state='*')
 async def pick_project(query: types.CallbackQuery, payload: str):
     project = await users_db.get_project_by_id(payload)
 

@@ -4,7 +4,7 @@ from aiogram.utils.markdown import hbold as b
 
 import functions as funcs
 from data_types import ProjectStatuses, UserRoles, Prefixes, TextQueries
-from filters import find_pair_chat, QueryPrefix
+from filters import find_pair_chat
 from keyboards import inline_funcs
 from keyboards.inline_funcs import GroupMenu
 from loader import dp, users_db, bot
@@ -36,7 +36,7 @@ async def offer_price(msg: types.Message, pchat_id: int):
 
 
 @dp.callback_query_handler(find_pair_chat,
-                           QueryPrefix(Prefixes.PAY_FOR_PROJECT_),
+                           prefix=Prefixes.PAY_FOR_PROJECT_,
                            pstatus=ProjectStatuses.ACTIVE,
                            user_role=UserRoles.CLIENT)
 async def pay_for_project(query: types.CallbackQuery, pchat_id: int, payload: str):

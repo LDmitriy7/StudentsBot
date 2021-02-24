@@ -1,7 +1,7 @@
-from database_api import MongoDB
 import datatypes as datatypes
 from pytest import mark
-import asyncio
+
+from database_api import MongoDB
 
 _db = MongoDB()
 pdata = {"work_type": "Дипломная", "subject": "Unix", "date": "2021-02-17",

@@ -6,13 +6,14 @@ import subfuncs
 from data_types import data_classes
 from keyboards import inline_funcs
 from loader import users_db, bot
-from aiogram.contrib.currents import SetCurrent
+# from subfuncs.currents2 import Currents
+from subfuncs.currents2 import Currents
 from texts import templates
 
 __all__ = ['get_worker_bid_text', 'send_chat_link']
 
 
-@SetCurrent.msg
+@Currents.set
 async def get_worker_bid_text(project_id: str, *, msg: types.Message) -> str:
     """Формирует полный текст для заявки исполнителя на проект."""
     account = await users_db.get_account_by_id(msg.from_user.id)

@@ -3,7 +3,7 @@ from aiogram import types
 
 from config import PAYMENTS_PROVIDER_TOKEN
 from loader import users_db
-from aiogram.contrib.currents import SetCurrent
+from subfuncs.currents2 import Currents
 
 __all__ = ['make_invoice', 'get_account_balance']
 
@@ -26,7 +26,7 @@ def make_invoice(chat_id: int, price: int) -> dict:
     return invoice_data
 
 
-@SetCurrent.user
+@Currents.set
 async def get_account_balance(*, user: types.User) -> int:
     """Return balance of account or 0."""
     account = await users_db.get_account_by_id(user.id)

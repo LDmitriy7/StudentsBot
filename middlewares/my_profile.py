@@ -14,6 +14,5 @@ class UpdatePage(BaseMiddleware):
     @classmethod
     async def on_post_process_message(cls, msg: types.Message, results: list, states_dict: dict):
         state_name = states_dict.get('raw_state')
-        print(state_name)
         if state_name in cls.FIT_STATE_NAMES:
             await funcs.save_author_page()

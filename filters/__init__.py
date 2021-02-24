@@ -1,7 +1,7 @@
-from loader import dp
 from filters.check_prefixes import DeepLinkPrefix, QueryPrefix, InlinePrefix
-from filters.for_groups import ProjectStatus, ChatUserRole, find_pair_chat
 from filters.common import StorageData
+from filters.for_groups import ProjectStatus, ChatUserRole, find_pair_chat
+from loader import dp
 
 
 def setup(filters: list):

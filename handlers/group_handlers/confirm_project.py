@@ -1,10 +1,11 @@
 from aiogram import types
 from aiogram.contrib.questions import QuestText
 from aiogram.utils.markdown import hbold as b
+
 import functions as funcs
-from data_types import ProjectStatuses, UserRoles, Prefixes
-from filters import find_pair_chat, QueryPrefix
 import keyboards as KB
+from data_types import ProjectStatuses, UserRoles, Prefixes
+from filters import find_pair_chat
 from loader import dp, users_db, bot
 
 
@@ -19,7 +20,7 @@ async def ask_confirm_project(query: types.CallbackQuery):
 
 
 @dp.callback_query_handler(find_pair_chat,
-                           QueryPrefix(Prefixes.CONFIRM_PROJECT_),
+                           prefix=Prefixes.CONFIRM_PROJECT_,
                            pstatus=ProjectStatuses.IN_PROGRESS,
                            user_role=UserRoles.CLIENT)
 async def confirm_project(query: types.CallbackQuery, pchat_id: int, payload: str):

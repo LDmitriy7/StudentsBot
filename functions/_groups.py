@@ -1,12 +1,10 @@
 from typing import Optional
 
-from aiogram import types
-from aiogram.contrib.currents import SetCurrent
-
 from data_types import ProjectStatuses, UserRoles
 from data_types.data_classes import PairChats, Project
 from keyboards import inline_funcs
 from loader import bot, users_db
+from subfuncs.currents2 import Currents
 from utils.chat_creator import create_pair_chats
 
 __all__ = ['create_and_save_groups', 'get_project_status', 'get_user_role',
@@ -28,36 +26,36 @@ async def create_and_save_groups(client_id: int, worker_id: int, project_id: str
     return pair_chats
 
 
-@SetCurrent.chat
-async def get_project_for_chat(*, chat: types.Chat) -> Optional[Project]:
+@Currents.set
+async def get_project_for_chat(*, chat_id: int) -> Optional[Project]:
     """Get linked project for chat or None."""
-    chat = await users_db.get_chat_by_id(chat.id)
     try:
+        chat = await users_db.get_chat_by_id(chat_id)
         project = await users_db.get_project_by_id(chat.project_id)
     except AttributeError:
         project = None
     return project
 
 
-@SetCurrent.chat
-async def get_project_status(*, chat: types.Chat) -> Optional[str]:
+@Currents.set
+async def get_project_status(*, chat_id: int) -> Optional[str]:
     """Return status of linked project or None."""
-    project = await get_project_for_chat(chat=chat)
+    project = await get_project_for_chat(chat_id=chat_id)
     return project.status if project else None
 
 
-@SetCurrent.chat
-async def get_user_role(*, chat: types.Chat) -> Optional[str]:
+@Currents.set
+async def get_user_role(*, chat_id: int) -> Optional[str]:
     """Return user role in chat or None."""
-    chat = await users_db.get_chat_by_id(chat.id)
+    chat = await users_db.get_chat_by_id(chat_id)
     return chat.user_role if chat else None
 
 
-@SetCurrent.chat
-async def get_group_keyboard(*, chat: types.Chat) -> inline_funcs.GroupMenu:
+@Currents.set
+async def get_group_keyboard(*, chat_id: int) -> inline_funcs.GroupMenu:
     """Создает меню для группы, основываясь на статусе проекта и роли юзера."""
-    pstatus = await get_project_status(chat=chat)
-    user_role = await get_user_role(chat=chat)
+    pstatus = await get_project_status(chat_id=chat_id)
+    user_role = await get_user_role(chat_id=chat_id)
 
     def make_keyboard():
         CALL_ADMIN = True

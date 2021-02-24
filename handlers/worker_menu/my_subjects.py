@@ -1,7 +1,6 @@
 from aiogram import types
 from aiogram.contrib.middlewares.conversation import UpdateData
 from aiogram.contrib.questions import QuestText
-from aiogram.dispatcher import FSMContext
 
 import keyboards as KB
 from loader import dp, users_db
@@ -32,15 +31,13 @@ async def reset_subjects(msg: types.Message):
 
 
 @dp.message_handler(text=KB.Ready.READY, state=States.subjects)
-async def finish_change_subjects(msg: types.Message, state: FSMContext):
-    udata = await state.get_data()
+async def finish_change_subjects(msg: types.Message, *, udata: dict):
     await users_db.update_account_subjects(msg.from_user.id, udata.get('subjects', []))
     return UpdateData(), QuestText('Предметы обновлены', KB.ForWorker())
 
 
 @dp.message_handler(state=States.subjects)
-async def change_subject(msg: types.Message, state: FSMContext):
-    udata = await state.get_data()
+async def change_subject(msg: types.Message, *, udata: dict):
     if msg.text in udata['subjects']:
         return UpdateData(remove_data={'subjects': msg.text}, new_state=None), 'Предмет удален'
     else:

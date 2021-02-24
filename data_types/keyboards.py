@@ -1,7 +1,8 @@
+from dataclasses import dataclass
+
 from aiogram.types import ReplyKeyboardMarkup, InlineKeyboardMarkup, InlineKeyboardButton, \
     InlineKeyboardButton as IButton
 from aiogram.utils.helper import Helper, Item
-from dataclasses import dataclass
 
 
 @dataclass
