@@ -1,42 +1,41 @@
-from aiogram.utils.helper import Helper, Item, HelperMode
+from aiogram.utils.helper import Constants
 
 
-class TextQueries(Helper):
-    INVITE_PROJECT = Item()  # для инлайн-запроса на приглашение в проект
-    DEL_MESSAGE = Item()  # для удаления связанного сообщения
-    REFUSE_WORK_PRICE = Item()  # для отказа от предложенной цены
+class TextQueries(Constants):
+    INVITE_PROJECT = ...  # для инлайн-запроса на приглашение в проект
+    DEL_MESSAGE = ...  # для удаления связанного сообщения
+    REFUSE_WORK_PRICE = ...  # для отказа от предложенной цены
 
 
-class Prefixes(Helper):
+class Prefixes(Constants):
     """Command-prefixes for deep-links and query.data"""
-    GET_PROJECT_ = Item()  # для получения проекта
-    DEL_PROJECT_ = Item()  # для запроса удаления проекта
-    TOTAL_DEL_PROJECT_ = Item()  # для удаления проекта
-    PAY_FOR_PROJECT_ = Item()  # для оплаты проекта
-    INVITE_PROJECT_ = Item()  # для предложения проекта автором
-    OFFER_PROJECT_ = Item()  # для предложения проекта заказчиком
-    PICK_PROJECT_ = Item()  # для принятия персонального проекта автором
-    CONFIRM_PROJECT_ = Item()  # для подтверждения выполнения проекта
+    GET_PROJECT_ = ...  # для получения проекта
+    DEL_PROJECT_ = ...  # для запроса удаления проекта
+    TOTAL_DEL_PROJECT_ = ...  # для удаления проекта
+    PAY_FOR_PROJECT_ = ...  # для оплаты проекта
+    INVITE_PROJECT_ = ...  # для предложения проекта автором
+    OFFER_PROJECT_ = ...  # для предложения проекта заказчиком
+    PICK_PROJECT_ = ...  # для принятия персонального проекта автором
+    CONFIRM_PROJECT_ = ...  # для подтверждения выполнения проекта
 
-    GET_FILES_ = Item()  # для получения файлов к проекту
+    GET_FILES_ = ...  # для получения файлов к проекту
 
-    SEND_BID_ = Item()  # для заявки на проект
-    PICK_BID_ = Item()  # для принятия заявки
+    SEND_BID_ = ...  # для заявки на проект
+    PICK_BID_ = ...  # для принятия заявки
 
 
-class ProjectStatuses(Helper):
+class ProjectStatuses(Constants):
     ACTIVE = 'Активен'
     IN_PROGRESS = 'Выполняется'
     COMPLETED = 'Выполнен'
     REVIEWED = 'Оставлен отзыв'
 
 
-class UserRoles(Helper):
-    mode = HelperMode.lowercase
-    CLIENT = Item()
-    WORKER = Item()
+class UserRoles(Constants):
+    client = ...
+    worker = ...
 
 
-class SendTo(Helper):
-    CHANNEL = Item()
-    WORKER = Item()
+class SendTo(Constants):
+    CHANNEL = ...
+    WORKER = ...

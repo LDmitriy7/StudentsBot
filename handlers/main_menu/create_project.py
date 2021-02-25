@@ -10,13 +10,13 @@ from questions import CreateProjectConv as States
 
 
 @dp.callback_query_handler(text=KB.WorkTypes.BUTTONS, state=States.work_type)
-async def process_work_type(query: types.CallbackQuery):
-    return UpdateData({'work_type': query.data})
+async def process_work_type(data):
+    return UpdateData({'work_type': data})
 
 
 @dp.message_handler(state=States.subject)
-async def process_subject(msg: types.Message):
-    return UpdateData({'subject': msg.text})
+async def process_subject(text):
+    return UpdateData({'subject': text})
 
 
 @dp.callback_query_handler(calendar.filter(), state=States.date)
@@ -29,27 +29,27 @@ async def process_date(query: types.CallbackQuery, callback_data: dict):
 
 
 @dp.message_handler(state=States.description)
-async def process_description(msg: types.Message):
+async def process_description(text):
     min_len, max_len = 15, 500
-    if min_len < len(msg.text) < max_len:
-        return UpdateData({'description': msg.text})
+    if min_len < len(text) < max_len:
+        return UpdateData({'description': text})
     return f'Ошибка, описание должно быть от {min_len} до {max_len} символов'
 
 
 @dp.message_handler(state=States.price)
-async def process_price(msg: types.Message):
-    if msg.text == KB.Miss.MISS:
+async def process_price(text):
+    if text == KB.Miss.MISS:
         price = None
-    elif msg.text.isdigit():
-        price = int(msg.text)
+    elif text.isdigit():
+        price = int(text)
     else:
         return 'Ошибка, введите только число'
     return UpdateData({'price': price})
 
 
 @dp.message_handler(state=States.note)
-async def process_note(msg: types.Message):
-    note = None if msg.text == KB.Miss.MISS else msg.text
+async def process_note(text):
+    note = None if text == KB.Miss.MISS else text
     return UpdateData({'note': note})
 
 
@@ -60,7 +60,7 @@ async def process_file(msg: types.Message):
 
 
 @dp.message_handler(text=[KB.Ready.READY, KB.Ready.START_OVER], state=States.files)
-async def process_file_finish(msg: types.Message):
-    if msg.text == KB.Ready.START_OVER:
+async def process_file_finish(text):
+    if text == KB.Ready.START_OVER:
         return UpdateData(delete_keys='files', new_state=None), 'Теперь отправляйте заново'
     return UpdateData(extend_data={'files': []})

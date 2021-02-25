@@ -1,79 +1,96 @@
 """Набор всех обычных текстовых клавиатур."""
-from dataclasses import dataclass
-from typing import Optional
 
 from aiogram.types import KeyboardButton
 
-from data_types.keyboards import ResizedKeyboard, make_keyboard
+from data_types.keyboards import ReplyKeyboard
 
-__all__ = ['Miss', 'Ready', 'ForWorker', 'ConfirmProject', 'Main', 'Back', 'phone_number']
+__all__ = [
+    'Miss', 'MissCancel', 'Back', 'BackCancel', 'Ready', 'ReadyCancel', 'ForWorker',
+    'ConfirmProject', 'Main', 'Back', 'PhoneNumber', 'PhoneNumberCancel',
+    'BACK', 'CANCEL', 'READY', 'MISS', 'RESET', 'START_OVER'
+]
 
-_B = Optional[str]
-
-
-class CButtons:
-    BACK = 'Назад'
-    CANCEL = 'Отменить'
-    READY = 'Готово'
-    MISS = 'Пропустить'
-    RESET = 'Сбросить'
-    START_OVER = 'Начать заново'
+BACK = 'Назад'
+CANCEL = 'Отменить'
+READY = 'Готово'
+MISS = 'Пропустить'
+RESET = 'Сбросить'
+START_OVER = 'Начать заново'
 
 
 # --- общие клавиатуры ---
 
-@dataclass
-class Back(ResizedKeyboard):
-    BACK: _B = CButtons.BACK
-    CANCEL: _B = CButtons.CANCEL
+class Back(ReplyKeyboard):
+    BACK = BACK
 
 
-@dataclass
-class Miss(ResizedKeyboard):
-    MISS: _B = CButtons.MISS
-    BACK: _B = CButtons.BACK
-    CANCEL: _B = CButtons.CANCEL
+class BackCancel(ReplyKeyboard):
+    BACK = BACK
+    CANCEL = CANCEL
 
 
-@dataclass
-class Ready(ResizedKeyboard):
-    READY: _B = CButtons.READY
-    START_OVER: _B = CButtons.START_OVER
-    BACK: _B = CButtons.BACK
-    CANCEL: _B = CButtons.CANCEL
+class Miss(ReplyKeyboard):
+    MISS = MISS
+    BACK = BACK
+
+
+class MissCancel(ReplyKeyboard):
+    MISS = MISS
+    BACK = BACK
+    CANCEL = CANCEL
+
+    rows_width = [1]
+
+
+class Ready(ReplyKeyboard):
+    READY = READY
+    START_OVER = START_OVER
+    BACK = BACK
+
+
+class ReadyCancel(ReplyKeyboard):
+    READY = READY
+    START_OVER = START_OVER
+    BACK = BACK
+    CANCEL = CANCEL
 
 
 # --- частные клавиатуры ---
 
-@dataclass
-class Main(ResizedKeyboard):
-    CREATE_POST: _B = 'Создать пост ➕'
-    PERSONAL_PROJECT: _B = 'Личный проект 🤝'
-    MY_ORDERS: _B = 'Мои заказы 💼'
-    BALANCE: _B = 'Баланс 🤑'
-    OFFER_IDEA: _B = 'Предложить идею ✍'
-    GUIDE: _B = 'Инструкция 📑'
-    WORKER_MENU: _B = 'Меню исполнителя'
+class Main(ReplyKeyboard):
+    CREATE_POST = 'Создать пост ➕'
+    PERSONAL_PROJECT = 'Личный проект 🤝'
+    MY_ORDERS = 'Мои заказы 💼'
+    BALANCE = 'Баланс 🤑'
+    OFFER_IDEA = 'Предложить идею ✍'
+    GUIDE = 'Инструкция 📑'
+    WORKER_MENU = 'Меню исполнителя'
 
 
-@dataclass
-class ForWorker(ResizedKeyboard):
-    MY_WORKS: _B = 'Мои работы'
-    SEARCH_ORDERS: _B = 'Поиск заказов'
-    MY_PROFILE: _B = 'Мой профиль'
-    MY_SUBJECTS: _B = 'Мои предметы'
-    BACK: _B = CButtons.BACK
+class ForWorker(ReplyKeyboard):
+    MY_WORKS = 'Мои работы'
+    SEARCH_ORDERS = 'Поиск заказов'
+    MY_PROFILE = 'Мой профиль'
+    MY_SUBJECTS = 'Мои предметы'
+    BACK = BACK
 
 
-@dataclass
-class ConfirmProject(ResizedKeyboard):
-    SEND: _B = 'Отправить проект'
-    BACK: _B = CButtons.BACK
-    CANCEL: _B = CButtons.CANCEL
+class ConfirmProject(ReplyKeyboard):
+    SEND = 'Отправить проект'
+    BACK = BACK
+    CANCEL = CANCEL
+
+    rows_width = [1]
 
 
-# клавиатура для отправки номера
-def phone_number(miss_btn=True, back_btn=True, cancel_btn=True):
-    row = {KeyboardButton('Отправить номер', request_contact=True): True, CButtons.MISS: miss_btn}
-    row2 = {CButtons.BACK: back_btn, CButtons.CANCEL: cancel_btn}
-    return make_keyboard(row, row2)
+class PhoneNumber(ReplyKeyboard):
+    PHONE = KeyboardButton('Отправить номер', request_contact=True)
+    MISS = MISS
+    BACK = BACK
+
+
+class PhoneNumberCancel(ReplyKeyboard):
+    PHONE = KeyboardButton('Отправить номер', request_contact=True)
+    MISS = MISS
+    BACK = BACK
+    CANCEL = CANCEL

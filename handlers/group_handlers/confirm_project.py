@@ -11,19 +11,19 @@ from loader import dp, users_db, bot
 
 @dp.callback_query_handler(text=KB.GroupMenu.CONFIRM_PROJECT,
                            pstatus=ProjectStatuses.IN_PROGRESS,
-                           user_role=UserRoles.CLIENT)
-async def ask_confirm_project(query: types.CallbackQuery):
-    chat = await users_db.get_chat_by_id(query.message.chat.id)
+                           user_role=UserRoles.client)
+async def ask_confirm_project(chat_id):
+    chat = await users_db.get_chat_by_id(chat_id)
     text = 'Вы точно хотите подтвердить выполнение проекта?'
     keyboard = KB.total_confirm_project(chat.project_id)
     return QuestText(text, keyboard)
 
 
 @dp.callback_query_handler(find_pair_chat,
-                           prefix=Prefixes.CONFIRM_PROJECT_,
+                           cprefix=Prefixes.CONFIRM_PROJECT_,
                            pstatus=ProjectStatuses.IN_PROGRESS,
-                           user_role=UserRoles.CLIENT)
-async def confirm_project(query: types.CallbackQuery, pchat_id: int, payload: str):
+                           user_role=UserRoles.client)
+async def confirm_project(pchat_id: int, payload: str):
     project = await users_db.get_project_by_id(payload)
     project.status = ProjectStatuses.COMPLETED
 

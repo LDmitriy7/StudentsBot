@@ -1,13 +1,13 @@
 from aiogram import types
-
+from aiogram.contrib.questions import QuestText
 import functions as funcs
 from loader import dp
 
 
 @dp.message_handler(commands='menu')
-async def send_keyboard(msg: types.Message):
-    if msg.chat.type == 'group':
+async def send_keyboard(chat_type):
+    if chat_type == 'group':
         keyboard = await funcs.get_group_keyboard()
-        await msg.answer('Доступные команды:', reply_markup=keyboard)
+        return QuestText('Доступные команды:', keyboard)
     else:
-        await msg.answer('Эта команда доступна только в группах')
+        return 'Эта команда доступна только в группах'

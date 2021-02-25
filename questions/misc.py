@@ -1,8 +1,8 @@
 from aiogram.contrib.questions import QuestText, ConvState, ConvStatesGroup
 
-from keyboards.markup import Back
+import keyboards as KB
 
-bid_text = QuestText('Отправьте текст для заявки', Back(BACK=None))
+bid_text = QuestText('Отправьте текст для заявки', KB.Back)
 
 
 class SendBidConv(ConvStatesGroup):

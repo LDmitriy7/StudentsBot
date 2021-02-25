@@ -19,9 +19,9 @@ async def send_guide():
 
 
 @dp.message_handler(text=KB.Main.WORKER_MENU)
-async def worker_menu(*, user_id: int):
+async def worker_menu(user_id: int):
     account = await users_db.get_account_by_id(user_id)
     if account and account.profile:
-        return QuestText('Меню исполнителя:', KB.ForWorker())
+        return QuestText('Меню исполнителя:', KB.ForWorker)
     else:
         return UpdateData(new_state=RegistrationConv), 'Сначала пройдите регистрацию'

@@ -57,13 +57,10 @@ async def get_group_keyboard(*, chat_id: int) -> inline_funcs.GroupMenu:
     pstatus = await get_project_status(chat_id=chat_id)
     user_role = await get_user_role(chat_id=chat_id)
 
-    def make_keyboard():
-        CALL_ADMIN = True
-        OFFER_PRICE = pstatus == ProjectStatuses.ACTIVE and user_role == UserRoles.WORKER
-        CONFIRM_PROJECT = pstatus == ProjectStatuses.IN_PROGRESS and user_role == UserRoles.CLIENT
-        FEEDBACK = pstatus == ProjectStatuses.COMPLETED and user_role == UserRoles.CLIENT
+    CALL_ADMIN = True
+    OFFER_PRICE = pstatus == ProjectStatuses.ACTIVE and user_role == UserRoles.WORKER
+    CONFIRM_PROJECT = pstatus == ProjectStatuses.IN_PROGRESS and user_role == UserRoles.client
+    FEEDBACK = pstatus == ProjectStatuses.COMPLETED and user_role == UserRoles.client
 
-        exclude_btns = {key: None for key, value in locals().items() if not value}
-        return inline_funcs.GroupMenu(**exclude_btns)
-
-    return make_keyboard()
+    exclude_btns = {key: None for key, value in locals().items() if not value and key.isupper()}
+    return inline_funcs.GroupMenu(**exclude_btns)

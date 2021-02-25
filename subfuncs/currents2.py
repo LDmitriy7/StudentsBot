@@ -4,7 +4,7 @@ from __future__ import annotations
 
 import functools
 import inspect
-from typing import Callable, Optional
+from typing import Optional
 
 from aiogram import types, Dispatcher as _Dispatcher, Bot as _Bot
 from aiogram.dispatcher.filters.state import State as _State, StatesGroup
@@ -19,7 +19,7 @@ def get_state_by_name(state_name: str) -> Optional[_State]:
                 return state
 
 
-async def get_udata(obj: _Dispatcher) -> dict:
+async def get_sdata(obj: _Dispatcher) -> dict:
     try:
         return await obj.current_state().get_data()
     except AttributeError:
@@ -43,7 +43,7 @@ async def get_state(obj: _Dispatcher) -> Optional[_State]:
 
 class ContextObj:
 
-    def __init__(self, ctx_type: type[ContextInstanceMixin], get_target: Callable = lambda x: x):
+    def __init__(self, ctx_type: type[ContextInstanceMixin], get_target: callable = lambda x: x):
         self.ctx_type = ctx_type
         self.get_target = get_target
 
@@ -72,7 +72,7 @@ class Currents:
     dp = ContextObj(_Dispatcher)
     bot = ContextObj(_Bot)
 
-    udata = ContextObj(_Dispatcher, get_udata)
+    sdata = ContextObj(_Dispatcher, get_sdata)
     raw_state = ContextObj(_Dispatcher, get_raw_state)
     # state = ContextObj(_Dispatcher, get_state)
 

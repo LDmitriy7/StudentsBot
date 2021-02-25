@@ -7,7 +7,6 @@ from functions._offer_project import *
 from functions._payment import *  # +
 from functions._projects import *  # +
 from functions._save_in_database import *  # ++
-from functions._storage import *
 from functions._subjects import *
 from functions._telegraph import *  # +
 from functions.common import *  # +

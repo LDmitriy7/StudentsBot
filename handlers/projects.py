@@ -6,10 +6,11 @@ import functions as funcs
 from data_types import Prefixes, ProjectStatuses
 from keyboards import inline_funcs
 from loader import dp, users_db
+from aiogram.contrib.questions import QuestText
 
 
-@dp.message_handler(prefix=Prefixes.GET_FILES_, state='*')
-async def send_files(*, payload: str):
+@dp.message_handler(cprefix=Prefixes.GET_FILES_, state='*')
+async def send_files(payload: str):
     """Отправляет все файлы к проекту."""
     project = await users_db.get_project_by_id(payload)
     if project:
@@ -18,16 +19,16 @@ async def send_files(*, payload: str):
         return 'Этот проект уже удален'
 
 
-@dp.callback_query_handler(prefix=Prefixes.DEL_PROJECT_, state='*')
-async def del_project(*, query_msg: types.Message, payload: str):
+@dp.callback_query_handler(cprefix=Prefixes.DEL_PROJECT_, state='*')
+async def del_project(payload: str):
     """Просит потвердить удаление проекта."""
     text = 'Вы точно хотите удалить проект?'
     keyboard = inline_funcs.del_project(payload)
-    await query_msg.answer(text, reply_markup=keyboard)
+    return QuestText(text, keyboard)
 
 
-@dp.callback_query_handler(prefix=Prefixes.TOTAL_DEL_PROJECT_, state='*')
-async def total_del_project(*, query_msg: types.Message, user_id: int, payload: str):
+@dp.callback_query_handler(cprefix=Prefixes.TOTAL_DEL_PROJECT_, state='*')
+async def total_del_project(msg: types.Message, user_id: int, payload: str):
     """Удаляет проект, если он имеет активный статус и принадлежит юзеру."""
     project = await users_db.get_project_by_id(payload)
 
@@ -39,4 +40,4 @@ async def total_del_project(*, query_msg: types.Message, user_id: int, payload: 
         await users_db.delete_project_by_id(payload)
     else:
         text = '<b>Не могу удалить этот проект.</b>'
-    await query_msg.edit_text(text)
+    await msg.edit_text(text)

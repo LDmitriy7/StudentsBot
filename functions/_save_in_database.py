@@ -8,26 +8,26 @@ __all__ = ['save_bid', 'save_profile', 'save_project', 'save_review']
 
 
 @Currents.set
-async def save_bid(*, msg: types.Message, udata: dict) -> data_classes.Bid:
-    bid = data_classes.Bid.from_dict({'worker_id': msg.from_user.id, 'text': msg.text, **udata})
+async def save_bid(*, msg: types.Message, sdata: dict) -> data_classes.Bid:
+    bid = data_classes.Bid.from_dict({'worker_id': msg.from_user.id, 'text': msg.text, **sdata})
     bid.id = await users_db.add_bid(bid)
     return bid
 
 
 @Currents.set
-async def save_profile(*, user: types.User, udata: dict, **kwargs) -> data_classes.Profile:
-    profile_data = dict(**udata, **kwargs)
+async def save_profile(*, user: types.User, sdata: dict, **kwargs) -> data_classes.Profile:
+    profile_data = dict(**sdata, **kwargs)
     profile = data_classes.Profile.from_dict(profile_data)
     await users_db.update_account_profile(user.id, profile)
     return profile
 
 
 @Currents.set
-async def save_review(*, msg: types.Message, udata: dict) -> data_classes.Review:
+async def save_review(*, msg: types.Message, sdata: dict) -> data_classes.Review:
     chat = await users_db.get_chat_by_id(msg.chat.id)
     project = await users_db.get_project_by_id(chat.project_id)
 
-    rating = data_classes.Rating.from_dict(udata)
+    rating = data_classes.Rating.from_dict(sdata)
     review = data_classes.Review(
         project.client_id,
         msg.from_user.full_name,
@@ -44,8 +44,8 @@ async def save_review(*, msg: types.Message, udata: dict) -> data_classes.Review
 
 @Currents.set
 async def save_project(status: str = ProjectStatuses.ACTIVE, *,
-                       user: types.User, udata: dict) -> data_classes.Project:
-    project_data = data_classes.ProjectData.from_dict(udata)
-    project = data_classes.Project(project_data, status, user.id, udata.get('worker_id'))
+                       user: types.User, sdata: dict) -> data_classes.Project:
+    project_data = data_classes.ProjectData.from_dict(sdata)
+    project = data_classes.Project(project_data, status, user.id, sdata.get('worker_id'))
     project.id = await users_db.add_project(project)
     return project

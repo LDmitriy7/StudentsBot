@@ -2,16 +2,15 @@ from aiogram import types
 from aiogram.contrib.questions import QuestText, QuestFunc, ConvState, ConvStatesGroup
 
 import functions as funcs
+import keyboards as KB
 from data_types import data_classes, ProjectStatuses
-from keyboards import inline_funcs, inline_plain, markup
-from keyboards.inline_plain import WorkTypes
-from keyboards.markup import Back, Miss
+from keyboards import inline_funcs, inline_plain
 from loader import dp, bot
 from texts import templates
 
 work_type = [
-    QuestText('Это займет пару минут', Back()),
-    QuestText('Введите тип работы:', WorkTypes()),
+    QuestText('Это займет пару минут', KB.BackCancel),
+    QuestText('Введите тип работы:', inline_plain.WorkTypes()),
 ]
 
 subject = QuestText('Отправьте название предмета', inline_plain.find_subject)
@@ -27,29 +26,28 @@ async def date():
 
 description = QuestText(
     'Теперь опишите задание максимально подробно (только текст). Укажите время сдачи!',
-    Back()
+    KB.BackCancel
 )
 
-price = QuestText('Теперь введите цену (в гривнах)', Miss())
+price = QuestText('Теперь введите цену (в гривнах)', KB.MissCancel)
 
-note = QuestText('Добавьте заметку (она будет видна только вам)', Miss())
+note = QuestText('Добавьте заметку (она будет видна только вам)', KB.MissCancel)
 
 file = QuestText(
     'Отправьте фото или файлы к работе (Загружайте фото по одному!)',
-    markup.Ready()
+    KB.ReadyCancel
 )
 
 
 @QuestFunc
 async def confirm():
     chat = types.Chat.get_current()
-    udata = await dp.current_state().get_data()
-    post_data = data_classes.ProjectData.from_dict(udata)
+    sdata = await dp.current_state().get_data()
+    post_data = data_classes.ProjectData.from_dict(sdata)
 
     post_text = templates.form_post_text(ProjectStatuses.ACTIVE, post_data, with_note=True)
-    keyboard = markup.ConfirmProject()
     await bot.send_message(chat.id, '<b>Проверьте свой пост:</b>')
-    await bot.send_message(chat.id, post_text, reply_markup=keyboard)
+    await bot.send_message(chat.id, post_text, reply_markup=KB.ConfirmProject)
     await funcs.send_files(post_data.files)
 
 

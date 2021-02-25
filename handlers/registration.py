@@ -15,13 +15,12 @@ async def miss_phone_number():
 
 
 @dp.message_handler(content_types=types.ContentType.CONTACT, state=States.phone_number)
-async def process_phone_number(msg: types.Message):
-    phone_number = msg.contact.phone_number
-    return UpdateData({'phone_number': phone_number})
+async def process_phone_number(contact: types.Contact):
+    return UpdateData({'phone_number': contact.phone_number})
 
 
 @dp.message_handler(state=States.email)
-async def process_email(*, text: str):
+async def process_email(text: str):
     if text == KB.Miss.MISS:
         email = None
     elif '@' in text:
@@ -32,7 +31,7 @@ async def process_email(*, text: str):
 
 
 @dp.message_handler(state=States.biography)
-async def process_biography(*, text: str):
+async def process_biography(text: str):
     if len(text) > 15:
         return UpdateData({'biography': text})
     else:
@@ -40,23 +39,23 @@ async def process_biography(*, text: str):
 
 
 @dp.message_handler(content_types='photo', state=States.works)
-async def process_works(msg: types.Message):
-    photo_id = msg.photo[-1].file_id
+async def process_works(photo: list[types.PhotoSize]):
+    photo_id = photo[-1].file_id
     return UpdateData(extend_data={'works': photo_id}, new_state=None)
 
 
 @dp.message_handler(text=[KB.Ready.READY, KB.Ready.START_OVER], state=States.works)
-async def process_works_finish(*, text: str):
+async def process_works_finish(text: str):
     if text == KB.Ready.START_OVER:
         return UpdateData(delete_keys='works', new_state=None), 'Теперь отправляйте фото заново'
     return UpdateData(extend_data={'works': []})
 
 
 @dp.message_handler(state=States.nickname)
-async def process_nickname(*, text: str, username: str):
+async def process_nickname(text: str, username: str):
     all_nicknames = await funcs.get_all_nicknames()
 
-    if username and text.lower() == username.lower():
+    if username and username.lower() == text.lower():
         return 'Пожалуйста, не используйте свой юзернейм'
     if text in all_nicknames:
         return 'Этот никнейм уже занят'

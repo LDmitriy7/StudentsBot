@@ -14,21 +14,21 @@ from questions import ForGroups as States
 @dp.callback_query_handler(find_pair_chat,
                            text=GroupMenu.OFFER_PRICE,
                            pstatus=ProjectStatuses.ACTIVE,
-                           user_role=UserRoles.WORKER)
-async def ask_work_price(query: types.CallbackQuery):
+                           user_role=UserRoles.worker)
+async def ask_work_price():
     return UpdateData(new_state=States.ask_work_price)
 
 
 @dp.message_handler(find_pair_chat,
                     state=States.ask_work_price,
                     pstatus=ProjectStatuses.ACTIVE,
-                    user_role=UserRoles.WORKER)
-async def offer_price(msg: types.Message, pchat_id: int):
-    if not msg.text.isdigit():
+                    user_role=UserRoles.worker)
+async def offer_price(text, chat_id, pchat_id: int):
+    if not text.isdigit():
         return 'Ошибка, отправьте число'
 
-    price = int(msg.text)
-    chat = await users_db.get_chat_by_id(msg.chat.id)
+    price = int(text)
+    chat = await users_db.get_chat_by_id(chat_id)
     client_text = f'Автор предлагает вам сделку за <b>{price} грн</b>'
     keyboard = inline_funcs.pay_for_project(price, chat.project_id)
     await bot.send_message(pchat_id, client_text, reply_markup=keyboard)
@@ -36,10 +36,10 @@ async def offer_price(msg: types.Message, pchat_id: int):
 
 
 @dp.callback_query_handler(find_pair_chat,
-                           prefix=Prefixes.PAY_FOR_PROJECT_,
+                           cprefix=Prefixes.PAY_FOR_PROJECT_,
                            pstatus=ProjectStatuses.ACTIVE,
-                           user_role=UserRoles.CLIENT)
-async def pay_for_project(query: types.CallbackQuery, pchat_id: int, payload: str):
+                           user_role=UserRoles.client)
+async def pay_for_project(user_id, chat_id, pchat_id: int, payload: str):
     client_balance = await funcs.get_account_balance()
     price, project_id = payload.split('_')
 
@@ -48,9 +48,9 @@ async def pay_for_project(query: types.CallbackQuery, pchat_id: int, payload: st
         await funcs.start_project_update(
             project_id,
             int(price),
-            query.from_user.id,
+            user_id,
             worker_chat.user_id,
-            query.message.chat.id,
+            chat_id,
             pchat_id,
         )
         await bot.send_message(pchat_id, b('Проект оплачен, приступайте к работе'))
@@ -62,7 +62,7 @@ async def pay_for_project(query: types.CallbackQuery, pchat_id: int, payload: st
 @dp.callback_query_handler(find_pair_chat,
                            text=TextQueries.REFUSE_WORK_PRICE,
                            pstatus=ProjectStatuses.ACTIVE,
-                           user_role=UserRoles.CLIENT)
-async def refuse_work_price(query: types.CallbackQuery, pchat_id: int):
-    await query.message.delete()
+                           user_role=UserRoles.client)
+async def refuse_work_price(msg: types.Message, pchat_id: int):
+    await msg.delete()
     await bot.send_message(pchat_id, b('Заказчик отказался от предложенной цены'))
