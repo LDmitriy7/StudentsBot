@@ -1,18 +1,18 @@
 from aiogram import types
 from aiogram.contrib.middlewares.conversation import UpdateData
 from aiogram.utils.markdown import hbold as b
+from aiogram.contrib.questions import QuestText
 
 import functions as funcs
 from data_types import ProjectStatuses, UserRoles, Prefixes, TextQueries
 from filters import find_pair_chat
-from keyboards import inline_funcs
-from keyboards.inline_funcs import GroupMenu
+import keyboards as KB
 from loader import dp, users_db, bot
 from questions import ForGroups as States
 
 
 @dp.callback_query_handler(find_pair_chat,
-                           text=GroupMenu.OFFER_PRICE,
+                           text=KB.GroupMenu.OFFER_PRICE,
                            pstatus=ProjectStatuses.ACTIVE,
                            user_role=UserRoles.worker)
 async def ask_work_price():
@@ -30,7 +30,7 @@ async def offer_price(text, chat_id, pchat_id: int):
     price = int(text)
     chat = await users_db.get_chat_by_id(chat_id)
     client_text = f'Автор предлагает вам сделку за <b>{price} грн</b>'
-    keyboard = inline_funcs.pay_for_project(price, chat.project_id)
+    keyboard = KB.pay_for_project(price, chat.project_id)
     await bot.send_message(pchat_id, client_text, reply_markup=keyboard)
     return UpdateData(on_conv_exit='Заявка отправлена, мы пришлем вам уведомление в случае оплаты.')
 
@@ -42,21 +42,17 @@ async def offer_price(text, chat_id, pchat_id: int):
 async def pay_for_project(user_id, chat_id, pchat_id: int, payload: str):
     client_balance = await funcs.get_account_balance()
     price, project_id = payload.split('_')
+    price = int(price)
 
-    if int(price) <= client_balance:
+    if price <= client_balance:
         worker_chat = await users_db.get_chat_by_id(pchat_id)
-        await funcs.start_project_update(
-            project_id,
-            int(price),
-            user_id,
-            worker_chat.user_id,
-            chat_id,
-            pchat_id,
-        )
+        await funcs.start_project_update(project_id, price, user_id, worker_chat.user_id, chat_id, pchat_id)
         await bot.send_message(pchat_id, b('Проект оплачен, приступайте к работе'))
         return b('Проект оплачен, уведомление отправлено автору')
     else:
-        return b('У вас недостаточно средств, пополните баланс')
+        text = f'У вас не хватает {price - client_balance} грн.' \
+               f' Отправьте недостающую сумму через один из банков. Обязательно укажите {user_id} в комментарии'
+        return QuestText(text, KB.payment)
 
 
 @dp.callback_query_handler(find_pair_chat,

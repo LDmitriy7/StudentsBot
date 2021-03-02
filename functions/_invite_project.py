@@ -1,16 +1,16 @@
 from aiogram import types
 
 from keyboards import inline_funcs
-from subfuncs.currents2 import Currents
+from aiogram.dispatcher.currents import CurrentObjects
 
 __all__ = ['form_invite_project_article']
 
 
-@Currents.set
-async def form_invite_project_article(*, iquery: types.InlineQuery) -> types.InlineQueryResultArticle:
+@CurrentObjects.decorate
+async def form_invite_project_article(*, user_id) -> types.InlineQueryResultArticle:
     """Form InlineQueryResultArticle [to invite to project] for current User."""
     text = 'Перейдите по ссылке, чтобы заполнить персональный проект'
-    keyboard = inline_funcs.invite_project(iquery.from_user.id)
+    keyboard = inline_funcs.invite_project(user_id)
     imc = types.InputMessageContent(message_text=text)
 
     return types.InlineQueryResultArticle(

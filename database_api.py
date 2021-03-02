@@ -127,6 +127,13 @@ class MongoGetter(MongoBase):
             accounts.append(account)
         return accounts
 
+    async def get_all_chats(self) -> List[data_classes.Chat]:
+        chats = []
+        for c in await self.get_object(CHATS, {}, many=True):
+            chat = data_classes.Chat.from_dict(c)
+            chats.append(chat)
+        return chats
+
     async def get_all_projects(self) -> List[data_classes.Project]:
         projects = []
         for p in await self.get_object(PROJECTS, {}, many=True):
@@ -173,10 +180,30 @@ class MongoGetter(MongoBase):
         chat = await self.get_object(CHATS, _filter)
         return data_classes.Chat.from_dict(chat)
 
+    async def get_chats_by_project(self, project_id: str) -> list[data_classes.Chat]:
+        _filter = {'project_id': project_id}
+        chat_dicts = await self.get_object(CHATS, _filter, many=True)
+        chats = [data_classes.Chat.from_dict(c) for c in chat_dicts]
+        return chats
+
     async def get_bid_by_id(self, bid_id: str) -> Optional[data_classes.Bid]:
         _filter = {'_id': ObjectId(bid_id)}
         bid = await self.get_object(BIDS, _filter)
         return data_classes.Bid.from_dict(bid)
+
+    async def get_bids_by_user(self, client_id: int = None, worker_id: int = None) -> List[data_classes.Bid]:
+        if client_id:
+            _filter = {'client_id': client_id}
+        elif worker_id:
+            _filter = {'worker_id': worker_id}
+        else:
+            raise ValueError('Must specify one of values.')
+
+        bids = []
+        for b in await self.get_object(BIDS, _filter, many=True):
+            bid = data_classes.Bid.from_dict(b)
+            bids.append(bid)
+        return bids
 
     async def get_reviews_by_worker(self, worker_id: int) -> List[data_classes.Review]:
         reviews = []
@@ -207,6 +234,9 @@ class MongoDeleter(MongoBase):
 
 class MongoUpdater(MongoBase):
     """Содержит методы для обновления объектов в коллекциях."""
+
+    async def update_chat(self, chat_id: int, chat: data_classes.Chat):
+        await self.update_object(CHATS, {'_id': chat_id}, '$set', asdict(chat))
 
     async def incr_balance(self, user_id: int, amount: int):
         await self.update_object(ACCOUNTS, {'_id': user_id}, '$inc', {'balance': amount})
@@ -277,3 +307,11 @@ class MongoProfileUpdater(MongoUpdater):
 class MongoDB(MongoAdder, MongoGetter, MongoDeleter,
               MongoProjectUpdater, MongoProfileUpdater):
     """Наследует все наборы методов управления базой."""
+
+# if __name__ == '__main__':
+#     import asyncio
+#
+#     loop = asyncio.get_event_loop()
+#     coro = MongoDB().get_chats_by_project('60206a46a14267f716cc48a9')
+#     r = loop.run_until_complete(coro)
+#     print(r)

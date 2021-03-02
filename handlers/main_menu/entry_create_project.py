@@ -6,40 +6,39 @@ from aiogram.contrib.questions import QuestText
 import functions as funcs
 import keyboards as KB
 import texts
-from data_types import Prefixes, SendTo, TextQueries
+from data_types import Prefixes, SendTo
 from loader import dp, users_db
 from questions import CreateProjectConv, RegistrationConv
 
 
-@dp.message_handler(text=KB.Main.CREATE_POST)
+@dp.message_handler(text=KB.main.CREATE_POST)
 async def entry_create_post():
     return UpdateData({'send_to': SendTo.CHANNEL}, new_state=CreateProjectConv)
 
 
-@dp.message_handler(text=KB.Main.PERSONAL_PROJECT)
+@dp.message_handler(text=KB.main.PERSONAL_PROJECT)
 async def ask_user_role():
-    return QuestText(texts.start_personal_project, KB.UserRoles())
+    return QuestText(texts.start_personal_project, KB.user_roles)
 
 
-@dp.callback_query_handler(text=KB.UserRoles.WORKER)
+@dp.callback_query_handler(text=KB.user_roles.WORKER)
 async def send_invite_project_keyboard(msg: types.Message, user_id):
     account = await users_db.get_account_by_id(user_id)
     if account and account.profile:
         text = 'Выберите <b>заказчика</b> из списка своих чатов'
-        keyboard = KB.choose_invite_chat
-        await msg.edit_text(text, reply_markup=keyboard)
+        await msg.edit_text(text, reply_markup=KB.choose_invite_chat)
     else:
         await msg.edit_text('Сначала пройдите регистрацию')
         return UpdateData(new_state=RegistrationConv)
 
 
-@dp.inline_handler(text=TextQueries.INVITE_PROJECT)
+@dp.inline_handler(text=KB.choose_invite_chat.INVITE_QUERY)
 async def send_project_invite_to_client(iquery: types.InlineQuery):
     article = await funcs.form_invite_project_article()
     await iquery.answer([article], cache_time=0, is_personal=True)
 
 
-@dp.callback_query_handler(text=KB.UserRoles.CLIENT)
+@dp.callback_query_handler(text=KB.user_roles.CLIENT)
 async def entry_personal_project(msg: types.Message):
     await msg.edit_text('Сначала заполните проект')
     return UpdateData({'send_to': None}, new_state=CreateProjectConv)

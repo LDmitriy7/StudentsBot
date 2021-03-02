@@ -1,5 +1,6 @@
 """Все для диалога: регистрация юзера как исполнителя."""
 from aiogram import types
+from aiogram.types import ContentType
 from aiogram.contrib.middlewares.conversation import UpdateData
 from aiogram.contrib.questions import QuestText
 
@@ -9,24 +10,24 @@ from loader import dp
 from questions import RegistrationConv as States
 
 
-@dp.message_handler(text=KB.Miss.MISS, state=States.phone_number)
+@dp.message_handler(text=KB.miss_cancel.MISS, state=States.phone_number)
 async def miss_phone_number():
     return UpdateData({'phone_number': None})
 
 
-@dp.message_handler(content_types=types.ContentType.CONTACT, state=States.phone_number)
+@dp.message_handler(content_types=ContentType.CONTACT, state=States.phone_number)
 async def process_phone_number(contact: types.Contact):
     return UpdateData({'phone_number': contact.phone_number})
 
 
 @dp.message_handler(state=States.email)
-async def process_email(text: str):
-    if text == KB.Miss.MISS:
+async def process_email(text):
+    if text == KB.miss.MISS:
         email = None
     elif '@' in text:
         email = text
     else:
-        return "Похоже, вы ошиблись в email'е"
+        return 'Похоже, вы ошиблись в email\'е'
     return UpdateData({'email': email})
 
 
@@ -44,9 +45,9 @@ async def process_works(photo: list[types.PhotoSize]):
     return UpdateData(extend_data={'works': photo_id}, new_state=None)
 
 
-@dp.message_handler(text=[KB.Ready.READY, KB.Ready.START_OVER], state=States.works)
-async def process_works_finish(text: str):
-    if text == KB.Ready.START_OVER:
+@dp.message_handler(text=[KB.ready.READY, KB.ready.START_OVER], state=States.works)
+async def process_works_finish(text):
+    if text == KB.ready.START_OVER:
         return UpdateData(delete_keys='works', new_state=None), 'Теперь отправляйте фото заново'
     return UpdateData(extend_data={'works': []})
 
@@ -62,4 +63,4 @@ async def process_nickname(text: str, username: str):
 
     await funcs.save_profile(nickname=text)
     await funcs.save_author_page()  # создание страницы автора
-    return UpdateData(), QuestText('Регистрация пройдена', KB.ForWorker())
+    return UpdateData(), QuestText('Регистрация пройдена', KB.for_worker)

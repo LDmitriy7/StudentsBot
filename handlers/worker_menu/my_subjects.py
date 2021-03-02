@@ -1,4 +1,3 @@
-from aiogram import types
 from aiogram.contrib.middlewares.conversation import UpdateData
 from aiogram.contrib.questions import QuestText
 
@@ -8,32 +7,32 @@ from questions import ChangeProfile as States
 from texts import templates
 
 
-@dp.message_handler(text=KB.ForWorker.MY_SUBJECTS)
+@dp.message_handler(text=KB.for_worker.MY_SUBJECTS)
 async def send_my_subjects(user_id: int):
     account = await users_db.get_account_by_id(user_id)
     if account.subjects:
         text = templates.form_subjects_text(account.subjects)
     else:
         text = '<b>Вы еще не выбрали ни одного предмета</b>'
-    return QuestText(text, KB.Subjects())
+    return QuestText(text, KB.subjects)
 
 
-@dp.callback_query_handler(text=KB.Subjects.CHANGE_SUBJECTS)
+@dp.callback_query_handler(text=KB.subjects.CHANGE)
 async def start_change_subjects(user_id: int):
     account = await users_db.get_account_by_id(user_id)
     return UpdateData({'subjects': account.subjects}, new_state=States.subjects)
 
 
-@dp.message_handler(text=KB.Ready.START_OVER, state=States.subjects)
+@dp.message_handler(text=KB.ready.START_OVER, state=States.subjects)
 async def reset_subjects():
     text = 'Осторожно, вы сбросили все предметы, но можете сделать отмену'
     return UpdateData(delete_keys='subjects', new_state=None), text
 
 
-@dp.message_handler(text=KB.Ready.READY, state=States.subjects)
+@dp.message_handler(text=KB.ready.READY, state=States.subjects)
 async def finish_change_subjects(user_id: int, sdata: dict):
     await users_db.update_account_subjects(user_id, sdata.get('subjects', []))
-    return UpdateData(), QuestText('Предметы обновлены', KB.ForWorker())
+    return UpdateData(), QuestText('Предметы обновлены', KB.for_worker)
 
 
 @dp.message_handler(state=States.subjects)

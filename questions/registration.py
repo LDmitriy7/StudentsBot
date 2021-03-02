@@ -1,23 +1,18 @@
 from aiogram.contrib.questions import ConvState, ConvStatesGroup, QuestText
 
-from keyboards import markup
 import keyboards as KB
 
-nickname = QuestText('Придумайте себе никнейм', KB.Back)
+nickname = QuestText('Придумайте себе никнейм', KB.back_cancel)
 
-phone_number = QuestText('Отправьте номер телефона', KB.PhoneNumber)
+phone_number = QuestText('Отправьте номер телефона', KB.phone_number_cancel)
 
-email = QuestText('Отправьте email', KB.Miss)
+email = QuestText('Отправьте email', KB.miss_cancel)
 
-biography = QuestText('Напишите о себе все, что считаете нужным', KB.Back)
+biography = QuestText('Напишите о себе все, что считаете нужным', KB.back_cancel)
 
-works = QuestText(
-    'Отправьте примеры ваших работ (только фото), отправляйте фото по одному!',
-    KB.Ready,
-)
+works = QuestText('Отправьте примеры ваших работ (только фото), отправляйте фото по одному!', KB.ready_cancel)
 
 
-# прикрепляем вопросы к состояниям
 class RegistrationConv(ConvStatesGroup):
     """Содержит все состояния для регистрации и вопросы к ним."""
     phone_number = ConvState(phone_number)

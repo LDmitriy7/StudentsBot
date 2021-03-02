@@ -2,7 +2,5 @@
 
 from data_types.constants import Prefixes, TextQueries, ProjectStatuses, UserRoles, SendTo
 
-# common - общее
-# states - только обычные группы состояний
 # constants - сгрупированные в классы константы
-# dataclasses - классы с набором данных
+# data_classes - классы с набором данных

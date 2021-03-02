@@ -1,23 +1,21 @@
 from dataclasses import asdict, fields
 
-from aiogram import types
+from aiogram.dispatcher.currents import CurrentObjects
 
 import subfuncs
 from data_types import data_classes
 from keyboards import inline_funcs
 from loader import users_db, bot
-# from subfuncs.currents2 import Currents
-from subfuncs.currents2 import Currents
 from texts import templates
 
 __all__ = ['get_worker_bid_text', 'send_chat_link']
 
 
-@Currents.set
-async def get_worker_bid_text(project_id: str, *, msg: types.Message) -> str:
+@CurrentObjects.decorate
+async def get_worker_bid_text(project_id: str, *, user_id, text) -> str:
     """Формирует полный текст для заявки исполнителя на проект."""
-    account = await users_db.get_account_by_id(msg.from_user.id)
-    reviews = await users_db.get_reviews_by_worker(msg.from_user.id)
+    account = await users_db.get_account_by_id(user_id)
+    reviews = await users_db.get_reviews_by_worker(user_id)
     project = await users_db.get_project_by_id(project_id)
 
     ratings = [asdict(r.rating) for r in reviews]
@@ -26,7 +24,11 @@ async def get_worker_bid_text(project_id: str, *, msg: types.Message) -> str:
     avg_rating_text = templates.form_avg_rating_text(avg_rating)
 
     return templates.form_worker_bid_text(
-        account.profile.nickname, account.page_url, project.post_url, avg_rating_text, msg.text
+        account.profile.nickname,
+        account.page_url,
+        project.post_url,
+        avg_rating_text,
+        text,
     )
 
 

@@ -4,20 +4,20 @@ from typing import Union
 
 from aiogram import types
 from aiogram.contrib.questions import QuestFunc
+from aiogram.dispatcher.currents import CurrentObjects
 
 from keyboards import inline_funcs
 from loader import calendar
-from subfuncs.currents2 import Currents
 from utils.inline_calendar import NotInitedException
 
 __all__ = ['handle_calendar_callback']
 
 
-@Currents.set
-async def handle_calendar_callback(callback_data, *, query: types.CallbackQuery) -> Union[date, QuestFunc]:
+@CurrentObjects.decorate
+async def handle_calendar_callback(callback_data, *, query: types.CallbackQuery, user_id) -> Union[date, QuestFunc]:
     """Return date or exception for turning/reiniting calendar."""
     try:
-        _date = calendar.handle_callback(query.from_user.id, callback_data)
+        _date = calendar.handle_callback(user_id, callback_data)
     except NotInitedException:
         await query.answer('Попробуйте еще раз')
         return QuestFunc(_reinit_calendar)
@@ -27,13 +27,13 @@ async def handle_calendar_callback(callback_data, *, query: types.CallbackQuery)
     return _date
 
 
-@Currents.set
-async def _reinit_calendar(*, query_msg: types.Message):
+@CurrentObjects.decorate
+async def _reinit_calendar(*, msg: types.Message):
     keyboard = inline_funcs.make_calendar()
-    await query_msg.edit_reply_markup(keyboard)
+    await msg.edit_reply_markup(keyboard)
 
 
-@Currents.set
-async def _turn_calendar(*, query_msg: types.Message):
+@CurrentObjects.decorate
+async def _turn_calendar(*, msg: types.Message):
     keyboard = calendar.get_keyboard()
-    await query_msg.edit_reply_markup(keyboard)
+    await msg.edit_reply_markup(keyboard)

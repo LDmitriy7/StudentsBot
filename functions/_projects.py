@@ -1,52 +1,59 @@
 """Contain funcs for sending invitations and projects."""
 from typing import List
 
-from aiogram import types
+from aiogram.dispatcher.currents import CurrentObjects
 from aiogram.utils.exceptions import BadRequest
 
 import functions.common as funcs
-from data_types import data_classes, ProjectStatuses
-from keyboards import inline_funcs, Main
+from data_types import data_classes, ProjectStatuses, UserRoles
+from keyboards import inline_funcs
 from loader import bot, users_db
-from subfuncs.currents2 import Currents
 from texts import templates
 
-__all__ = ['send_projects', 'send_project_invitation', 'send_personal_project',
+__all__ = ['send_projects', 'send_project_invitation',
            'send_chat_link_to_worker', 'start_project_update']
 
 
-async def get_project_keyboard(project: data_classes.Project, pick_btn, del_btn, client_chat_btn, worker_chat_btn):
+async def get_project_keyboard(project: data_classes.Project, pick_btn, del_btn,
+                               client_chat_btns: bool, worker_chat_btns: bool):
     """Возращает инлайн-клавиатуру для проекта."""
     has_files = bool(project.data.files)
     can_delete = del_btn and project.status == ProjectStatuses.ACTIVE
 
-    if client_chat_btn:
-        chat_link = await funcs.get_chat_link(project.client_chat_id)
-    elif worker_chat_btn:
-        chat_link = await funcs.get_chat_link(project.worker_chat_id)
+    if client_chat_btns:
+        chats = await users_db.get_chats_by_project(project.id)
+        chats_links = [c.link for c in chats if c.user_role == UserRoles.client]
+    elif worker_chat_btns:
+        chats = await users_db.get_chats_by_project(project.id)
+        chats_links = [c.link for c in chats if c.user_role == UserRoles.worker]
     else:
-        chat_link = None
+        chats_links = []
 
     keyboard = inline_funcs.for_project(
         project.id,
         pick_btn=pick_btn,
         del_btn=can_delete,
         files_btn=has_files,
-        chat_link=chat_link
+        chat_links=chats_links
     )
     return keyboard
 
 
-@Currents.set
-async def send_projects(projects: List[data_classes.Project], with_note=False,
-                        pick_btn=False, del_btn=False, client_chat_btn=False, worker_chat_btn=False,
-                        *, chat: types.Chat):
-    """Отправляет проекты по списку (добавляет кнопки, если они выбраны и доступны)."""
+@CurrentObjects.decorate
+async def send_projects(projects: List[data_classes.Project],
+                        with_note=False,
+                        pick_btn=False,
+                        del_btn=False,
+                        client_chat_btns=False,
+                        worker_chat_btn=False,
+                        *, chat_id):
+    """Отправить все проекты, используя шаблон.
+    Добавить к каждому заметку, файлы и кнопки, если они выбраны и доступны."""
 
     for p in projects:
         text = templates.form_post_text(p.status, p.data, with_note)
-        keyboard = await get_project_keyboard(p, pick_btn, del_btn, client_chat_btn, worker_chat_btn)
-        await bot.send_message(chat.id, text, reply_markup=keyboard)
+        keyboard = await get_project_keyboard(p, pick_btn, del_btn, client_chat_btns, worker_chat_btn)
+        await bot.send_message(chat_id, text, reply_markup=keyboard)
 
 
 async def send_project_invitation(client_name: str, worker_id: int, chat_link: str) -> bool:
@@ -60,22 +67,20 @@ async def send_project_invitation(client_name: str, worker_id: int, chat_link: s
         return False
 
 
-@Currents.set
-async def send_personal_project(worker_id: int, worker_chat_link: str, client_name: str = None, *,
-                                chat: types.Chat) -> bool:
-    """Try to send project to worker, return True on success."""
-
-    if client_name is None:
-        client_name = types.User.get_current().full_name
-
-    result = await send_project_invitation(client_name, worker_id, worker_chat_link)
-    if result is False:  # распространяем исключение
-        return False
-
-    keyboard = inline_funcs.link_button('Перейти в чат', worker_chat_link)
-    await bot.send_message(chat.id, 'Проект отправлен', reply_markup=Main())
-    await bot.send_message(chat.id, 'Ожидайте исполнителя в чате', reply_markup=keyboard)
-    return True
+#
+# @CurrentObjects.decorate
+# async def send_personal_project(worker_id: int, worker_chat_link: str, *,
+#                                 user_name, chat_id) -> bool:
+#     """Try to send project to worker, return True on success."""
+#
+#     result = await send_project_invitation(user_name, worker_id, worker_chat_link)
+#     if result is False:  # распространяем исключение
+#         return False
+#
+#     keyboard = inline_funcs.link_button('Перейти в чат', worker_chat_link)
+#     await bot.send_message(chat_id, 'Проект отправлен', reply_markup=Main())
+#     await bot.send_message(chat_id, 'Ожидайте исполнителя в чате', reply_markup=keyboard)
+#     return True
 
 
 async def send_chat_link_to_worker(client_name: str, worker_id: int, worker_chat_link: str):

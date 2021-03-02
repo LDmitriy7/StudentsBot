@@ -9,7 +9,7 @@ from loader import calendar, dp
 from questions import CreateProjectConv as States
 
 
-@dp.callback_query_handler(text=KB.WorkTypes.BUTTONS, state=States.work_type)
+@dp.callback_query_handler(text=KB.work_types.BUTTONS, state=States.work_type)
 async def process_work_type(data):
     return UpdateData({'work_type': data})
 
@@ -38,7 +38,7 @@ async def process_description(text):
 
 @dp.message_handler(state=States.price)
 async def process_price(text):
-    if text == KB.Miss.MISS:
+    if text == KB.miss.MISS:
         price = None
     elif text.isdigit():
         price = int(text)
@@ -49,18 +49,18 @@ async def process_price(text):
 
 @dp.message_handler(state=States.note)
 async def process_note(text):
-    note = None if text == KB.Miss.MISS else text
+    note = None if text == KB.miss.MISS else text
     return UpdateData({'note': note})
 
 
 @dp.message_handler(content_types=['photo', 'document'], state=States.files)
-async def process_file(msg: types.Message):
-    file_obj = funcs.get_file_tuple(msg)
+async def process_file():
+    file_obj = await funcs.get_file_tuple()
     return UpdateData(extend_data={'files': file_obj}, new_state=None)
 
 
-@dp.message_handler(text=[KB.Ready.READY, KB.Ready.START_OVER], state=States.files)
+@dp.message_handler(text=[KB.ready.READY, KB.ready.START_OVER], state=States.files)
 async def process_file_finish(text):
-    if text == KB.Ready.START_OVER:
+    if text == KB.ready.START_OVER:
         return UpdateData(delete_keys='files', new_state=None), 'Теперь отправляйте заново'
     return UpdateData(extend_data={'files': []})

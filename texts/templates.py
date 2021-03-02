@@ -72,7 +72,7 @@ def form_post_text(status: str, post_data: data_classes.ProjectData, with_note=F
     """Form text for post for channel."""
     post_data = deepcopy(post_data)
 
-    emojis = {'Активен': '🔥', 'Выполняется': '⏳', 'Выполнен': '✅'}
+    emojis = {'Активен': '🔥', 'Выполняется': '⏳', 'Выполнен': '✅', 'Оставлен отзыв': '✅'}
     status = f'{emojis.get(status, "")} {status}'
 
     post_data.subject = post_data.subject.replace(' ', '_')

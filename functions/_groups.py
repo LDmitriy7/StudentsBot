@@ -1,33 +1,68 @@
 from typing import Optional
 
-from data_types import ProjectStatuses, UserRoles
-from data_types.data_classes import PairChats, Project
-from keyboards import inline_funcs
-from loader import bot, users_db
-from subfuncs.currents2 import Currents
-from utils.chat_creator import create_pair_chats
+from aiogram.dispatcher.currents import CurrentObjects
+from aiogram.utils.exceptions import TelegramAPIError
 
-__all__ = ['create_and_save_groups', 'get_project_status', 'get_user_role',
+import functions as funcs
+import keyboards as KB
+from data_types import ProjectStatuses, UserRoles, data_classes
+from loader import users_db, bot
+from utils import create_chat
+
+__all__ = ['get_project_status', 'get_user_role', 'create_and_save_groups',
            'get_project_for_chat', 'get_group_keyboard']
 
 GROUP_NUM = 0
 
 
-async def create_and_save_groups(client_id: int, worker_id: int, project_id: str) -> PairChats:
+async def _check_chat_freedom(chat_id) -> Optional[int]:
+    try:
+        pstatus = await funcs.get_project_status(chat_id=chat_id)
+        if pstatus in [ProjectStatuses.COMPLETED, ProjectStatuses.REVIEWED, None]:
+            members_count = await bot.get_chat_members_count(chat_id)
+            if members_count <= 3:
+                return True
+    except TelegramAPIError:
+        return False
+
+
+async def _get_pair_chat_ids(title: str) -> list[int]:
+    chat_ids = []
+
+    for chat in await users_db.get_all_chats():
+        if await _check_chat_freedom(chat.id):
+            chat_ids.append(chat.id)
+        if len(chat_ids) >= 2:
+            break
+    else:
+        while len(chat_ids) < 2:
+            chat_id = await create_chat(title)
+            chat_ids.append(chat_id)
+
+    return chat_ids
+
+
+async def create_and_save_groups(client_id: int, worker_id: int, project_id: str) -> data_classes.PairChats:
     """Создает парные группы с порядковым номером в названии и сохраняет их."""
     global GROUP_NUM
     GROUP_NUM += 1
 
     await bot.send_chat_action(client_id, 'typing')
-    pair_chats = await create_pair_chats(f'Нора #{GROUP_NUM}', project_id, client_id, worker_id)
+    cchat_id, wchat_id = await _get_pair_chat_ids(f'Нора #{GROUP_NUM}')
 
-    await users_db.add_chat(pair_chats.client_chat)
-    await users_db.add_chat(pair_chats.worker_chat)
-    return pair_chats
+    cchat_link = await bot.export_chat_invite_link(cchat_id)
+    wchat_link = await bot.export_chat_invite_link(wchat_id)
+
+    cchat = data_classes.Chat(project_id, UserRoles.client, client_id, cchat_link, wchat_id, cchat_id)
+    wchat = data_classes.Chat(project_id, UserRoles.worker, worker_id, wchat_link, cchat_id, wchat_id)
+    await users_db.update_chat(cchat_id, cchat)
+    await users_db.update_chat(wchat_id, wchat)
+
+    return data_classes.PairChats(cchat, wchat)
 
 
-@Currents.set
-async def get_project_for_chat(*, chat_id: int) -> Optional[Project]:
+@CurrentObjects.decorate
+async def get_project_for_chat(*, chat_id: int) -> Optional[data_classes.Project]:
     """Get linked project for chat or None."""
     try:
         chat = await users_db.get_chat_by_id(chat_id)
@@ -37,30 +72,28 @@ async def get_project_for_chat(*, chat_id: int) -> Optional[Project]:
     return project
 
 
-@Currents.set
+@CurrentObjects.decorate
 async def get_project_status(*, chat_id: int) -> Optional[str]:
     """Return status of linked project or None."""
     project = await get_project_for_chat(chat_id=chat_id)
     return project.status if project else None
 
 
-@Currents.set
+@CurrentObjects.decorate
 async def get_user_role(*, chat_id: int) -> Optional[str]:
     """Return user role in chat or None."""
     chat = await users_db.get_chat_by_id(chat_id)
     return chat.user_role if chat else None
 
 
-@Currents.set
-async def get_group_keyboard(*, chat_id: int) -> inline_funcs.GroupMenu:
+@CurrentObjects.decorate
+async def get_group_keyboard(*, chat_id: int) -> KB.GroupMenu:
     """Создает меню для группы, основываясь на статусе проекта и роли юзера."""
     pstatus = await get_project_status(chat_id=chat_id)
     user_role = await get_user_role(chat_id=chat_id)
 
-    CALL_ADMIN = True
-    OFFER_PRICE = pstatus == ProjectStatuses.ACTIVE and user_role == UserRoles.WORKER
-    CONFIRM_PROJECT = pstatus == ProjectStatuses.IN_PROGRESS and user_role == UserRoles.client
-    FEEDBACK = pstatus == ProjectStatuses.COMPLETED and user_role == UserRoles.client
-
-    exclude_btns = {key: None for key, value in locals().items() if not value and key.isupper()}
-    return inline_funcs.GroupMenu(**exclude_btns)
+    call_admin = True
+    offer_price = pstatus == ProjectStatuses.ACTIVE and user_role == UserRoles.worker
+    confirm_project = pstatus == ProjectStatuses.IN_PROGRESS and user_role == UserRoles.client
+    feedback = pstatus == ProjectStatuses.COMPLETED and user_role == UserRoles.client
+    return KB.group_menu(call_admin, offer_price, confirm_project, feedback)

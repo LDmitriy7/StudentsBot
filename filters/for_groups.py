@@ -22,7 +22,7 @@ class ProjectStatus(BoundFilter):
     key = 'pstatus'
 
     def __init__(self, pstatus: str):
-        if pstatus not in ProjectStatuses.all():
+        if pstatus not in ProjectStatuses.all:
             raise ValueError('Invalid project status.')
         self.pstatus = pstatus
 
@@ -35,7 +35,7 @@ class ChatUserRole(BoundFilter):
     key = 'user_role'
 
     def __init__(self, user_role: str):
-        if user_role not in UserRoles.all():
+        if user_role not in UserRoles.all:
             raise ValueError('Invalid chat\'s user role.')
         self.user_role = user_role
 

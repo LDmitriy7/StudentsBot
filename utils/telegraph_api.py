@@ -35,6 +35,7 @@ def _make_html_reviews(reviews: list[data_classes.Review]) -> str:
         return templates.REVIEW_TEMPLATE.format(
             client_name=review.client_name,
             text=review.text,
+            subject=review.subject,
             **text_rating,
         )
 

@@ -12,6 +12,8 @@ _conv_bot = parser['Conv Bot']
 _application = parser['Application']
 _channel = parser['Channel']
 _telegraph = parser['Telegraph']
+_banks = parser['Banks']
+_admins = parser['Admins']
 
 BOT_TOKEN = _bot['bot_token']
 BOT_USERNAME = _bot['bot_username']
@@ -28,3 +30,8 @@ CHANNEL_USERNAME = '@' + _channel['main_channel']
 CHANNEL_POST_URL = 't.me/' + _channel['main_channel'] + '/{}'
 
 TELEGRAPH_TOKEN = _telegraph['access_token']
+
+MONOBANK_PAYMENT_URL = _banks['monobank_payment_url']
+PRIVAT_BANK_PAYMENT_url = _banks['privat_bank_payment_url']
+
+MAIN_ADMIN_ID = _admins.getint('main_admin_id')

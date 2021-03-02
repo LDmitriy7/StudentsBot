@@ -1,5 +1,5 @@
-from aiogram import types
 from aiogram.contrib.questions import QuestText
+
 import functions as funcs
 from loader import dp
 

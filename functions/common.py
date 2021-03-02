@@ -1,6 +1,6 @@
 from dataclasses import asdict, fields
 from typing import List, Optional
-
+from aiogram.utils.exceptions import TelegramAPIError
 from aiogram import types
 
 import subfuncs
@@ -71,5 +71,8 @@ async def update_post(project_id: str, project_status: str, post_url: Optional[s
 async def delete_post(post_url: str = None):
     """Удаляет пост из канала, если передана ссылка."""
     if post_url:
-        post_id = post_url.split('/')[-1]
-        await bot.delete_message(CHANNEL_USERNAME, post_id)
+        try:
+            post_id = post_url.split('/')[-1]
+            await bot.delete_message(CHANNEL_USERNAME, post_id)
+        except TelegramAPIError:
+            pass

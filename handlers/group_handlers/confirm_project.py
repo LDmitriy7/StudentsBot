@@ -1,4 +1,3 @@
-from aiogram import types
 from aiogram.contrib.questions import QuestText
 from aiogram.utils.markdown import hbold as b
 

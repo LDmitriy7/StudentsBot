@@ -3,13 +3,13 @@ from aiogram import types
 from aiogram.dispatcher.middlewares import BaseMiddleware
 
 import functions as funcs
-from questions import ChangeProfile, FeedbackConv
+from questions import ChangeProfile
 
 
 class UpdatePage(BaseMiddleware):
     """Update personal user's page."""
 
-    FIT_STATE_NAMES = [*ChangeProfile.states_names, FeedbackConv.ask_text.state]
+    FIT_STATE_NAMES = [*ChangeProfile.states_names]
 
     @classmethod
     async def on_post_process_message(cls, msg: types.Message, results: list, states_dict: dict):

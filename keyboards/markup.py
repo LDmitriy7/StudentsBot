@@ -1,12 +1,20 @@
 """Набор всех обычных текстовых клавиатур."""
 
 from aiogram.types import KeyboardButton
-
-from data_types.keyboards import ReplyKeyboard
+from aiogram.utils.keyboards import ReplyKeyboard
 
 __all__ = [
-    'Miss', 'MissCancel', 'Back', 'BackCancel', 'Ready', 'ReadyCancel', 'ForWorker',
-    'ConfirmProject', 'Main', 'Back', 'PhoneNumber', 'PhoneNumberCancel',
+    'back',
+    'back_cancel',
+    'miss',
+    'miss_cancel',
+    'ready',
+    'ready_cancel',
+    'main',
+    'for_worker',
+    'confirm_project',
+    'phone_number',
+    'phone_number_cancel',
     'BACK', 'CANCEL', 'READY', 'MISS', 'RESET', 'START_OVER'
 ]
 
@@ -24,9 +32,15 @@ class Back(ReplyKeyboard):
     BACK = BACK
 
 
+back = Back()
+
+
 class BackCancel(ReplyKeyboard):
     BACK = BACK
     CANCEL = CANCEL
+
+
+back_cancel = BackCancel()
 
 
 class Miss(ReplyKeyboard):
@@ -34,12 +48,16 @@ class Miss(ReplyKeyboard):
     BACK = BACK
 
 
+miss = Miss()
+
+
 class MissCancel(ReplyKeyboard):
     MISS = MISS
     BACK = BACK
     CANCEL = CANCEL
 
-    rows_width = [1]
+
+miss_cancel = MissCancel([1])
 
 
 class Ready(ReplyKeyboard):
@@ -48,11 +66,17 @@ class Ready(ReplyKeyboard):
     BACK = BACK
 
 
+ready = Ready()
+
+
 class ReadyCancel(ReplyKeyboard):
     READY = READY
     START_OVER = START_OVER
     BACK = BACK
     CANCEL = CANCEL
+
+
+ready_cancel = ReadyCancel()
 
 
 # --- частные клавиатуры ---
@@ -67,6 +91,9 @@ class Main(ReplyKeyboard):
     WORKER_MENU = 'Меню исполнителя'
 
 
+main = Main()
+
+
 class ForWorker(ReplyKeyboard):
     MY_WORKS = 'Мои работы'
     SEARCH_ORDERS = 'Поиск заказов'
@@ -75,12 +102,16 @@ class ForWorker(ReplyKeyboard):
     BACK = BACK
 
 
+for_worker = ForWorker()
+
+
 class ConfirmProject(ReplyKeyboard):
     SEND = 'Отправить проект'
     BACK = BACK
     CANCEL = CANCEL
 
-    rows_width = [1]
+
+confirm_project = ConfirmProject([1])
 
 
 class PhoneNumber(ReplyKeyboard):
@@ -89,8 +120,27 @@ class PhoneNumber(ReplyKeyboard):
     BACK = BACK
 
 
+phone_number = PhoneNumber()
+
+
 class PhoneNumberCancel(ReplyKeyboard):
     PHONE = KeyboardButton('Отправить номер', request_contact=True)
     MISS = MISS
     BACK = BACK
     CANCEL = CANCEL
+
+
+phone_number_cancel = PhoneNumberCancel()
+
+if __name__ == '__main__':
+    print(back)
+    print(back_cancel)
+    print(miss)
+    print(miss_cancel)
+    print(ready)
+    print(ready_cancel)
+    print(main)
+    print(for_worker)
+    print(confirm_project)
+    print(phone_number)
+    print(phone_number_cancel)

@@ -6,4 +6,4 @@ from handlers.main_menu import my_orders  # отвечает за кнопку "
 from handlers.main_menu import other  # кнопки 'Предложить идею', 'Инструкция' и 'Меню исполнителя' ++
 from handlers.main_menu import send_project  # отправка проекта в канал/лично/самостоятельно ++
 
-# from handlers.main_menu import _balance  # изменить
+from handlers.main_menu import _balance  # изменить

@@ -2,7 +2,6 @@ from aiogram.utils.helper import Constants
 
 
 class TextQueries(Constants):
-    INVITE_PROJECT = ...  # для инлайн-запроса на приглашение в проект
     DEL_MESSAGE = ...  # для удаления связанного сообщения
     REFUSE_WORK_PRICE = ...  # для отказа от предложенной цены
 
@@ -39,3 +38,11 @@ class UserRoles(Constants):
 class SendTo(Constants):
     CHANNEL = ...
     WORKER = ...
+
+
+if __name__ == '__main__':
+    print(TextQueries.all)
+    print(Prefixes.all)
+    print(ProjectStatuses.all)
+    print(UserRoles.all)
+    print(SendTo.all)

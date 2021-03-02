@@ -17,7 +17,7 @@ PAGE_TEMPLATE = """
 """
 
 REVIEW_TEMPLATE = """
-<aside>{client_name}:</aside>
+<aside>{client_name} ({subject}):</aside>
 <blockquote>{text}</blockquote>
 <p>Качество: {quality}</p>
 <p>Сроки: {terms}</p>

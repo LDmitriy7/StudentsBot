@@ -38,7 +38,7 @@ async def send_bid(text: str):
     full_bid_text = await funcs.get_worker_bid_text(bid.project_id)
     keyboard = KB.for_bid(bid.id)
     await bot.send_message(bid.client_id, full_bid_text, reply_markup=keyboard)
-    return UpdateData(), QuestText('Заявка отправлена', KB.Main())
+    return UpdateData(), QuestText('Заявка отправлена', KB.main)
 
 
 @dp.callback_query_handler(cprefix=Prefixes.PICK_BID_, state='*')

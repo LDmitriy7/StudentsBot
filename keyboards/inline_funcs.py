@@ -1,25 +1,33 @@
 """Инлайновые клавиатуры с генерацией данных."""
 
-from dataclasses import dataclass
-from datetime import date, timedelta
-from typing import Optional
-
-from aiogram.types import InlineKeyboardButton as Button
+from datetime import date, timedelta, datetime
+import pytz
+from aiogram.types import InlineKeyboardButton as Button, InlineKeyboardMarkup
+from aiogram.utils.keyboards import InlineKeyboard
 
 from config import BOT_START_LINK
 from data_types import Prefixes, TextQueries
-from data_types.keyboards import InlineKeyboard, InlineButton
 from loader import calendar
 
-_B = Optional[InlineButton]
+
+class GroupMenu(InlineKeyboardMarkup):
+    CALL_ADMIN = 'CALL_ADMIN'
+    OFFER_PRICE = 'OFFER_PRICE'
+    CONFIRM_PROJECT = 'CONFIRM_PROJECT'
+    FEEDBACK = 'FEEDBACK'
 
 
-@dataclass
-class GroupMenu(InlineKeyboard):
-    CALL_ADMIN: _B = InlineButton('Вызвать админа')
-    OFFER_PRICE: _B = InlineButton('Предложить цену')
-    CONFIRM_PROJECT: _B = InlineButton('Подтвердить выполнение')
-    FEEDBACK: _B = InlineButton('Оставить отзыв')
+def group_menu(call_admin, offer_price, confirm_project, feedback):
+    keyboard = GroupMenu()
+    if call_admin:
+        keyboard.data_row('Вызвать админа', GroupMenu.CALL_ADMIN)
+    if offer_price:
+        keyboard.data_row('Предложить цену', GroupMenu.OFFER_PRICE)
+    if confirm_project:
+        keyboard.data_row('Подтвердить выполнение', GroupMenu.CONFIRM_PROJECT)
+    if feedback:
+        keyboard.data_row('Оставить отзыв', GroupMenu.FEEDBACK)
+    return keyboard
 
 
 def link_button(text: str, url: str):
@@ -46,10 +54,10 @@ def offer_project(project_id: str):
 
 
 def pick_project(project_id: str):
-    """Кнопка 'Позвать в чат' для принятия проекта автором."""
+    """Кнопка 'Принять проект' для принятия проекта автором."""
     keyboard = InlineKeyboard()
     cdata = f'{Prefixes.PICK_PROJECT_}{project_id}'
-    keyboard.data_row('Позвать в чат', cdata)
+    keyboard.data_row('Принять проект', cdata)
     return keyboard
 
 
@@ -80,7 +88,7 @@ def total_confirm_project(project_id: str):
     return keyboard
 
 
-def for_project(project_id: str, pick_btn=False, del_btn=False, files_btn=False, chat_link=None):
+def for_project(project_id: str, pick_btn=False, del_btn=False, files_btn=False, chat_links: [list] = None):
     """Кнопки с данными в формате: prefix{project_id} + кнопка-ссылка в чат."""
     keyboard = InlineKeyboard()
 
@@ -96,8 +104,9 @@ def for_project(project_id: str, pick_btn=False, del_btn=False, files_btn=False,
         add_button('Взять проект', Prefixes.SEND_BID_)
     if files_btn:
         add_button('Посмотреть файлы', Prefixes.GET_FILES_)
-    if chat_link:
-        keyboard.url_row('Перейти в чат', chat_link)
+    if chat_links:
+        for num, link in enumerate(chat_links, start=1):
+            keyboard.url_row(f'Перейти в чат {num}', link)
     if del_btn:
         add_button('Удалить проект', Prefixes.DEL_PROJECT_, as_url=False)
     return keyboard
@@ -123,10 +132,14 @@ def make_calendar():
         'Январь', 'Февраль', 'Март', 'Апрель', 'Май', 'Июнь', 'Июль',
         'Август', 'Сентябрь', 'Октябрь', 'Ноябрь', 'Декабрь'
     ]
+
+    ukrainian_tz = pytz.timezone('Etc/GMT-2')
+    date_now = datetime.now(tz=ukrainian_tz).date()
+
     calendar.init(
-        date.today(),
-        min_date=date.today(),
-        max_date=date.today() + timedelta(weeks=30),
+        base_date=date_now,
+        min_date=date_now,
+        max_date=date_now + timedelta(weeks=30),
         days_names=days_names,
         month_names=month_names
     )
