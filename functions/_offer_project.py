@@ -1,13 +1,13 @@
 from aiogram import types
 
-from keyboards import inline_funcs
+import keyboards as KB
 
 __all__ = ['make_offer_project_article']
 
 
 def make_offer_project_article(project_id) -> types.InlineQueryResultArticle:
     text = 'Предлагаю вам персональный проект'
-    keyboard = inline_funcs.pick_project(project_id)
+    keyboard = KB.PickProject(project_id)
     imc = types.InputMessageContent(message_text=text)
 
     return types.InlineQueryResultArticle(

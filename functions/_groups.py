@@ -96,4 +96,4 @@ async def get_group_keyboard(*, chat_id: int) -> KB.GroupMenu:
     offer_price = pstatus == ProjectStatuses.ACTIVE and user_role == UserRoles.worker
     confirm_project = pstatus == ProjectStatuses.IN_PROGRESS and user_role == UserRoles.client
     feedback = pstatus == ProjectStatuses.COMPLETED and user_role == UserRoles.client
-    return KB.group_menu(call_admin, offer_price, confirm_project, feedback)
+    return KB.GroupMenu(call_admin, offer_price, confirm_project, feedback)

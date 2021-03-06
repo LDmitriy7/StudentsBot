@@ -1,33 +1,32 @@
 """Инлайновые клавиатуры с генерацией данных."""
 
-from datetime import date, timedelta, datetime
-import pytz
-from aiogram.types import InlineKeyboardButton as Button, InlineKeyboardMarkup
-from aiogram.utils.keyboards import InlineKeyboard
+from datetime import timedelta, datetime
 
-from config import BOT_START_LINK
-from data_types import Prefixes, TextQueries
+import pytz
+from aiogram.utils.keyboards2 import InlineKeyboard, InlineButton
+
 from loader import calendar
 
-
-class GroupMenu(InlineKeyboardMarkup):
-    CALL_ADMIN = 'CALL_ADMIN'
-    OFFER_PRICE = 'OFFER_PRICE'
-    CONFIRM_PROJECT = 'CONFIRM_PROJECT'
-    FEEDBACK = 'FEEDBACK'
+DEL_MESSAGE = 'del:message'
 
 
-def group_menu(call_admin, offer_price, confirm_project, feedback):
-    keyboard = GroupMenu()
-    if call_admin:
-        keyboard.data_row('Вызвать админа', GroupMenu.CALL_ADMIN)
-    if offer_price:
-        keyboard.data_row('Предложить цену', GroupMenu.OFFER_PRICE)
-    if confirm_project:
-        keyboard.data_row('Подтвердить выполнение', GroupMenu.CONFIRM_PROJECT)
-    if feedback:
-        keyboard.data_row('Оставить отзыв', GroupMenu.FEEDBACK)
-    return keyboard
+class GroupMenu(InlineKeyboard):
+    CALL_ADMIN = 'Вызвать админа'
+    OFFER_PRICE = 'Предложить цену'
+    CONFIRM_PROJECT = 'Подтвердить выполнение'
+    FEEDBACK = 'Оставить отзыв'
+
+    def __init__(self, call_admin: bool, offer_price: bool, confirm_project: bool, feedback: bool):
+        if not call_admin:
+            self.CALL_ADMIN = None
+        if not offer_price:
+            self.OFFER_PRICE = None
+        if not confirm_project:
+            self.CONFIRM_PROJECT = None
+        if not feedback:
+            self.FEEDBACK = None
+
+        super().__init__()
 
 
 def link_button(text: str, url: str):
@@ -37,93 +36,102 @@ def link_button(text: str, url: str):
     return keyboard
 
 
-def invite_project(worker_id: int):
+class InviteProject(InlineKeyboard):
     """Кнопка 'Заполнить проект' со стартовой ссылкой {prefix}{worker_id}."""
-    keyboard = InlineKeyboard()
-    url = BOT_START_LINK.format(f'{Prefixes.INVITE_PROJECT_}{worker_id}')
-    keyboard.url_row('Заполнить проект', url)
-    return keyboard
+    START_LINK = InlineButton('Заполнить проект', start_param='project-invite_from-')
+
+    def __init__(self, worker_id: int):
+        self.START_LINK += str(worker_id)
+        super().__init__()
 
 
-def offer_project(project_id: str):
-    """Кнопка 'Выбрать чат' для отправки проекта лично."""
-    keyboard = InlineKeyboard()
-    siq = f'{Prefixes.OFFER_PROJECT_}{project_id}'
-    keyboard.row(Button('Выбрать чат', switch_inline_query=siq))
-    return keyboard
+class OfferProject(InlineKeyboard):
+    OFFER = InlineButton('Выбрать чат', switch_iquery='offer:project:')
+
+    def __init__(self, project_id: str):
+        self.OFFER += project_id
+        super().__init__()
 
 
-def pick_project(project_id: str):
-    """Кнопка 'Принять проект' для принятия проекта автором."""
-    keyboard = InlineKeyboard()
-    cdata = f'{Prefixes.PICK_PROJECT_}{project_id}'
-    keyboard.data_row('Принять проект', cdata)
-    return keyboard
+class PickProject(InlineKeyboard):
+    PICK = InlineButton('Принять проект', 'project:pick:')
+    DEL_MESSAGE = InlineButton('Отменить', DEL_MESSAGE)
+
+    def __init__(self, project_id: str):
+        self.PICK += project_id
+        super().__init__()
 
 
-def del_project(project_id: str):
-    """Для окончательного удаления проекта."""
-    keyboard = InlineKeyboard()
-    cdata = f'{Prefixes.TOTAL_DEL_PROJECT_}{project_id}'
-    keyboard.data_row('Удалить проект', cdata)
-    keyboard.data_row('Отменить', TextQueries.DEL_MESSAGE)
-    return keyboard
+class DelProject(InlineKeyboard):
+    DEL_PROJECT = InlineButton('Удалить проект', 'project:total_del:')
+    DEL_MESSAGE = InlineButton('Отменить', DEL_MESSAGE)
+
+    def __init__(self, project_id: str):
+        self.DEL_PROJECT += project_id
+        super().__init__()
 
 
-def pay_for_project(price: int, project_id: str):
-    """Кнопки: Оплатить(prefix_price_project), Отказаться."""
-    keyboard = InlineKeyboard()
-    cdata = f'{Prefixes.PAY_FOR_PROJECT_}{price}_{project_id}'
-    keyboard.data_row(f'Оплатить {price} грн', cdata)
-    keyboard.data_row('Отказаться', TextQueries.REFUSE_WORK_PRICE)
-    return keyboard
+class PayForProject(InlineKeyboard):
+    PAY = InlineButton('Оплатить', 'project:pay_for:')
+    REFUSE = InlineButton('Отказаться', 'work_price:refuse')
+
+    def __init__(self, price: int, project_id: str):
+        self.PAY += f'{price}_{project_id}'
+        super().__init__()
 
 
-def total_confirm_project(project_id: str):
-    """Кнопки: Подтвердить(prefix_project), Отменить."""
-    keyboard = InlineKeyboard()
-    cdata = f'{Prefixes.CONFIRM_PROJECT_}{project_id}'
-    keyboard.data_row('Подтвердить', cdata)
-    keyboard.data_row('Отменить', TextQueries.DEL_MESSAGE)
-    return keyboard
+class ConfirmProject(InlineKeyboard):
+    CONFIRM = InlineButton('Подтвердить', callback='confirm:project:')
+    DEL_MESSAGE = InlineButton('Отменить', callback=DEL_MESSAGE)
+
+    def __init__(self, project_id: str):
+        self.CONFIRM += project_id
+        super().__init__()
 
 
-def for_project(project_id: str, pick_btn=False, del_btn=False, files_btn=False, chat_links: [list] = None):
-    """Кнопки с данными в формате: prefix{project_id} + кнопка-ссылка в чат."""
-    keyboard = InlineKeyboard()
+class ForProject(InlineKeyboard):
+    PICK = InlineButton('Взять проект', start_param='send-bid-')
+    FILES = InlineButton('Посмотреть файлы', start_param='get-files-')
+    REPOST = InlineButton('Обновить в канале', callback='post:repost:')
+    DELETE = InlineButton('Удалить проект', callback='del:project:')
 
-    def add_button(text, prefix, as_url=True):
-        if as_url:
-            url = BOT_START_LINK.format(f'{prefix}{project_id}')
-            keyboard.url_row(text, url)
+    def __init__(self, project_id: str,
+                 pick_btn=False, del_btn=False, files_btn=False, chat_links: [list] = None, repost_btn=False):
+        if pick_btn:
+            self.PICK.url += project_id
         else:
-            cdata = f'{prefix}{project_id}'
-            keyboard.data_row(text, cdata)
+            self.PICK = None
 
-    if pick_btn:
-        add_button('Взять проект', Prefixes.SEND_BID_)
-    if files_btn:
-        add_button('Посмотреть файлы', Prefixes.GET_FILES_)
-    if chat_links:
-        for num, link in enumerate(chat_links, start=1):
-            keyboard.url_row(f'Перейти в чат {num}', link)
-    if del_btn:
-        add_button('Удалить проект', Prefixes.DEL_PROJECT_, as_url=False)
-    return keyboard
+        if files_btn:
+            self.FILES.url += project_id
+        else:
+            self.FILES = None
+
+        if del_btn:
+            self.DELETE.callback_data += project_id
+        else:
+            self.DELETE = None
+
+        if repost_btn:
+            self.REPOST.callback_data += project_id
+        else:
+            self.REPOST = None
+
+        super().__init__()
+
+        if chat_links:
+            for num, link in enumerate(chat_links, start=1):
+                self.url_row(f'Перейти в чат {num}', link)
 
 
-def for_bid(bid_id: str, pick_btn=True, refuse_btn=True):
+class ForBid(InlineKeyboard):
     """Кнопки c данными в формате: {prefix}{bid_id}."""
-    keyboard = InlineKeyboard()
-    pick_bid_data = f'{Prefixes.PICK_BID_}{bid_id}'
+    PICK = InlineButton('Принять', 'bid:pick:')
+    DEL_MESSAGE = InlineButton('Отклонить', DEL_MESSAGE)
 
-    if pick_btn:
-        button1 = Button('Принять', callback_data=pick_bid_data)
-        keyboard.insert(button1)
-    if refuse_btn:
-        button2 = Button('Отклонить', callback_data=TextQueries.DEL_MESSAGE)
-        keyboard.insert(button2)
-    return keyboard
+    def __init__(self, bid_id: str):
+        self.PICK += bid_id
+        super().__init__(default_width=2)
 
 
 def make_calendar():
@@ -144,3 +152,20 @@ def make_calendar():
         month_names=month_names
     )
     return calendar.get_keyboard()
+
+
+class ControlUser(InlineKeyboard):
+    PAY = InlineButton('Начислить деньги', callback='user:pay:')
+    WITHDRAW = InlineButton('Списать деньги', callback='user:withdraw:')
+    WATCH_BALANCE = InlineButton('Посмотреть баланс', callback='user:watch_balance:')
+    WATCH_PROFILE = InlineButton('Посмотреть профиль', callback='user:watch_profile:')
+
+    def __init__(self, user_id: int):
+        user_id = str(user_id)
+
+        self.PAY += user_id
+        self.WITHDRAW += user_id
+        self.WATCH_BALANCE += user_id
+        self.WATCH_PROFILE += user_id
+
+        super().__init__()

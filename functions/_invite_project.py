@@ -1,7 +1,7 @@
 from aiogram import types
-
-from keyboards import inline_funcs
 from aiogram.dispatcher.currents import CurrentObjects
+
+import keyboards as KB
 
 __all__ = ['form_invite_project_article']
 
@@ -10,7 +10,7 @@ __all__ = ['form_invite_project_article']
 async def form_invite_project_article(*, user_id) -> types.InlineQueryResultArticle:
     """Form InlineQueryResultArticle [to invite to project] for current User."""
     text = 'Перейдите по ссылке, чтобы заполнить персональный проект'
-    keyboard = inline_funcs.invite_project(user_id)
+    keyboard = KB.InviteProject(user_id)
     imc = types.InputMessageContent(message_text=text)
 
     return types.InlineQueryResultArticle(

@@ -35,3 +35,4 @@ MONOBANK_PAYMENT_URL = _banks['monobank_payment_url']
 PRIVAT_BANK_PAYMENT_url = _banks['privat_bank_payment_url']
 
 MAIN_ADMIN_ID = _admins.getint('main_admin_id')
+ADMIN_IDS = list(map(int, _admins['admin_ids'].split(',')))

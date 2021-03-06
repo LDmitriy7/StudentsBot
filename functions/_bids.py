@@ -3,7 +3,7 @@ from dataclasses import asdict, fields
 from aiogram.dispatcher.currents import CurrentObjects
 
 import subfuncs
-from data_types import data_classes
+from data_types import data_models
 from keyboards import inline_funcs
 from loader import users_db, bot
 from texts import templates
@@ -19,7 +19,7 @@ async def get_worker_bid_text(project_id: str, *, user_id, text) -> str:
     project = await users_db.get_project_by_id(project_id)
 
     ratings = [asdict(r.rating) for r in reviews]
-    rates = [f.name for f in fields(data_classes.Rating)]
+    rates = [f.name for f in fields(data_models.Rating)]
     avg_rating = subfuncs.count_avg_values(ratings, rates)
     avg_rating_text = templates.form_avg_rating_text(avg_rating)
 

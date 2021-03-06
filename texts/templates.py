@@ -3,7 +3,7 @@
 from copy import deepcopy
 from dataclasses import asdict
 
-from data_types import data_classes
+from data_types import data_models
 
 _POST_TEMPLATE = """
 <b>{status}</b>
@@ -68,7 +68,7 @@ def form_subjects_text(subjects: list) -> str:
     return result
 
 
-def form_post_text(status: str, post_data: data_classes.ProjectData, with_note=False) -> str:
+def form_post_text(status: str, post_data: data_models.ProjectData, with_note=False) -> str:
     """Form text for post for channel."""
     post_data = deepcopy(post_data)
 

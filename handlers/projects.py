@@ -1,15 +1,29 @@
 """Обработка данных с кнопок под проектами: посмотреть файлы, удалить проект."""
 
 from aiogram import types
-
-import functions as funcs
-from data_types import Prefixes, ProjectStatuses
-from keyboards import inline_funcs
-from loader import dp, users_db
 from aiogram.contrib.questions import QuestText
 
+import functions as funcs
+import keyboards as KB
+from data_types import ProjectStatuses
+from loader import dp, users_db
 
-@dp.message_handler(cprefix=Prefixes.GET_FILES_, state='*')
+
+@dp.callback_query_handler(prefix_button=KB.ForProject.REPOST, state='*')
+async def repost_project(query: types.CallbackQuery, payload: str):
+    throttle_rate = 0
+    if not await dp.throttle(repost_project.__name__, rate=throttle_rate, no_error=True):
+        await query.answer(f'Вы можете обновлять ваши проекты не чаще раза в {throttle_rate // 60} мин.')
+        return
+
+    project = await users_db.get_project_by_id(payload)
+    await funcs.delete_post(project.post_url)
+    post = await funcs.send_post(project.id, project.data, project.status)
+    await users_db.update_project_post_url(project.id, post.url)
+    await query.answer('Проект переопубликован')
+
+
+@dp.message_handler(prefix_button=KB.ForProject.FILES, state='*')
 async def send_files(payload: str):
     """Отправляет все файлы к проекту."""
     project = await users_db.get_project_by_id(payload)
@@ -19,15 +33,15 @@ async def send_files(payload: str):
         return 'Этот проект уже удален'
 
 
-@dp.callback_query_handler(cprefix=Prefixes.DEL_PROJECT_, state='*')
+@dp.callback_query_handler(prefix_button=KB.ForProject.DELETE, state='*')
 async def del_project(payload: str):
     """Просит потвердить удаление проекта."""
     text = 'Вы точно хотите удалить проект?'
-    keyboard = inline_funcs.del_project(payload)
+    keyboard = KB.DelProject(payload)
     return QuestText(text, keyboard)
 
 
-@dp.callback_query_handler(cprefix=Prefixes.TOTAL_DEL_PROJECT_, state='*')
+@dp.callback_query_handler(prefix_button=KB.DelProject.DEL_PROJECT, state='*')
 async def total_del_project(msg: types.Message, user_id: int, payload: str):
     """Удаляет проект, если он имеет активный статус и принадлежит юзеру."""
     project = await users_db.get_project_by_id(payload)

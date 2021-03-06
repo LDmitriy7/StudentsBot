@@ -5,12 +5,11 @@ from aiogram.contrib.questions import QuestText
 import functions as funcs
 import keyboards as KB
 import texts
-from data_types import Prefixes
 from loader import dp, users_db, bot
 from questions import RegistrationConv, SendBidConv
 
 
-@dp.message_handler(cprefix=Prefixes.SEND_BID_)
+@dp.message_handler(prefix_button=KB.ForProject.PICK)
 async def ask_bid_text(user_id: int, payload: str):
     """Запрашивает текст для заявки у исполнителя."""
     account = await users_db.get_account_by_id(user_id)
@@ -36,12 +35,12 @@ async def send_bid(text: str):
 
     bid = await funcs.save_bid()
     full_bid_text = await funcs.get_worker_bid_text(bid.project_id)
-    keyboard = KB.for_bid(bid.id)
+    keyboard = KB.ForBid(bid.id)
     await bot.send_message(bid.client_id, full_bid_text, reply_markup=keyboard)
     return UpdateData(), QuestText('Заявка отправлена', KB.main)
 
 
-@dp.callback_query_handler(cprefix=Prefixes.PICK_BID_, state='*')
+@dp.callback_query_handler(prefix_button=KB.ForBid.PICK, state='*')
 async def pick_bid(msg: types.Message, user_name: str, payload: str):
     """Принять заявку: пригласить обоих пользователей в чат."""
     bid = await users_db.get_bid_by_id(payload)
@@ -54,7 +53,7 @@ async def pick_bid(msg: types.Message, user_name: str, payload: str):
     await funcs.send_chat_link(bid.worker_id, worker_text, chats.worker_chat.link)
 
 
-@dp.callback_query_handler(cprefix=Prefixes.PICK_PROJECT_, state='*')
+@dp.callback_query_handler(prefix_button=KB.PickProject.PICK, state='*')
 async def pick_project(query: types.CallbackQuery, user_id: int, user_name: str, payload: str):
     project = await users_db.get_project_by_id(payload)
 

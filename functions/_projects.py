@@ -18,7 +18,8 @@ async def get_project_keyboard(project: data_classes.Project, pick_btn, del_btn,
                                client_chat_btns: bool, worker_chat_btns: bool):
     """Возращает инлайн-клавиатуру для проекта."""
     has_files = bool(project.data.files)
-    can_delete = del_btn and project.status == ProjectStatuses.ACTIVE
+    can_be_deleted = bool(del_btn and project.status == ProjectStatuses.ACTIVE)
+    can_be_reposted = bool(project.post_url and project.status == ProjectStatuses.ACTIVE)
 
     if client_chat_btns:
         chats = await users_db.get_chats_by_project(project.id)
@@ -29,14 +30,14 @@ async def get_project_keyboard(project: data_classes.Project, pick_btn, del_btn,
     else:
         chats_links = []
 
-    keyboard = inline_funcs.for_project(
+    return inline_funcs.ForProject(
         project.id,
         pick_btn=pick_btn,
-        del_btn=can_delete,
+        del_btn=can_be_deleted,
         files_btn=has_files,
-        chat_links=chats_links
+        chat_links=chats_links,
+        repost_btn=can_be_reposted
     )
-    return keyboard
 
 
 @CurrentObjects.decorate

@@ -66,12 +66,6 @@ async def process_nickname(user_id, text, username):
     return UpdateData(), QuestText('Никнейм обновлен', KB.for_worker)
 
 
-@dp.message_handler(text=KB.miss.MISS, state=States.phone_number)
-async def miss_phone_number(user_id):
-    await users_db.update_profile_phone_number(user_id, None)
-    return UpdateData(), QuestText('Номер телефона сброшен', KB.for_worker)
-
-
 @dp.message_handler(content_types=types.ContentType.CONTACT, state=States.phone_number)
 async def process_phone_number(contact: types.Contact, user_id):
     await users_db.update_profile_phone_number(user_id, contact.phone_number)
@@ -80,9 +74,7 @@ async def process_phone_number(contact: types.Contact, user_id):
 
 @dp.message_handler(state=States.email)
 async def process_email(text, user_id):
-    if text == KB.miss.MISS:
-        email = None
-    elif '@' in text:
+    if '@' in text:
         email = text
     else:
         return 'Похоже, вы ошиблись'

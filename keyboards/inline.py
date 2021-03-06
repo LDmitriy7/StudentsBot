@@ -1,4 +1,5 @@
-from aiogram.utils.keyboards import InlineKeyboard, Buttons
+from aiogram.utils.keyboards2 import InlineKeyboard, InlineButton
+
 from config import MONOBANK_PAYMENT_URL, PRIVAT_BANK_PAYMENT_url
 
 __all__ = [
@@ -15,9 +16,8 @@ __all__ = [
 
 
 class Payment(InlineKeyboard):
-    MONOBANK = Buttons.url('Монобанк', MONOBANK_PAYMENT_URL)
-    PRIVATBANK = Buttons.url('Приватбанк', PRIVAT_BANK_PAYMENT_url)
-    ASK_CONFIRM = 'Подтвердить оплату'
+    MONOBANK = InlineButton('Монобанк', url=MONOBANK_PAYMENT_URL)
+    PRIVATBANK = InlineButton('Приватбанк', url=PRIVAT_BANK_PAYMENT_url)
 
 
 payment = Payment()
@@ -76,19 +76,20 @@ subjects = Subjects()
 
 
 class FindSubject(InlineKeyboard):
-    FIND_QUERY = Buttons.switch_iquery_current('Найти предмет', '')
+    FIND_QUERY = InlineButton('Найти предмет', switch_iquery_current='')
 
 
 find_subject = FindSubject()
 
 
 class ChooseInviteChat(InlineKeyboard):
-    INVITE_QUERY = Buttons.switch_iquery('Выбрать чат', 'Предложить проект')
+    INVITE_QUERY = InlineButton('Выбрать чат', switch_iquery='Предложить проект')
 
 
 choose_invite_chat = ChooseInviteChat()
 
 if __name__ == '__main__':
+    print(payment)
     print(rates)
     print(work_types)
     print(my_profile)

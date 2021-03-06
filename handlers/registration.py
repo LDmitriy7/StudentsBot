@@ -1,8 +1,8 @@
 """Все для диалога: регистрация юзера как исполнителя."""
 from aiogram import types
-from aiogram.types import ContentType
 from aiogram.contrib.middlewares.conversation import UpdateData
 from aiogram.contrib.questions import QuestText
+from aiogram.types import ContentType
 
 import functions as funcs
 import keyboards as KB
@@ -10,7 +10,7 @@ from loader import dp
 from questions import RegistrationConv as States
 
 
-@dp.message_handler(text=KB.miss_cancel.MISS, state=States.phone_number)
+@dp.message_handler(button=KB.miss_cancel.MISS, state=States.phone_number)
 async def miss_phone_number():
     return UpdateData({'phone_number': None})
 

@@ -9,7 +9,7 @@ from eval_ellipsis import EvalEllipsis
 from motor.motor_asyncio import AsyncIOMotorClient, AsyncIOMotorDatabase
 from pymongo.results import InsertOneResult
 
-from data_types import data_classes
+from data_types import data_models
 
 ACCOUNTS = ...
 PROJECTS = ...
@@ -104,49 +104,49 @@ class MongoBase(MongoClient):
 class MongoAdder(MongoBase):
     """Содержит методы для добавления объектов в коллекции."""
 
-    async def add_project(self, project: data_classes.Project) -> str:
+    async def add_project(self, project: data_models.Project) -> str:
         return await self.add_object(PROJECTS, asdict(project))
 
-    async def add_bid(self, bid: data_classes.Bid) -> str:
+    async def add_bid(self, bid: data_models.Bid) -> str:
         return await self.add_object(BIDS, asdict(bid))
 
-    async def add_chat(self, chat: data_classes.Chat) -> str:
+    async def add_chat(self, chat: data_models.Chat) -> str:
         return await self.add_object(CHATS, asdict(chat))
 
-    async def add_review(self, review: data_classes.Review) -> str:
+    async def add_review(self, review: data_models.Review) -> str:
         return await self.add_object(REVIEWS, asdict(review))
 
 
 class MongoGetter(MongoBase):
     """Содержит методы для поиска объектов в коллекциях."""
 
-    async def get_all_accounts(self) -> List[data_classes.Account]:
+    async def get_all_accounts(self) -> List[data_models.Account]:
         accounts = []
         for a in await self.get_object(ACCOUNTS, {}, many=True):
-            account = data_classes.Account.from_dict(a)
+            account = data_models.Account.from_dict(a)
             accounts.append(account)
         return accounts
 
-    async def get_all_chats(self) -> List[data_classes.Chat]:
+    async def get_all_chats(self) -> List[data_models.Chat]:
         chats = []
         for c in await self.get_object(CHATS, {}, many=True):
-            chat = data_classes.Chat.from_dict(c)
+            chat = data_models.Chat.from_dict(c)
             chats.append(chat)
         return chats
 
-    async def get_all_projects(self) -> List[data_classes.Project]:
+    async def get_all_projects(self) -> List[data_models.Project]:
         projects = []
         for p in await self.get_object(PROJECTS, {}, many=True):
-            project = data_classes.Project.from_dict(p)
+            project = data_models.Project.from_dict(p)
             projects.append(project)
         return projects
 
-    async def get_project_by_id(self, project_id: str) -> Optional[data_classes.Project]:
+    async def get_project_by_id(self, project_id: str) -> Optional[data_models.Project]:
         _filter = {'_id': ObjectId(project_id)}
         project_dict = await self.get_object(PROJECTS, _filter)
-        return data_classes.Project.from_dict(project_dict)
+        return data_models.Project.from_dict(project_dict)
 
-    async def get_projects_by_user(self, client_id: int = None, worker_id: int = None) -> List[data_classes.Project]:
+    async def get_projects_by_user(self, client_id: int = None, worker_id: int = None) -> List[data_models.Project]:
         if client_id:
             _filter = {'client_id': client_id}
         elif worker_id:
@@ -156,42 +156,42 @@ class MongoGetter(MongoBase):
 
         projects = []
         for p in await self.get_object(PROJECTS, _filter, many=True):
-            project = data_classes.Project.from_dict(p)
+            project = data_models.Project.from_dict(p)
             projects.append(project)
         return projects
 
-    async def get_projects_by_subjects(self, subjects: List[str], only_active=True) -> List[data_classes.Project]:
+    async def get_projects_by_subjects(self, subjects: List[str], only_active=True) -> List[data_models.Project]:
         _filter = {'data.subject': {'$in': subjects}}
         if only_active:
             _filter.update(status='Активен')
         projects = []
         for p in await self.get_object(PROJECTS, _filter, many=True):
-            project = data_classes.Project.from_dict(p)
+            project = data_models.Project.from_dict(p)
             projects.append(project)
         return projects
 
-    async def get_account_by_id(self, user_id: int) -> Optional[data_classes.Account]:
+    async def get_account_by_id(self, user_id: int) -> Optional[data_models.Account]:
         _filter = {'_id': user_id}
         account = await self.get_object(ACCOUNTS, _filter)
-        return data_classes.Account.from_dict(account)
+        return data_models.Account.from_dict(account)
 
-    async def get_chat_by_id(self, chat_id: int) -> Optional[data_classes.Chat]:
+    async def get_chat_by_id(self, chat_id: int) -> Optional[data_models.Chat]:
         _filter = {'_id': chat_id}
         chat = await self.get_object(CHATS, _filter)
-        return data_classes.Chat.from_dict(chat)
+        return data_models.Chat.from_dict(chat)
 
-    async def get_chats_by_project(self, project_id: str) -> list[data_classes.Chat]:
+    async def get_chats_by_project(self, project_id: str) -> list[data_models.Chat]:
         _filter = {'project_id': project_id}
         chat_dicts = await self.get_object(CHATS, _filter, many=True)
-        chats = [data_classes.Chat.from_dict(c) for c in chat_dicts]
+        chats = [data_models.Chat.from_dict(c) for c in chat_dicts]
         return chats
 
-    async def get_bid_by_id(self, bid_id: str) -> Optional[data_classes.Bid]:
+    async def get_bid_by_id(self, bid_id: str) -> Optional[data_models.Bid]:
         _filter = {'_id': ObjectId(bid_id)}
         bid = await self.get_object(BIDS, _filter)
-        return data_classes.Bid.from_dict(bid)
+        return data_models.Bid.from_dict(bid)
 
-    async def get_bids_by_user(self, client_id: int = None, worker_id: int = None) -> List[data_classes.Bid]:
+    async def get_bids_by_user(self, client_id: int = None, worker_id: int = None) -> List[data_models.Bid]:
         if client_id:
             _filter = {'client_id': client_id}
         elif worker_id:
@@ -201,14 +201,14 @@ class MongoGetter(MongoBase):
 
         bids = []
         for b in await self.get_object(BIDS, _filter, many=True):
-            bid = data_classes.Bid.from_dict(b)
+            bid = data_models.Bid.from_dict(b)
             bids.append(bid)
         return bids
 
-    async def get_reviews_by_worker(self, worker_id: int) -> List[data_classes.Review]:
+    async def get_reviews_by_worker(self, worker_id: int) -> List[data_models.Review]:
         reviews = []
         for r in await self.get_object(REVIEWS, {'worker_id': worker_id}, many=True):
-            reviews.append(data_classes.Review.from_dict(r))
+            reviews.append(data_models.Review.from_dict(r))
         return reviews
 
 
@@ -235,7 +235,7 @@ class MongoDeleter(MongoBase):
 class MongoUpdater(MongoBase):
     """Содержит методы для обновления объектов в коллекциях."""
 
-    async def update_chat(self, chat_id: int, chat: data_classes.Chat):
+    async def update_chat(self, chat_id: int, chat: data_models.Chat):
         await self.update_object(CHATS, {'_id': chat_id}, '$set', asdict(chat))
 
     async def incr_balance(self, user_id: int, amount: int):
@@ -245,7 +245,7 @@ class MongoUpdater(MongoBase):
         _filter = {'_id': user_id}
         await self.update_object(ACCOUNTS, _filter, '$set', {'subjects': subjects})
 
-    async def update_account_profile(self, user_id: int, profile: data_classes.Profile):
+    async def update_account_profile(self, user_id: int, profile: data_models.Profile):
         _filter = {'_id': user_id}
         await self.update_object(ACCOUNTS, _filter, '$set', {'profile': asdict(profile)})
 

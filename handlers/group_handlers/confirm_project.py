@@ -3,7 +3,7 @@ from aiogram.utils.markdown import hbold as b
 
 import functions as funcs
 import keyboards as KB
-from data_types import ProjectStatuses, UserRoles, Prefixes
+from data_types import ProjectStatuses, UserRoles
 from filters import find_pair_chat
 from loader import dp, users_db, bot
 
@@ -14,12 +14,12 @@ from loader import dp, users_db, bot
 async def ask_confirm_project(chat_id):
     chat = await users_db.get_chat_by_id(chat_id)
     text = 'Вы точно хотите подтвердить выполнение проекта?'
-    keyboard = KB.total_confirm_project(chat.project_id)
+    keyboard = KB.ConfirmProject(chat.project_id)
     return QuestText(text, keyboard)
 
 
 @dp.callback_query_handler(find_pair_chat,
-                           cprefix=Prefixes.CONFIRM_PROJECT_,
+                           prefix_button=KB.ConfirmProject.CONFIRM,
                            pstatus=ProjectStatuses.IN_PROGRESS,
                            user_role=UserRoles.client)
 async def confirm_project(pchat_id: int, payload: str):

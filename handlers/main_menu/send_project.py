@@ -4,7 +4,7 @@ from aiogram.contrib.questions import QuestText
 from aiogram.utils.exceptions import TelegramAPIError
 
 import functions as funcs
-from data_types import SendTo, Prefixes
+from data_types import SendTo
 import keyboards as KB
 from loader import dp
 from questions import CreateProjectConv as States
@@ -38,11 +38,11 @@ async def send_offer_keyboard(msg: types.Message):
     project = await funcs.save_project()
     await msg.answer('Проект успешно создан', reply_markup=KB.main)
     text = 'Теперь вы можете отправить проект <b>исполнителю</b>'
-    keyboard = KB.offer_project(project.id)
+    keyboard = KB.OfferProject(project.id)
     return UpdateData(), QuestText(text, keyboard)
 
 
-@dp.inline_handler(cprefix=Prefixes.OFFER_PROJECT_)
+@dp.inline_handler(prefix_button=KB.OfferProject.OFFER)
 async def send_offer_to_worker(iquery: types.InlineQuery, payload: str):
     article = funcs.make_offer_project_article(payload)
     await iquery.answer([article], cache_time=0, is_personal=True)

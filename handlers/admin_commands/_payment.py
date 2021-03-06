@@ -1,18 +1,16 @@
 from aiogram.contrib.middlewares.conversation import UpdateData
 from aiogram.contrib.questions import ConvStatesGroup, ConvState, QuestText
-from aiogram.utils.keyboards import InlineKeyboard, Buttons
-from data_types import TextQueries
 from aiogram.utils.exceptions import TelegramAPIError
+from aiogram.utils.keyboards import InlineKeyboard, Buttons
 
 import keyboards as KB
+from config import ADMIN_IDS
 from loader import dp, users_db, bot
-
-ADMIN_IDS = [724477101, 794950174]
 
 
 class ConfirmPayment(InlineKeyboard):
     CONFIRM = 'Подтвердить'
-    REFUSE = Buttons.callback('Отменить', TextQueries.DEL_MESSAGE)
+    REFUSE = Buttons.callback('Отменить', KB.DEL_MESSAGE)
 
 
 keyboard = ConfirmPayment()

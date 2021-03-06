@@ -9,7 +9,7 @@ from loader import calendar, dp
 from questions import CreateProjectConv as States
 
 
-@dp.callback_query_handler(text=KB.work_types.BUTTONS, state=States.work_type)
+@dp.callback_query_handler(button=KB.work_types.BUTTONS, state=States.work_type)
 async def process_work_type(data):
     return UpdateData({'work_type': data})
 
@@ -22,8 +22,10 @@ async def process_subject(text):
 @dp.callback_query_handler(calendar.filter(), state=States.date)
 async def process_date(query: types.CallbackQuery, callback_data: dict):
     handle_result = await funcs.handle_calendar_callback(callback_data)
+
     if isinstance(handle_result, QuestFunc):
         return handle_result  # распространяем исключение
+
     await query.answer(f'Выбрано: {handle_result}')
     return UpdateData({'date': str(handle_result)})
 
@@ -59,7 +61,7 @@ async def process_file():
     return UpdateData(extend_data={'files': file_obj}, new_state=None)
 
 
-@dp.message_handler(text=[KB.ready.READY, KB.ready.START_OVER], state=States.files)
+@dp.message_handler(button=[KB.ready.READY, KB.ready.START_OVER], state=States.files)
 async def process_file_finish(text):
     if text == KB.ready.START_OVER:
         return UpdateData(delete_keys='files', new_state=None), 'Теперь отправляйте заново'

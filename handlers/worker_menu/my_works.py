@@ -1,6 +1,6 @@
 from aiogram import types
 from aiogram.contrib.questions import QuestText
-from aiogram.utils.keyboards2 import IButton, InlineKeyboard
+from aiogram.utils.keyboards2 import InlineButton, InlineKeyboard
 from aiogram.utils.markdown import hbold as b
 
 import functions as funcs
@@ -10,8 +10,8 @@ from loader import dp, users_db
 
 
 class MyWorks(InlineKeyboard):
-    ACTIVE = IButton('Активные проекты', callback='works:send:active')
-    IN_PROGRESS = IButton('Проекты в работе', callback='works:send:in_progress')
+    ACTIVE = InlineButton('Активные проекты', callback='works:send:active')
+    IN_PROGRESS = InlineButton('Проекты в работе', callback='works:send:in_progress')
 
 
 my_works = MyWorks()
@@ -22,7 +22,7 @@ async def ask_works_type():
     return QuestText('Выберите тип работ', my_works)
 
 
-@dp.callback_query_handler(text=my_works.ACTIVE)
+@dp.callback_query_handler(button=my_works.ACTIVE)
 async def send_active_works(msg: types.Message, user_id):
     """
     1) Найти и отправить все активные проекты, персональные или с заявкой исполнителя, от новых к старым
@@ -45,7 +45,7 @@ async def send_active_works(msg: types.Message, user_id):
         await msg.answer('У вас нет заявок ни на один проект')
 
 
-@dp.callback_query_handler(text=my_works.IN_PROGRESS)
+@dp.callback_query_handler(button=my_works.IN_PROGRESS)
 async def send_works_in_progress(msg: types.Message, user_id):
     """
     1) Найти и отправить все проекты в работе, от новых к старым

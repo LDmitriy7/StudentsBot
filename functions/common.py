@@ -5,7 +5,7 @@ from aiogram import types
 
 import subfuncs
 from config import CHANNEL_USERNAME, BOT_START_LINK
-from data_types import Prefixes, data_classes, ProjectStatuses
+from data_types import data_classes, ProjectStatuses
 from keyboards import inline_funcs
 from loader import bot, users_db
 from texts import templates
@@ -47,10 +47,10 @@ async def get_all_nicknames() -> set:
 
 async def send_post(project_id: str, post_data: data_classes.ProjectData,
                     project_status: str = ProjectStatuses.ACTIVE) -> types.Message:
-    """Send post to channel. Return post_url."""
+    """Send post to channel. Return post object."""
     text = templates.form_post_text(project_status, post_data)
     has_files = bool(post_data.files)
-    keyboard = inline_funcs.for_project(project_id, pick_btn=True, files_btn=has_files)
+    keyboard = inline_funcs.ForProject(project_id, pick_btn=True, files_btn=has_files)
 
     post = await bot.send_message(CHANNEL_USERNAME, text, reply_markup=keyboard)
     await users_db.update_project_post_url(project_id, post.url)
@@ -64,7 +64,7 @@ async def update_post(project_id: str, project_status: str, post_url: Optional[s
         post_id = post_url.split('/')[-1]
         text = templates.form_post_text(project_status, post_data)
         has_files = bool(post_data.files)
-        keyboard = inline_funcs.for_project(project_id, files_btn=has_files)
+        keyboard = inline_funcs.ForProject(project_id, files_btn=has_files)
         await bot.edit_message_text(text, CHANNEL_USERNAME, post_id, reply_markup=keyboard)
 
 

@@ -6,7 +6,7 @@ nickname = QuestText('Введите новый никнейм', KB.back)
 
 phone_number = QuestText('Отправьте номер телефона', KB.phone_number)
 
-email = QuestText('Отправьте новый email', KB.miss)
+email = QuestText('Отправьте новый email', KB.back)
 
 biography = QuestText('Напишите о себе все, что считаете нужным', KB.back)
 

@@ -1,14 +1,14 @@
-"""Contain all data classes."""
+"""Contain all data models."""
 from __future__ import annotations
 
-from dataclasses import dataclass, field, fields
-from typing import List, Optional, Union
+from dataclasses import dataclass, field, fields, asdict, Field
+from typing import List, Union
 
 from bson import ObjectId
 
 
 @dataclass
-class DataType:
+class DataModel:
 
     @property
     def id(self) -> Union[str, int, None]:
@@ -25,9 +25,20 @@ class DataType:
         else:
             raise AttributeError(f'{self.__class__} does not have id field.')
 
+    def to_dict(self):
+        return asdict(self)
+
+    @classmethod
+    def field_names(cls) -> list[str]:
+        return [f.name for f in fields(cls)]
+
+    @classmethod
+    def fields(cls) -> list[Field]:
+        return fields(cls)
+
     @classmethod
     def _resolve_fields(cls, obj_data: dict) -> dict:
-        cls_fields = {f.name for f in fields(cls)}
+        cls_fields = {f.name for f in cls.fields()}
         resolved_data = {}
         for key, value in obj_data.items():
             if key in cls_fields:
@@ -36,20 +47,22 @@ class DataType:
 
     @classmethod
     def from_dict(cls, obj_data: dict):
-        """Exclude extra items, return instance if data provided else None."""
-        if cls is DataType:
-            err_text = f'This method is only for {cls.__name__} subclasses'
-            raise AttributeError(err_text)
+        resolved_data = cls._resolve_fields(obj_data)
 
-        if obj_data:
-            obj_data = cls._resolve_fields(obj_data)
-            # noinspection PyArgumentList
-            return cls(**obj_data)
-        return None
+        for _field, value in resolved_data.items():
+            field_type_name = cls.__annotations__.get(_field)
+            if field_type_name:
+                field_type = eval(field_type_name)
+                factory = getattr(field_type, 'from_dict', None)
+                if factory:
+                    resolved_data[_field] = factory(value)
+
+        # noinspection PyArgumentList
+        return cls(**resolved_data)
 
 
 @dataclass
-class Profile(DataType):
+class Profile(DataModel):
     nickname: str
     phone_number: str
     email: str
@@ -59,25 +72,16 @@ class Profile(DataType):
 
 
 @dataclass
-class Account(DataType):
+class Account(DataModel):
     balance: int = 0
     subjects: list = field(default_factory=list)
     profile: Profile = None
     page_url: str = None
     _id: int = None
 
-    @classmethod
-    def from_dict(cls, account: dict) -> Optional[Account]:
-        if account:
-            obj_data = cls._resolve_fields(account)
-            profile_data = obj_data.pop('profile', None)
-            profile = Profile.from_dict(profile_data)
-            return cls(**obj_data, profile=profile)
-        return None
-
 
 @dataclass
-class Bid(DataType):
+class Bid(DataModel):
     client_id: int
     project_id: str
     worker_id: int = None
@@ -86,7 +90,7 @@ class Bid(DataType):
 
 
 @dataclass
-class Chat(DataType):
+class Chat(DataModel):
     project_id: str
     user_role: str
     user_id: int
@@ -96,13 +100,13 @@ class Chat(DataType):
 
 
 @dataclass
-class PairChats(DataType):
+class PairChats(DataModel):
     client_chat: Chat
     worker_chat: Chat
 
 
 @dataclass
-class ProjectData(DataType):
+class ProjectData(DataModel):
     work_type: str
     subject: str
     date: str
@@ -113,7 +117,7 @@ class ProjectData(DataType):
 
 
 @dataclass
-class Project(DataType):
+class Project(DataModel):
     data: ProjectData
     status: str
     client_id: int
@@ -123,25 +127,16 @@ class Project(DataType):
     worker_chat_id: int = None
     _id: ObjectId = None
 
-    @classmethod
-    def from_dict(cls, project: dict) -> Optional[Project]:
-        if project:
-            obj_data = cls._resolve_fields(project)
-            project_data = obj_data.pop('data', None)
-            project_data = ProjectData.from_dict(project_data)
-            return cls(**obj_data, data=project_data)
-        return None
-
 
 @dataclass
-class Rating(DataType):
+class Rating(DataModel):
     quality: int
     contact: int
     terms: int
 
 
 @dataclass
-class Review(DataType):
+class Review(DataModel):
     client_id: int
     client_name: str
     worker_id: int
@@ -150,12 +145,3 @@ class Review(DataType):
     rating: Rating
     text: str
     _id: ObjectId = None
-
-    @classmethod
-    def from_dict(cls, review: dict) -> Optional[Review]:
-        if review:
-            obj_data = cls._resolve_fields(review)
-            rating_data = obj_data.pop('rating', None)
-            rating = Rating.from_dict(rating_data)
-            return cls(**obj_data, rating=rating)
-        return None

@@ -6,7 +6,7 @@ from dataclasses import asdict
 from aiograph import Telegraph
 
 from config import TELEGRAPH_TOKEN, BOT_USERNAME
-from data_types import data_classes
+from data_types import data_models
 from texts import html_templates as templates
 
 BASE_URL = 'https://telegra.ph/'
@@ -26,10 +26,10 @@ async def _make_html_imgs(photo_urls: list[str]) -> str:
     return photo_urls
 
 
-def _make_html_reviews(reviews: list[data_classes.Review]) -> str:
+def _make_html_reviews(reviews: list[data_models.Review]) -> str:
     """Создает html-текст с отзывами по шаблону."""
 
-    def make_review(review: data_classes.Review) -> str:
+    def make_review(review: data_models.Review) -> str:
         rating = asdict(review.rating)
         text_rating = {key: "⭐" * value for key, value in rating.items()}
         return templates.REVIEW_TEMPLATE.format(
@@ -51,7 +51,7 @@ def _make_html_avg_rating(avg_rating: dict) -> str:
 
 async def make_html_content(
         deals_amount: int, biography: str, subjects: list[str], invite_project_url: str,
-        photo_urls: list[str], avg_rating: dict, reviews: list[data_classes.Review]) -> str:
+        photo_urls: list[str], avg_rating: dict, reviews: list[data_models.Review]) -> str:
     """Создает весь html-контент для личной страницы исполнителя."""
     return templates.PAGE_TEMPLATE.format(
         deals_amount=deals_amount,

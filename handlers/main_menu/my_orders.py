@@ -1,6 +1,6 @@
 from aiogram import types
 from aiogram.contrib.questions import QuestText
-from aiogram.utils.keyboards2 import IButton, InlineKeyboard
+from aiogram.utils.keyboards2 import InlineButton, InlineKeyboard
 from aiogram.utils.markdown import hbold as b
 
 import functions as funcs
@@ -10,8 +10,8 @@ from loader import dp, users_db
 
 
 class MyOrders(InlineKeyboard):
-    ACTIVE = IButton('Активные проекты', callback='orders:send:active')
-    IN_PROGRESS = IButton('Проекты на выполнении', callback='orders:send:in_progress')
+    ACTIVE = InlineButton('Активные проекты', callback='orders:send:active')
+    IN_PROGRESS = InlineButton('Проекты на выполнении', callback='orders:send:in_progress')
 
 
 my_orders = MyOrders()
@@ -22,7 +22,7 @@ async def ask_orders_type():
     return QuestText('Выберите тип заказов', my_orders)
 
 
-@dp.callback_query_handler(text=my_orders.ACTIVE)
+@dp.callback_query_handler(button=my_orders.ACTIVE)
 async def send_active_orders(msg: types.Message, user_id):
     """
     1) найти и отправить все активные проекты клиента от новых к старым
@@ -40,7 +40,7 @@ async def send_active_orders(msg: types.Message, user_id):
         await msg.answer(b('У вас нет ни одного активного заказа'))
 
 
-@dp.callback_query_handler(text=my_orders.IN_PROGRESS)
+@dp.callback_query_handler(button=my_orders.IN_PROGRESS)
 async def send_orders_in_progress(msg: types.Message, user_id):
     """
     1) найти и отправить все проекты клиента на выполнении, от новых к старым

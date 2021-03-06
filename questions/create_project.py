@@ -4,7 +4,7 @@ from aiogram.utils.markdown import hbold as b
 
 import functions as funcs
 import keyboards as KB
-from data_types import data_classes, ProjectStatuses
+from data_types import data_models, ProjectStatuses
 from loader import dp, bot
 from texts import templates
 
@@ -43,7 +43,7 @@ file = QuestText(
 async def confirm():
     chat = types.Chat.get_current()
     sdata = await dp.current_state().get_data()
-    post_data = data_classes.ProjectData.from_dict(sdata)
+    post_data = data_models.ProjectData.from_dict(sdata)
 
     post_text = templates.form_post_text(ProjectStatuses.ACTIVE, post_data, with_note=True)
     await bot.send_message(chat.id, b('Проверьте свой пост:'))

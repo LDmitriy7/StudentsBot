@@ -1,7 +1,6 @@
 """Набор всех обычных текстовых клавиатур."""
 
-from aiogram.types import KeyboardButton
-from aiogram.utils.keyboards import ReplyKeyboard
+from aiogram.utils.keyboards2 import ReplyKeyboard, Button
 
 __all__ = [
     'back',
@@ -115,8 +114,7 @@ confirm_project = ConfirmProject([1])
 
 
 class PhoneNumber(ReplyKeyboard):
-    PHONE = KeyboardButton('Отправить номер', request_contact=True)
-    MISS = MISS
+    PHONE = Button('Отправить номер', request_contact=True)
     BACK = BACK
 
 
@@ -124,7 +122,7 @@ phone_number = PhoneNumber()
 
 
 class PhoneNumberCancel(ReplyKeyboard):
-    PHONE = KeyboardButton('Отправить номер', request_contact=True)
+    PHONE = Button('Отправить номер', request_contact=True)
     MISS = MISS
     BACK = BACK
     CANCEL = CANCEL

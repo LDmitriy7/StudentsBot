@@ -6,7 +6,7 @@ from aiogram.contrib.questions import QuestText
 import functions as funcs
 import keyboards as KB
 import texts
-from data_types import Prefixes, SendTo
+from data_types import SendTo
 from loader import dp, users_db
 from questions import CreateProjectConv, RegistrationConv
 
@@ -32,7 +32,7 @@ async def send_invite_project_keyboard(msg: types.Message, user_id):
         return UpdateData(new_state=RegistrationConv)
 
 
-@dp.inline_handler(text=KB.choose_invite_chat.INVITE_QUERY)
+@dp.inline_handler(button=KB.choose_invite_chat.INVITE_QUERY)
 async def send_project_invite_to_client(iquery: types.InlineQuery):
     article = await funcs.form_invite_project_article()
     await iquery.answer([article], cache_time=0, is_personal=True)
@@ -44,7 +44,7 @@ async def entry_personal_project(msg: types.Message):
     return UpdateData({'send_to': None}, new_state=CreateProjectConv)
 
 
-@dp.message_handler(cprefix=Prefixes.INVITE_PROJECT_)
+@dp.message_handler(prefix_button=KB.InviteProject.START_LINK)
 async def entry_personal_project_with_worker(user_id, payload: str):
     worker_id = int(payload)
     if user_id == worker_id:

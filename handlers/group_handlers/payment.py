@@ -4,7 +4,7 @@ from aiogram.utils.markdown import hbold as b
 from aiogram.contrib.questions import QuestText
 
 import functions as funcs
-from data_types import ProjectStatuses, UserRoles, Prefixes, TextQueries
+from data_types import ProjectStatuses, UserRoles
 from filters import find_pair_chat
 import keyboards as KB
 from loader import dp, users_db, bot
@@ -30,13 +30,13 @@ async def offer_price(text, chat_id, pchat_id: int):
     price = int(text)
     chat = await users_db.get_chat_by_id(chat_id)
     client_text = f'Автор предлагает вам сделку за <b>{price} грн</b>'
-    keyboard = KB.pay_for_project(price, chat.project_id)
+    keyboard = KB.PayForProject(price, chat.project_id)
     await bot.send_message(pchat_id, client_text, reply_markup=keyboard)
     return UpdateData(on_conv_exit='Заявка отправлена, мы пришлем вам уведомление в случае оплаты.')
 
 
 @dp.callback_query_handler(find_pair_chat,
-                           cprefix=Prefixes.PAY_FOR_PROJECT_,
+                           prefix_button=KB.PayForProject.PAY,
                            pstatus=ProjectStatuses.ACTIVE,
                            user_role=UserRoles.client)
 async def pay_for_project(user_id, chat_id, pchat_id: int, payload: str):
@@ -56,7 +56,7 @@ async def pay_for_project(user_id, chat_id, pchat_id: int, payload: str):
 
 
 @dp.callback_query_handler(find_pair_chat,
-                           text=TextQueries.REFUSE_WORK_PRICE,
+                           button=KB.PayForProject.REFUSE,
                            pstatus=ProjectStatuses.ACTIVE,
                            user_role=UserRoles.client)
 async def refuse_work_price(msg: types.Message, pchat_id: int):
