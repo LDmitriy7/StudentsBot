@@ -308,10 +308,11 @@ class MongoDB(MongoAdder, MongoGetter, MongoDeleter,
               MongoProjectUpdater, MongoProfileUpdater):
     """Наследует все наборы методов управления базой."""
 
-# if __name__ == '__main__':
-#     import asyncio
-#
-#     loop = asyncio.get_event_loop()
-#     coro = MongoDB().get_chats_by_project('60206a46a14267f716cc48a9')
-#     r = loop.run_until_complete(coro)
-#     print(r)
+
+if __name__ == '__main__':
+    import asyncio
+
+    loop = asyncio.get_event_loop()
+    coro = MongoDB().get_chats_by_project('60206a46a14267f716cc48a9')
+    r = loop.run_until_complete(coro)
+    print(r)

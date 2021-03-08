@@ -1,5 +1,5 @@
 from aiogram.contrib.middlewares.conversation import UpdateData
-from aiogram.utils.markdown import hbold as b
+from aiogram import html
 
 import functions as funcs
 import keyboards as KB
@@ -35,5 +35,5 @@ async def process_contact(data: str):
 async def process_review_text(pchat_id: int):
     review = await funcs.save_review()
     await funcs.save_author_page(user_id=review.worker_id)
-    await bot.send_message(pchat_id, b('Заказчик оставил отзыв на вашей странице'))
-    return UpdateData(), b('Отзыв оставлен')
+    await bot.send_message(pchat_id, html.b('Заказчик оставил отзыв на вашей странице'))
+    return UpdateData(), html.b('Отзыв оставлен')

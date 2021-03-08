@@ -5,7 +5,7 @@ from aiogram.dispatcher.currents import CurrentObjects
 from aiogram.utils.exceptions import BadRequest
 
 import functions.common as funcs
-from data_types import data_classes, ProjectStatuses, UserRoles
+from data_types import data_models, ProjectStatuses, UserRoles
 from keyboards import inline_funcs
 from loader import bot, users_db
 from texts import templates
@@ -14,7 +14,7 @@ __all__ = ['send_projects', 'send_project_invitation',
            'send_chat_link_to_worker', 'start_project_update']
 
 
-async def get_project_keyboard(project: data_classes.Project, pick_btn, del_btn,
+async def get_project_keyboard(project: data_models.Project, pick_btn, del_btn,
                                client_chat_btns: bool, worker_chat_btns: bool):
     """Возращает инлайн-клавиатуру для проекта."""
     has_files = bool(project.data.files)
@@ -41,7 +41,7 @@ async def get_project_keyboard(project: data_classes.Project, pick_btn, del_btn,
 
 
 @CurrentObjects.decorate
-async def send_projects(projects: List[data_classes.Project],
+async def send_projects(projects: List[data_models.Project],
                         with_note=False,
                         pick_btn=False,
                         del_btn=False,

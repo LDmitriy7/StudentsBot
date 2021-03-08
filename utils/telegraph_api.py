@@ -59,8 +59,8 @@ async def make_html_content(
         subjects=', '.join(subjects) or '<b>Не выбраны</b>',
         invite_project_url=invite_project_url,
         avg_rating=_make_html_avg_rating(avg_rating),
-        images=await _make_html_imgs(photo_urls),
-        reviews=_make_html_reviews(reviews),
+        images=await _make_html_imgs(photo_urls) or '<b>Нет примеров работ</b>',
+        reviews=_make_html_reviews(reviews) or '<b>Пока нет отзывов</b>',
         reviews_amount=len(reviews),
     )
 
@@ -77,4 +77,5 @@ async def create_page(nickname: str, html_content: str, page_url: str = None) ->
     else:
         response = await telegraph.create_page(title, html_content, author_name, author_url)
 
+    print(html_content)
     return BASE_URL + response.path

@@ -5,7 +5,7 @@ from aiogram.utils.exceptions import TelegramAPIError
 
 import functions as funcs
 import keyboards as KB
-from data_types import ProjectStatuses, UserRoles, data_classes
+from data_types import ProjectStatuses, UserRoles, data_models
 from loader import users_db, bot
 from utils import create_chat
 
@@ -18,7 +18,7 @@ GROUP_NUM = 0
 async def _check_chat_freedom(chat_id) -> Optional[int]:
     try:
         pstatus = await funcs.get_project_status(chat_id=chat_id)
-        if pstatus in [ProjectStatuses.COMPLETED, ProjectStatuses.REVIEWED, None]:
+        if pstatus in [ProjectStatuses.COMPLETED, None]:
             members_count = await bot.get_chat_members_count(chat_id)
             if members_count <= 3:
                 return True
@@ -42,7 +42,7 @@ async def _get_pair_chat_ids(title: str) -> list[int]:
     return chat_ids
 
 
-async def create_and_save_groups(client_id: int, worker_id: int, project_id: str) -> data_classes.PairChats:
+async def create_and_save_groups(client_id: int, worker_id: int, project_id: str) -> data_models.PairChats:
     """Создает парные группы с порядковым номером в названии и сохраняет их."""
     global GROUP_NUM
     GROUP_NUM += 1
@@ -53,16 +53,16 @@ async def create_and_save_groups(client_id: int, worker_id: int, project_id: str
     cchat_link = await bot.export_chat_invite_link(cchat_id)
     wchat_link = await bot.export_chat_invite_link(wchat_id)
 
-    cchat = data_classes.Chat(project_id, UserRoles.client, client_id, cchat_link, wchat_id, cchat_id)
-    wchat = data_classes.Chat(project_id, UserRoles.worker, worker_id, wchat_link, cchat_id, wchat_id)
+    cchat = data_models.Chat(project_id, UserRoles.client, client_id, cchat_link, wchat_id, cchat_id)
+    wchat = data_models.Chat(project_id, UserRoles.worker, worker_id, wchat_link, cchat_id, wchat_id)
     await users_db.update_chat(cchat_id, cchat)
     await users_db.update_chat(wchat_id, wchat)
 
-    return data_classes.PairChats(cchat, wchat)
+    return data_models.PairChats(cchat, wchat)
 
 
 @CurrentObjects.decorate
-async def get_project_for_chat(*, chat_id: int) -> Optional[data_classes.Project]:
+async def get_project_for_chat(*, chat_id: int) -> Optional[data_models.Project]:
     """Get linked project for chat or None."""
     try:
         chat = await users_db.get_chat_by_id(chat_id)

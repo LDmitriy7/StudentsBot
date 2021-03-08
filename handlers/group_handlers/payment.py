@@ -1,12 +1,11 @@
-from aiogram import types
+from aiogram import types, html
 from aiogram.contrib.middlewares.conversation import UpdateData
-from aiogram.utils.markdown import hbold as b
 from aiogram.contrib.questions import QuestText
 
 import functions as funcs
+import keyboards as KB
 from data_types import ProjectStatuses, UserRoles
 from filters import find_pair_chat
-import keyboards as KB
 from loader import dp, users_db, bot
 from questions import ForGroups as States
 
@@ -47,8 +46,8 @@ async def pay_for_project(user_id, chat_id, pchat_id: int, payload: str):
     if price <= client_balance:
         worker_chat = await users_db.get_chat_by_id(pchat_id)
         await funcs.start_project_update(project_id, price, user_id, worker_chat.user_id, chat_id, pchat_id)
-        await bot.send_message(pchat_id, b('Проект оплачен, приступайте к работе'))
-        return b('Проект оплачен, уведомление отправлено автору')
+        await bot.send_message(pchat_id, html.b('Проект оплачен, приступайте к работе'))
+        return html.b('Проект оплачен, уведомление отправлено автору')
     else:
         text = f'У вас не хватает {price - client_balance} грн.' \
                f' Отправьте недостающую сумму через один из банков. Обязательно укажите {user_id} в комментарии'
@@ -61,4 +60,4 @@ async def pay_for_project(user_id, chat_id, pchat_id: int, payload: str):
                            user_role=UserRoles.client)
 async def refuse_work_price(msg: types.Message, pchat_id: int):
     await msg.delete()
-    await bot.send_message(pchat_id, b('Заказчик отказался от предложенной цены'))
+    await bot.send_message(pchat_id, html.b('Заказчик отказался от предложенной цены'))

@@ -1,12 +1,13 @@
 from dataclasses import asdict, fields
 from typing import List, Optional
-from aiogram.utils.exceptions import TelegramAPIError
-from aiogram import types
 
+from aiogram import types
+from aiogram.utils.exceptions import TelegramAPIError
+
+import keyboards as KB
 import subfuncs
-from config import CHANNEL_USERNAME, BOT_START_LINK
-from data_types import data_classes, ProjectStatuses
-from keyboards import inline_funcs
+from config import CHANNEL_USERNAME
+from data_types import data_models, ProjectStatuses
 from loader import bot, users_db
 from texts import templates
 
@@ -22,13 +23,12 @@ async def get_chat_link(chat_id: int) -> Optional[str]:
 
 def get_invite_project_url(user_id: int) -> str:
     """Создает ссылку-приглашение в личный проект."""
-    payload = f'{Prefixes.INVITE_PROJECT_}{user_id}'
-    return BOT_START_LINK.format(payload)
+    return KB.InviteProject(user_id).START_LINK.url
 
 
-def count_avg_rating(reviews: List[data_classes.Review]) -> dict:
+def count_avg_rating(reviews: List[data_models.Review]) -> dict:
     """Count average user's rating dict from reviews."""
-    all_fields = [field.name for field in fields(data_classes.Rating)]
+    all_fields = [field.name for field in fields(data_models.Rating)]
     rating_dicts = [asdict(r.rating) for r in reviews]
     return subfuncs.count_avg_values(rating_dicts, all_fields)
 
@@ -45,12 +45,12 @@ async def get_all_nicknames() -> set:
 # posts
 
 
-async def send_post(project_id: str, post_data: data_classes.ProjectData,
+async def send_post(project_id: str, post_data: data_models.ProjectData,
                     project_status: str = ProjectStatuses.ACTIVE) -> types.Message:
     """Send post to channel. Return post object."""
     text = templates.form_post_text(project_status, post_data)
     has_files = bool(post_data.files)
-    keyboard = inline_funcs.ForProject(project_id, pick_btn=True, files_btn=has_files)
+    keyboard = KB.ForProject(project_id, pick_btn=True, files_btn=has_files)
 
     post = await bot.send_message(CHANNEL_USERNAME, text, reply_markup=keyboard)
     await users_db.update_project_post_url(project_id, post.url)
@@ -58,13 +58,13 @@ async def send_post(project_id: str, post_data: data_classes.ProjectData,
 
 
 async def update_post(project_id: str, project_status: str, post_url: Optional[str],
-                      post_data: data_classes.ProjectData):
+                      post_data: data_models.ProjectData):
     """Находит пост в канале по ссылке и обновляет его (если передана ссылка)."""
     if post_url:
         post_id = post_url.split('/')[-1]
         text = templates.form_post_text(project_status, post_data)
         has_files = bool(post_data.files)
-        keyboard = inline_funcs.ForProject(project_id, files_btn=has_files)
+        keyboard = KB.ForProject(project_id, files_btn=has_files)
         await bot.edit_message_text(text, CHANNEL_USERNAME, post_id, reply_markup=keyboard)
 
 

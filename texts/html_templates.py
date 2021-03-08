@@ -10,7 +10,7 @@ PAGE_TEMPLATE = """
 {avg_rating}
 
 <h3>Примеры работ 🎓:</h3>
-<p>{images}</p>
+{images}
 
 <h3>Отзывы ({reviews_amount}):</h3>
 {reviews}
