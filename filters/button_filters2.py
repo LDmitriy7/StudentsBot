@@ -126,15 +126,15 @@ dp.bind_filter(MessageButton, event_handlers=[dp.message_handlers])
 
 
 class CallbackQueryButtonStrict:
-    raise NotImplementedError
+    ...
 
 
 class InlineQueryButtonStrict:
-    raise NotImplementedError
+    ...
 
 
 class MessageButtonStrict:
-    raise NotImplementedError
+    ...
 
 # -------------
 # btn1 = InlineKeyboardButton('test', switch_inline_query='test')

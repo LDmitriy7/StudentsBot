@@ -19,14 +19,14 @@ async def ask_confirm_project(chat_id):
 
 
 @dp.callback_query_handler(find_pair_chat,
-                           prefix_button=KB.ConfirmProject.CONFIRM,
+                           button=KB.ConfirmProject.CONFIRM,
                            pstatus=ProjectStatuses.IN_PROGRESS,
                            user_role=UserRoles.client)
-async def confirm_project(pchat_id: int, payload: str):
-    project = await users_db.get_project_by_id(payload)
+async def confirm_project(pchat_id: int, suffix: str):
+    project = await users_db.get_project_by_id(suffix)
     project.status = ProjectStatuses.COMPLETED
 
-    await users_db.update_project_status(payload, project.status)
+    await users_db.update_project_status(suffix, project.status)
     await funcs.update_post(project.id, project.status, project.post_url, project.data)
     await users_db.incr_balance(project.worker_id, project.data.price)
 

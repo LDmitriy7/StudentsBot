@@ -1,9 +1,9 @@
-aiogram==2.11.2
-aiogram-tools==0.1
+aiogram2==0.0a0
 aiograph==0.2
 aiohttp==3.7.3
 async-timeout==3.0.1
 atomicwrites==1.4.0
+attr==0.3.1
 attrs==19.1.0
 Babel==2.9.0
 certifi==2020.12.5

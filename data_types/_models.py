@@ -1,13 +1,10 @@
 """Contain all data models."""
-from dataclasses import dataclass, field, fields, asdict, Field, is_dataclass
+from dataclasses import dataclass, field, fields, asdict, Field
 from typing import Union, TypeVar
 
 from bson import ObjectId
 
 T = TypeVar('T')
-
-EmptyList = field(default_factory=list)
-EmptyDict = field(default_factory=dict)
 
 
 @dataclass

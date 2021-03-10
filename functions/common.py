@@ -42,9 +42,6 @@ async def get_all_nicknames() -> set:
     return nicknames
 
 
-# posts
-
-
 async def send_post(project_id: str, post_data: data_models.ProjectData,
                     project_status: str = ProjectStatuses.ACTIVE) -> types.Message:
     """Send post to channel. Return post object."""

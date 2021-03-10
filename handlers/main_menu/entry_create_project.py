@@ -44,9 +44,9 @@ async def entry_personal_project(msg: types.Message):
     return UpdateData({'send_to': None}, new_state=CreateProjectConv)
 
 
-@dp.message_handler(prefix_button=KB.InviteProject.START_LINK)
-async def entry_personal_project_with_worker(user_id, payload: str):
-    worker_id = int(payload)
+@dp.message_handler(button=KB.InviteProject.START_LINK)
+async def entry_personal_project_with_worker(user_id, suffix: str):
+    worker_id = int(suffix)
     if user_id == worker_id:
         return '<b>Вы сами не можете заполнить проект</b>'
     return UpdateData({'worker_id': worker_id, 'send_to': SendTo.WORKER}, new_state=CreateProjectConv)

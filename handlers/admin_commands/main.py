@@ -27,15 +27,15 @@ async def reply_on_forwarded(msg: types.Message):
     await msg.reply(text, reply_markup=keyboard)
 
 
-@dp.callback_query_handler(prefix_button=KB.ControlUser.WATCH_BALANCE, user_id=ADMIN_IDS)
-async def send_user_balance(payload: str):
-    balance = await funcs.get_account_balance(user_id=int(payload))
+@dp.callback_query_handler(button=KB.ControlUser.WATCH_BALANCE, user_id=ADMIN_IDS)
+async def send_user_balance(suffix: str):
+    balance = await funcs.get_account_balance(user_id=int(suffix))
     return f'Баланс этого пользователя: {balance} грн.'
 
 
-@dp.callback_query_handler(prefix_button=KB.ControlUser.WATCH_PROFILE, user_id=ADMIN_IDS)
-async def send_user_profile(payload: str):
-    target_user = int(payload)
+@dp.callback_query_handler(button=KB.ControlUser.WATCH_PROFILE, user_id=ADMIN_IDS)
+async def send_user_profile(suffix: str):
+    target_user = int(suffix)
     account = await users_db.get_account_by_id(target_user)
 
     if not (account and account.profile):
@@ -49,9 +49,9 @@ async def send_user_profile(payload: str):
     )
 
 
-@dp.callback_query_handler(prefix_button=KB.ControlUser.PAY, user_id=ADMIN_IDS)
-async def ask_pay_for_user_amount(payload: str):
-    return UpdateData({'user_id': int(payload)}, new_state=PaymentConv)
+@dp.callback_query_handler(button=KB.ControlUser.PAY, user_id=ADMIN_IDS)
+async def ask_pay_for_user_amount(suffix: str):
+    return UpdateData({'user_id': int(suffix)}, new_state=PaymentConv)
 
 
 @dp.message_handler(state=PaymentConv.ask_amount, user_id=ADMIN_IDS)
@@ -70,9 +70,9 @@ async def pay_for_user(text: str, sdata: dict):
     return UpdateData(), QuestText('Деньги успешно отправлены', KB.main)
 
 
-@dp.callback_query_handler(prefix_button=KB.ControlUser.WITHDRAW, user_id=ADMIN_IDS)
-async def ask_withdraw_amount(payload: str):
-    return UpdateData({'user_id': int(payload)}, new_state=WithdrawConv)
+@dp.callback_query_handler(button=KB.ControlUser.WITHDRAW, user_id=ADMIN_IDS)
+async def ask_withdraw_amount(suffix: str):
+    return UpdateData({'user_id': int(suffix)}, new_state=WithdrawConv)
 
 
 @dp.message_handler(state=WithdrawConv.ask_amount, user_id=ADMIN_IDS)

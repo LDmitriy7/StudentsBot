@@ -35,12 +35,12 @@ async def offer_price(text, chat_id, pchat_id: int):
 
 
 @dp.callback_query_handler(find_pair_chat,
-                           prefix_button=KB.PayForProject.PAY,
+                           button=KB.PayForProject.PAY,
                            pstatus=ProjectStatuses.ACTIVE,
                            user_role=UserRoles.client)
-async def pay_for_project(user_id, chat_id, pchat_id: int, payload: str):
+async def pay_for_project(user_id, chat_id, pchat_id: int, suffix: str):
     client_balance = await funcs.get_account_balance()
-    price, project_id = payload.split('_')
+    price, project_id = suffix.split('_')
     price = int(price)
 
     if price <= client_balance:

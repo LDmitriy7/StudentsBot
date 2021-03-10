@@ -42,7 +42,7 @@ async def send_offer_keyboard(msg: types.Message):
     return UpdateData(), QuestText(text, keyboard)
 
 
-@dp.inline_handler(prefix_button=KB.OfferProject.OFFER)
-async def send_offer_to_worker(iquery: types.InlineQuery, payload: str):
-    article = funcs.make_offer_project_article(payload)
+@dp.inline_handler(button=KB.OfferProject.OFFER)
+async def send_offer_to_worker(iquery: types.InlineQuery, suffix: str):
+    article = funcs.make_offer_project_article(suffix)
     await iquery.answer([article], cache_time=0, is_personal=True)

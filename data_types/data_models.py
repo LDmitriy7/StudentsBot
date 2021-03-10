@@ -1,5 +1,7 @@
 """Contain all data models."""
-from data_types._models import DataModel, MongoModel, dataclass, EmptyList
+from dataclasses import dataclass, field
+
+from data_types._models import DataModel, MongoModel
 
 
 @dataclass
@@ -9,13 +11,13 @@ class Profile(DataModel):
     email: str
     biography: str
     deals_amount: int = 0
-    works: list = EmptyList
+    works: list = field(default_factory=list)
 
 
 @dataclass
 class Account(MongoModel):
     balance: int = 0
-    subjects: list = EmptyList
+    subjects: list = field(default_factory=list)
     profile: Profile = None
     page_url: str = None
     _id: int = None
@@ -53,7 +55,7 @@ class ProjectData(DataModel):
     description: str
     price: int = None
     note: str = None
-    files: list[list] = EmptyList
+    files: list[list] = field(default_factory=list)
 
 
 @dataclass
