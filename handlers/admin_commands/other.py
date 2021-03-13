@@ -35,9 +35,11 @@ async def send_admin_commands():
 async def send_all_money_amount():
     account = await users_db.get_all_accounts()
     projects = await users_db.get_all_projects()
+    withdrawals = await users_db.get_all_withdrawals()
 
     on_balances = sum(a.balance or 0 for a in account)
     in_projects = sum(p.data.price for p in projects if p.status == ProjectStatuses.IN_PROGRESS)
+    in_withdrawals = sum(w.amount for w in withdrawals)
 
-    total_money = on_balances + in_projects
+    total_money = on_balances + in_projects + in_withdrawals
     return f'Всего в сервисе задействовано: {total_money} грн'

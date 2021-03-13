@@ -1,13 +1,49 @@
 """Инлайновые клавиатуры с генерацией данных."""
-
 from datetime import timedelta, datetime
-
+from texts.subjects import SUBJECT_CATEGORIES
 import pytz
+from copy import deepcopy
+from aiogram.types import InlineKeyboardMarkup
 from aiogram.utils.keyboards2 import InlineKeyboard, InlineButton
-
+from aiogram.utils.parts import paginate
 from loader import calendar
 
 DEL_MESSAGE = 'del:message'
+
+
+class SubjectsForCategory(InlineKeyboardMarkup):
+    BUTTONS = []
+    TURN_PAGE_LEFT = InlineButton('<<', 'subjects:turn:')
+    GO_BACK = InlineButton('Назад', 'subjects:back_to_categories')
+    TURN_PAGE_RIGHT = InlineButton('>>', 'subjects:turn:')
+
+    def __init__(self, category: str, page: int, user_subjects: list):
+        super().__init__(row_width=1)
+
+        subjects = SUBJECT_CATEGORIES[category]
+        self.BUTTONS = list(paginate(subjects, page, limit=10))
+
+        for button in self.BUTTONS:
+            ibutton = InlineButton(button, callback=True)
+            if button in set(user_subjects):
+                ibutton.text += ' ✅'
+            self.add(ibutton)
+
+        last_row = []
+
+        if page > 0:
+            button = deepcopy(self.TURN_PAGE_LEFT)
+            button.callback_data += f'{category}:{page - 1}'
+            last_row.append(button)
+
+        last_row.append(self.GO_BACK)
+
+        if self.BUTTONS[-1] != subjects[-1]:
+            button = deepcopy(self.TURN_PAGE_RIGHT)
+            button.callback_data += f'{category}:{page + 1}'
+            last_row.append(button)
+
+        self.row(*last_row)
 
 
 class GroupMenu(InlineKeyboard):
@@ -91,9 +127,9 @@ class ConfirmProject(InlineKeyboard):
 
 class ForProject(InlineKeyboard):
     PICK = InlineButton('Взять проект', start_param='send-bid-')
+    DELETE = InlineButton('Удалить проект', callback='del:project:')
     FILES = InlineButton('Посмотреть файлы', start_param='get-files-')
     REPOST = InlineButton('Обновить в канале', callback='post:repost:')
-    DELETE = InlineButton('Удалить проект', callback='del:project:')
 
     def __init__(self, project_id: str,
                  pick_btn=False, del_btn=False, files_btn=False, chat_links: [list] = None, repost_btn=False):

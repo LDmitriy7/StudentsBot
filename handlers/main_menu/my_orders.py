@@ -35,7 +35,7 @@ async def send_active_orders(msg: types.Message, user_id):
     if active_projects:
         active_projects = reversed(active_projects)
         await msg.answer(b('Список активных заказов:'))
-        await funcs.send_projects(active_projects, with_note=True, del_btn=True, client_chat_btns=True)
+        await funcs.send_projects(active_projects, with_note=True, del_btn=True, repost_btn=True, client_chat_btns=True)
     else:
         await msg.answer(b('У вас нет ни одного активного заказа'))
 

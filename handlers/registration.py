@@ -20,6 +20,13 @@ async def process_phone_number(contact: types.Contact):
     return UpdateData({'phone_number': contact.phone_number})
 
 
+@dp.message_handler(state=States.phone_number)
+async def process_phone_number_manual(text: str):
+    if text.isdigit() and len(text) == 12:
+        return UpdateData({'phone_number': text})
+    return 'Ошибка, введите только 12 цифр'
+
+
 @dp.message_handler(state=States.email)
 async def process_email(text):
     if text == KB.miss.MISS:

@@ -13,7 +13,10 @@ work_type = [
     QuestText('Введите тип работы:', KB.work_types),
 ]
 
-subject = QuestText('Отправьте название предмета', KB.find_subject)
+subject = [
+    QuestText('Отправьте название предмета', KB.find_subject),
+    QuestText('Вы также можете найти предмет в списках по категориям', KB.subjects_categories)
+]
 
 
 @QuestFunc

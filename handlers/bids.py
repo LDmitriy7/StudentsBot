@@ -19,10 +19,10 @@ async def ask_bid_text(user_id: int, suffix: str):
         return UpdateData(new_state=RegistrationConv), 'Сначала пройдите регистрацию'
 
     if not project:
-        return '<b>Этот проект уже удален</b>'
+        return 'Этот проект уже удален'
 
     if user_id == project.client_id:
-        return '<b>Вы не можете взять свой проект</b>'
+        return 'Вы не можете взять свой проект'
 
     return UpdateData({'project_id': suffix, 'client_id': project.client_id}, new_state=SendBidConv)
 

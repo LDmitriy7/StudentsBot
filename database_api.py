@@ -116,6 +116,9 @@ class MongoAdder(MongoBase):
     async def add_review(self, review: data_models.Review) -> str:
         return await self.add_object(REVIEWS, asdict(review))
 
+    async def add_withdrawal(self, withdrawal: data_models.Withdrawal) -> str:
+        return await self.add_object(WITHDRAWALS, asdict(withdrawal))
+
 
 class MongoGetter(MongoBase):
     """Содержит методы для поиска объектов в коллекциях."""
@@ -140,6 +143,13 @@ class MongoGetter(MongoBase):
             project = data_models.Project.from_dict(p)
             projects.append(project)
         return projects
+
+    async def get_all_withdrawals(self) -> List[data_models.Withdrawal]:
+        withdrawals = []
+        for w in await self.get_object(WITHDRAWALS, {}, many=True):
+            withdrawal = data_models.Withdrawal.from_dict(w)
+            withdrawals.append(withdrawal)
+        return withdrawals
 
     async def get_project_by_id(self, project_id: str) -> Optional[data_models.Project]:
         _filter = {'_id': ObjectId(project_id)}
@@ -231,6 +241,10 @@ class MongoDeleter(MongoBase):
         _filter = {'_id': chat_id}
         await self.delete_object(CHATS, _filter)
 
+    async def delete_withdrawal_by_id(self, withdrawal_id: str):
+        _filter = {'_id': ObjectId(withdrawal_id)}
+        await self.delete_object(WITHDRAWALS, _filter)
+
 
 class MongoUpdater(MongoBase):
     """Содержит методы для обновления объектов в коллекциях."""
@@ -253,9 +267,9 @@ class MongoUpdater(MongoBase):
         _filter = {'_id': user_id}
         await self.update_object(ACCOUNTS, _filter, '$set', {'page_url': page_url}, upsert=False)
 
-    async def update_profile(self, user_id: int, profile_field: str, new_value):
+    async def update_profile(self, user_id: int, profile_field: str, new_value, operator='$set'):
         _filter = {'_id': user_id}
-        await self.update_object(ACCOUNTS, _filter, '$set', {f'profile.{profile_field}': new_value})
+        await self.update_object(ACCOUNTS, _filter, operator, {f'profile.{profile_field}': new_value})
 
     async def update_project(self, project_id: str, field: str, new_value):
         _filter = {'_id': ObjectId(project_id)}
@@ -288,6 +302,9 @@ class MongoProjectUpdater(MongoUpdater):
 class MongoProfileUpdater(MongoUpdater):
     """Содержит методы для обновления профиля аккаунта."""
 
+    async def incr_profile_deals_amount(self, user_id: int, amount=1):
+        await self.update_profile(user_id, 'deals_amount', amount, operator='$inc')
+
     async def update_profile_nickname(self, user_id: int, nickname: str):
         await self.update_profile(user_id, 'nickname', nickname)
 
@@ -313,6 +330,6 @@ if __name__ == '__main__':
     import asyncio
 
     loop = asyncio.get_event_loop()
-    coro = MongoDB().get_chats_by_project('60206a46a14267f716cc48a9')
+    coro = MongoDB().incr_profile_deals_amount(724477101)
     r = loop.run_until_complete(coro)
     print(r)

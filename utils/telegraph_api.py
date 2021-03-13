@@ -77,5 +77,4 @@ async def create_page(nickname: str, html_content: str, page_url: str = None) ->
     else:
         response = await telegraph.create_page(title, html_content, author_name, author_url)
 
-    print(html_content)
     return BASE_URL + response.path

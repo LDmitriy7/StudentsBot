@@ -1,5 +1,5 @@
 from aiogram.contrib.questions import QuestText
-from aiogram.utils.markdown import hbold as b
+from aiogram import html
 
 import functions as funcs
 import keyboards as KB
@@ -27,9 +27,10 @@ async def confirm_project(pchat_id: int, suffix: str):
     project.status = ProjectStatuses.COMPLETED
 
     await users_db.update_project_status(suffix, project.status)
+    await users_db.incr_profile_deals_amount(project.worker_id)
     await funcs.update_post(project.id, project.status, project.post_url, project.data)
-    await users_db.incr_balance(project.worker_id, project.data.price)
+    await users_db.incr_balance(project.worker_id, int(project.data.price * 0.9))
 
-    worker_text = b('Заказчик подтвердил выполнение проекта, деньги перечислены на ваш счет.')
+    worker_text = html.b('Заказчик подтвердил выполнение проекта, деньги перечислены на ваш счет.')
     await bot.send_message(pchat_id, worker_text)
-    return b('Теперь вы можете написать отзыв')
+    return html.b('Теперь вы можете написать отзыв')

@@ -72,6 +72,14 @@ async def process_phone_number(contact: types.Contact, user_id):
     return UpdateData(), QuestText('Номер телефона обновлен', KB.for_worker)
 
 
+@dp.message_handler(state=States.phone_number)
+async def process_phone_number_manual(text: str, user_id: int):
+    if text.isdigit() and len(text) == 12:
+        await users_db.update_profile_phone_number(user_id, text)
+        return UpdateData(), QuestText('Номер телефона обновлен', KB.for_worker)
+    return 'Ошибка, введите только 12 цифр'
+
+
 @dp.message_handler(state=States.email)
 async def process_email(text, user_id):
     if '@' in text:

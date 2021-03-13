@@ -29,9 +29,8 @@ welcome = """
 
 admin_commands = """
 Все команды для админов:
- /pay - пополнить баланс
  /allMoney - сколько денег в проекте
- /balance - баланс пользователя
+ /withdrawals - все запросы на вывод средств
 """
 
 welcome_group = """

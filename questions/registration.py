@@ -4,7 +4,10 @@ import keyboards as KB
 
 nickname = QuestText('Придумайте себе никнейм', KB.back_cancel)
 
-phone_number = QuestText('Отправьте номер телефона', KB.phone_number_cancel)
+phone_number = QuestText(
+    'Отправьте номер телефона, нажав на кнопку, или введите его самостоятельно (только цифры)',
+    KB.phone_number_cancel
+)
 
 email = QuestText('Отправьте email', KB.miss_cancel)
 

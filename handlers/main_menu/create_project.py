@@ -5,6 +5,7 @@ from aiogram.contrib.questions import QuestFunc
 
 import functions as funcs
 import keyboards as KB
+from texts.subjects import ALL_SUBJECTS
 from loader import calendar, dp
 from questions import CreateProjectConv as States
 
@@ -14,10 +15,38 @@ async def process_work_type(data):
     return UpdateData({'work_type': data})
 
 
+# --- выбор предмета ---
+
 @dp.message_handler(state=States.subject)
 async def process_subject(text):
     return UpdateData({'subject': text})
 
+
+@dp.callback_query_handler(button=KB.subjects_categories.BUTTONS, state=States.subject)
+async def send_subjects_by_category(msg: types.Message, data: str):
+    keyboard = KB.SubjectsForCategory(data, 0, [])
+    await msg.edit_text('Предметы категории:', reply_markup=keyboard)
+
+
+@dp.callback_query_handler(button=KB.SubjectsForCategory.GO_BACK, state=States.subject)
+async def go_back_to_subjects_categories(msg: types.Message):
+    await msg.edit_text('Категории предметов:', reply_markup=KB.subjects_categories)
+
+
+@dp.callback_query_handler(button=[KB.SubjectsForCategory.TURN_PAGE_LEFT, KB.SubjectsForCategory.TURN_PAGE_RIGHT],
+                           state=States.subject)
+async def get_new_subjects_page(msg: types.Message, suffix: str):
+    category, page = suffix.rsplit(':', maxsplit=1)
+    keyboard = KB.SubjectsForCategory(category, int(page), [])
+    await msg.edit_text('Предметы категории:', reply_markup=keyboard)
+
+
+@dp.callback_query_handler(text=ALL_SUBJECTS, state=States.subject)
+async def process_subject(data: str):
+    return UpdateData({'subject': data})
+
+
+# --- ---
 
 @dp.callback_query_handler(calendar.filter(), state=States.date)
 async def process_date(query: types.CallbackQuery, callback_data: dict):

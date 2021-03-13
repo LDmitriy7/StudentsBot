@@ -85,3 +85,9 @@ class Review(MongoModel):
     subject: str
     rating: Rating
     text: str
+
+
+@dataclass
+class Withdrawal(MongoModel):
+    user_id: int
+    amount: int

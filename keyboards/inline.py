@@ -1,6 +1,7 @@
 from aiogram.utils.keyboards2 import InlineKeyboard, InlineButton
 
 from config import MONOBANK_PAYMENT_URL, PRIVAT_BANK_PAYMENT_url
+from texts.subjects import SUBJECT_CATEGORIES
 
 __all__ = [
     'rates',
@@ -9,6 +10,7 @@ __all__ = [
     'balance',
     'user_roles',
     'subjects',
+    'subjects_categories',
     'find_subject',
     'choose_invite_chat',
     'payment',
@@ -18,6 +20,7 @@ __all__ = [
 class Payment(InlineKeyboard):
     MONOBANK = InlineButton('Монобанк', url=MONOBANK_PAYMENT_URL)
     PRIVATBANK = InlineButton('Приватбанк', url=PRIVAT_BANK_PAYMENT_url)
+    CONFIRM = 'Подтвердить оплату'
 
 
 payment = Payment()
@@ -69,10 +72,18 @@ user_roles = UserRoles()
 
 
 class Subjects(InlineKeyboard):
-    CHANGE = 'Изменить предметы'
+    CHANGE_MANUALLY = 'Изменить предметы вручную'
+    CHANGE_BY_LISTS = 'Изменить предметы по спискам'
 
 
 subjects = Subjects()
+
+
+class SubjectsCategories(InlineKeyboard):
+    BUTTONS = list(SUBJECT_CATEGORIES)
+
+
+subjects_categories = SubjectsCategories()
 
 
 class FindSubject(InlineKeyboard):

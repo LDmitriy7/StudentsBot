@@ -11,9 +11,10 @@ from loader import dp, users_db
 
 @dp.callback_query_handler(button=KB.ForProject.REPOST, state='*')
 async def repost_project(query: types.CallbackQuery, suffix: str):
-    throttle_rate = 0
+    throttle_rate = 60 * 60
     if not await dp.throttle(repost_project.__name__, rate=throttle_rate, no_error=True):
-        await query.answer(f'Вы можете обновлять ваши проекты не чаще раза в {throttle_rate // 60} мин.')
+        text = f'Вы можете обновлять ваши проекты не чаще раза в {throttle_rate // 60} мин.'
+        await query.answer(text, show_alert=True)
         return
 
     project = await users_db.get_project_by_id(suffix)
@@ -47,11 +48,11 @@ async def total_del_project(msg: types.Message, user_id: int, suffix: str):
     project = await users_db.get_project_by_id(suffix)
 
     if project is None:
-        text = '<b>Этот проект уже удален</b>'
+        text = 'Этот проект уже удален'
     elif project.status == ProjectStatuses.ACTIVE and project.client_id == user_id:
-        text = '<b>Проект удален</b>'
+        text = 'Проект удален'
         await funcs.delete_post(project.post_url)  # удаляем пост, если есть ссылка
         await users_db.delete_project_by_id(suffix)
     else:
-        text = '<b>Не могу удалить этот проект.</b>'
+        text = 'Не могу удалить этот проект.'
     await msg.edit_text(text)
